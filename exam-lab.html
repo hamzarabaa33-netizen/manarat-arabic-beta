@@ -115,7 +115,7 @@ button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
 <div class="field wide"><label for="passage">النص الأصلي للسند *</label><textarea id="passage" rows="8"></textarea></div>
 <div class="field wide"><label for="situation">موقف واقعي للوضعية الإدماجية (اختياري)</label><textarea id="situation" rows="2" placeholder="يحدده الأستاذ ويربطه بموضوع السند"></textarea></div>
 </div></section>
-<section class="panel"><h2>03 — الظواهر المراد تقويمها</h2><p class="hint">يمكن دمج ظواهر مقطعين، ولكن كل شاهد يجب أن يظهر حرفيًا داخل السند المدخل.</p><div id="evidence"></div><div class="actions"><button type="button" class="gold" id="add">+ إضافة ظاهرة وشاهد</button></div></section>
+<section class="panel"><h2>03 — الظواهر المراد تقويمها</h2><p class="hint">يمكن دمج ظواهر مقطعين، ولكن كل شاهد يجب أن يظهر حرفيًا داخل السند المدخل.</p><div id="evidence"></div><div class="actions"><button type="button" class="gold" id="add">+ إضافة ظاهرة وشاهد</button><button type="button" id="sentenceButton">اقتراح عبارات حرفية من السند</button></div><div id="sentenceList" class="search-results"></div><p class="hint">العبارات المقترحة ليست تحليلًا نحويًا؛ اضغط العبارة فقط إذا تأكدت أنها شاهد صحيح للمورد.</p></section>
 </details>
 <section class="panel"><h2>04 — بناء المسودة ومراجعتها</h2><div class="actions"><button type="button" class="primary" id="generate">✧ إعداد مسودة متنوعة</button><button type="button" id="restore">استعادة مسودة محفوظة</button></div><div id="status" role="status" aria-live="polite">أدخل السند وشواهده ثم أنشئ المسودة.</div></section>
 <section class="panel" id="report" hidden><h2>ملاحظات المدقق البنيوي</h2><ul id="reportItems"></ul><p class="hint">يستطيع المحرك إثبات وجود الاقتباس في النص المدخل فقط؛ لا يصحح الإعراب أو يكشف الإسناد الزائف تلقائيًا.</p></section>
@@ -177,6 +177,30 @@ function save(){
  try{localStorage.setItem(KEY,JSON.stringify({data:data(),skills:skills(),paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
  catch(e){msg("تعذر الحفظ على هذا الجهاز: "+e.message,true)}
 }
+
+/* مخطط كفاءات للفهم: يوازن بين الفهم والاستدلال والتنظيم، ولا يفترض مضمونًا غير مثبت */
+function planReading(passage,previous,mode){
+ const normalized=norm(previous),text=norm(passage),candidates=[
+  {id:"gist",verb:"لخّص",skill:"تركيب",text:"لخّص القضية المركزية التي يعالجها السند في عبارة دقيقة.",answer:"يُحكم على التلخيص في ضوء الفكرة المركزية الفعلية للنص."},
+  {id:"evidence",verb:"استدل",skill:"فهم واستدلال",text:"بيّن الفكرة التي يؤكدها الكاتب، واستدل عليها بقرينة مناسبة من السند.",answer:"يُقبل الجواب المدعوم بدليل صريح من النص."},
+  {id:"title",verb:"اقترح",skill:"تقويم وتعليل",text:"اقترح عنوانًا بديلًا للنص، وعلّل اختياره استنادًا إلى مضمونه.",answer:"يُراجع اتساق العنوان مع القضية ومتانة التعليل."},
+  {id:"detail",verb:"ميّز",skill:"فهم وتحليل",text:"ميّز بين الفكرة الرئيسة وأحد التفاصيل التي تفسّرها في السند.",answer:"يتحقق الأستاذ من صحة الفكرة والتفصيل وعلاقتهما."},
+  {id:"purpose",verb:"استنتج",skill:"استنتاج",text:"استنتج الغاية التي يسعى إليها الكاتب من معالجة هذه القضية، وادعم استنتاجك بما ورد في النص.",answer:"يُراجع الاستنتاج وارتباطه بقرينة حقيقية."}
+ ];
+ const hasCauses=/لأن|لذلك|نتيجة|بسبب|نتج عن|أدّى إلى|إذ إن|ومن ثم/.test(text);
+ if(hasCauses)candidates.push({id:"causes",verb:"اربط",skill:"تحليل العلاقات",text:"أكمل الجدول بربط سبب ورد في السند بنتيجته، ثم استشهد بما يثبت العلاقة.",answer:"يُطلب شاهد مناسب من النص لعلاقة السبب والنتيجة.",table:true});
+ const hasParas=passage.split(/\n+/).filter(x=>t(x).length>35).length>=2;
+ if(hasParas)candidates.push({id:"paragraphs",verb:"قارن",skill:"ربط الأجزاء",text:"قارن بين وظيفة الفقرة الأولى والفقرة الأخيرة في بناء المعنى العام للنص.",answer:"يُراجع مدى مساهمة بداية النص وخاتمته في القضية المركزية."});
+ const priorities=mode==="analysis"?["evidence","causes","purpose","detail","gist","title","paragraphs"]:mode==="application"?["detail","title","evidence","gist","purpose","causes","paragraphs"]:["gist","evidence","causes","title","purpose","detail","paragraphs"];
+ candidates.sort((a,b)=>priorities.indexOf(a.id)-priorities.indexOf(b.id));
+ const wanted=text.length>360?3:2,selected=[],used=new Set(),skills=new Set();
+ for(const c of candidates){
+  if(normalized.includes(norm(c.verb))||used.has(c.verb)||skills.has(c.skill))continue;
+  selected.push(c);used.add(c.verb);skills.add(c.skill);if(selected.length===wanted)break;
+ }
+ for(const c of candidates){if(selected.length>=wanted)break;if(selected.some(x=>x.id===c.id))continue;selected.push(c)}
+ return selected;
+}
 function build(){
  const d=data(),arr=skills(),errors=[];
  if(t(d.sourceTitle).length<2||t(d.author).length<3||t(d.reference).length<5)errors.push("أدخل عنوان السند، والكاتب، والمرجع.");
@@ -193,11 +217,16 @@ function build(){
  const sourceRef=edit("p","المصدر كما أدخله الأستاذ: "+d.author+" — "+d.reference);sourceRef.className="source-ref";paper.append(sourceRef);
  paper.append(edit("h3","الجزء الأول: البناء الفكري واللغوي"));
  const answers=[];
- answers.push(addQ(paper,"1. لخّص الفكرة المركزية للنص في عبارة دقيقة.","تراجع الفكرة المركزية مع مضمون السند."));
- answers.push(addQ(paper,"2. وضّح صلة عنوان السند بمضمونه، مستدلًا بقرينة نصية.","تراجع العلاقة والدليل النصي."));
+ const reading=planReading(d.passage,d.previous,d.mode);
+ let index=1;
+ reading.forEach(q=>{
+  if(q.table){
+   answers.push(addQ(paper,(index++)+". "+q.text,q.answer,[{name:"سبب ورد في النص",quote:"........................"},{name:"نتيجة مرتبطة به",quote:"........................"}]));
+  }else answers.push(addQ(paper,(index++)+". "+q.text,q.answer));
+ });
  const jobs=plan(arr,d.mode,d.previous);
  const gram=jobs.filter(x=>!x.rhetorical);
- let index=3,grouped=new Set();
+ const grouped=new Set();
  if(gram.length>=2&&d.mode!=="analysis"){
   grouped.add(gram[0]);grouped.add(gram[1]);
   answers.push(addQ(paper,(index++)+". أكمل الجدول ببيان المورد اللغوي في كل شاهد، ثم علّل حكمك.","تراجع أحكام الظاهرتين وشواهدهما.",[gram[0].item,gram[1].item]));
@@ -209,11 +238,11 @@ function build(){
  cor.append(edit("h2","شبكة تصحيح أولية — لا تعتمد دون مراجعة"));answers.forEach((a,i)=>cor.append(edit("p",(i+1)+". "+a)));
  cor.append(edit("p","التحقق المطلوب: صحة السند ومصدره، حقوق الاستخدام، الإعراب والشواهد، التدرج، علامات الأسئلة، الوضعية وشبكتها."));
  const reports=[
-  [true,"الشواهد المدخلة موجودة حرفيًا في النص، بعد تسوية التشكيل والمسافات."],
+  [true,"تطابقت الشواهد اللغوية المدخلة مع عبارات في السند، بعد تسوية التشكيل والمسافات."],
   [arr.length>0,arr.length?"عُرضت مهام فهم ومهام لغوية ووضعية إدماجية.":"المسودة لا تتضمن مهارات لغوية محددة؛ أضفها بعد التحقق من شواهدها."],
-  [new Set(jobs.map(x=>x.verb)).size===jobs.length,"تنوعت أفعال الأسئلة اللغوية دون تكرار."],
+  [new Set(jobs.map(x=>x.verb)).size===jobs.length&&new Set(reading.map(x=>x.verb)).size===reading.length,"اختيرت طرائق متنوعة للفهم واللغة دون تكرار مباشر للأفعال داخل كل مجال."],
   [!!situation,"تضمنت الوضعية سياقًا واقعيًا حدده الأستاذ."],
-  [false,"لم تُتحقق بيانات المصدر وحقوق النشر أو الإجابات اللغوية أو المطابقة الرسمية تلقائيًا."]
+  [false,"ما زال التحقق من ملاءمة المهارات للشواهد، وبيانات المصدر وحقوق النشر، والإجابات الصحيحة، والتطابق مع المنهاج، والتنقيط مطلوبًا."]
  ];
  $("reportItems").replaceChildren(...reports.map(r=>el("li",(r[0]?"✓ ":"! ")+r[1],r[0]?"good":"bad")));
  $("report").hidden=false;$("output").hidden=false;save();msg("أُنشئت مسودة قابلة للتحرير، مع بيان ما يحتاج إلى مراجعة.");$("output").scrollIntoView({behavior:"smooth"});
@@ -300,7 +329,7 @@ $("quickBuildBtn").addEventListener("click",()=>{
 });
 const baseByLibrary={wikisource:"https://ar.wikisource.org",wikipedia:"https://ar.wikipedia.org"};
 let pendingSource=null,searchGeneration=0;
-const stripTags=str=>{const div=document.createElement("div");div.innerHTML=str||"";return t(div.textContent).replace(/\s+/g," ").slice(0,300)};
+const stripTags=str=>{const doc=new DOMParser().parseFromString(String(str||""),"text/html");return t(doc.body.textContent).replace(/\s+/g," ").slice(0,300)};
 function apiURL(base,params){
  const u=new URL(base+"/w/api.php");
  for(const [k,v]of Object.entries(params))u.searchParams.set(k,String(v));
@@ -373,6 +402,26 @@ $("useSource").addEventListener("click",()=>{
  $("advanced").open=true;
  quickMessage("أُدرج المقتطف ومصدره الرقمي. راجع بيانات الكاتب الأصلي وحقوق الاقتباس، ثم أثبت الشواهد اللغوية أو اكتفِ بمسودة الفهم الأولية.");
  $("passage").scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+
+$("sentenceButton").addEventListener("click",()=>{
+ const container=$("sentenceList");container.replaceChildren();
+ const full=t($("passage").value);
+ if(!full){container.append(el("p","أدخل سندًا حقيقيًا أولًا."));$("advanced").open=true;return}
+ const sentences=full.split(/(?<=[.؟!؛])\s+|\n+/).map(t).filter(x=>x.length>=18&&x.length<=260).slice(0,12);
+ if(!sentences.length){container.append(el("p","لم أجد عبارات قصيرة واضحة. يمكنك تحديد الشاهد يدويًا من النص."));return}
+ sentences.forEach(sentence=>{
+  const card=el("div",undefined,"search-hit"),text=el("p",sentence),button=el("button","اعتماد كشاهد"),actions=el("div",undefined,"actions");
+  button.addEventListener("click",()=>{
+   let target=[...$("evidence").children].find(row=>{const x=row.querySelectorAll("input");return t(x[0].value)&&!t(x[1].value)});
+   if(!target)target=[...$("evidence").children].find(row=>!t(row.querySelectorAll("input")[1].value));
+   if(!target){addSkill();target=$("evidence").lastElementChild}
+   target.querySelectorAll("input")[1].value=sentence;
+   quickMessage("أُدرج شاهد حرفي. تأكد بنفسك من انتمائه إلى الظاهرة المحددة؛ المطابقة النصية لا تثبت التحليل النحوي.");
+  });
+  actions.append(button);card.append(text,actions);container.append(card);
+ });
 });
 
 applyFont();
