@@ -303,10 +303,12 @@ function quickMessage(text,error=false){const state=$("quickState");state.textCo
 function understand(){
  const prompt=t(request.value);
  if(prompt.length<12){quickMessage("اكتب هدفًا واضحًا للتقويم أولًا.",true);return}
- if(/فرض/.test(prompt))$("kind").value="فرض";
- else if(/تقويم/.test(prompt)&&!/اختبار/.test(prompt))$("kind").value="تقويم";
- else if(/الثلاثي الثاني/.test(prompt))$("kind").value="اختبار الثلاثي الثاني";
- else if(/الثلاثي الثالث/.test(prompt))$("kind").value="اختبار الثلاثي الثالث";
+ if(/اختبار/.test(prompt)){
+   if(/الثلاثي الثاني/.test(prompt))$("kind").value="اختبار الثلاثي الثاني";
+   else if(/الثلاثي الثالث/.test(prompt))$("kind").value="اختبار الثلاثي الثالث";
+   else $("kind").value="اختبار الثلاثي الأول";
+ }else if(/فرض/.test(prompt))$("kind").value="فرض";
+ else if(/تقويم/.test(prompt))$("kind").value="تقويم";
  else $("kind").value="اختبار الثلاثي الأول";
  $("mode").value=/تعليل|تحليل|استنتاج|نقد/.test(prompt)?"analysis":/توظيف|تطبيق|تحويل|إنتاج/.test(prompt)?"application":"balanced";
  const found=topicOptions.find(x=>prompt.includes(x));
