@@ -134,8 +134,8 @@ function build(){
  paper.append(edit("h2",d.kind+" — اللغة العربية — السنة الرابعة متوسط"));
  paper.append(edit("p","المقطع التعلمي: "+(t(d.segment)||"يحدده الأستاذ")));
  paper.append(edit("h3","السند: "+d.sourceTitle));
- paper.append(edit("div",d.passage)).lastChild.className="source";
- paper.append(edit("p","المصدر كما أدخله الأستاذ: "+d.author+" — "+d.reference)).lastChild.className="source-ref";
+ const sourceBox=edit("div",d.passage);sourceBox.className="source";paper.append(sourceBox);
+ const sourceRef=edit("p","المصدر كما أدخله الأستاذ: "+d.author+" — "+d.reference);sourceRef.className="source-ref";paper.append(sourceRef);
  paper.append(edit("h3","الجزء الأول: البناء الفكري واللغوي"));
  const answers=[];
  answers.push(addQ(paper,"1. لخّص الفكرة المركزية للنص في عبارة دقيقة.","تراجع الفكرة المركزية مع مضمون السند."));
