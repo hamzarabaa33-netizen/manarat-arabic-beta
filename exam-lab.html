@@ -1,0 +1,209 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102b46"><title>المنارة | مختبر هندسة الاختبارات</title>
+<style>
+:root{--n:#102b46;--g:#c59b55;--t:#227c7b;--line:#dfe6ec}*{box-sizing:border-box}
+body{margin:0;background:#f4f7fa;color:#223c50;font:14px/1.9 Tahoma,Arial,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--g)}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+aside{background:linear-gradient(155deg,#173d59,#0b263d);color:white;padding:23px 14px}aside h1{font:700 31px Georgia,"Simplified Arabic",serif;margin:0;color:#ebd5a4}
+aside p{font-size:11px;color:#afc6d5;margin:2px 0 24px}aside a{display:block;color:#ecf5f8;text-decoration:none;padding:12px;border:1px solid #ffffff25;border-radius:8px;margin:10px 0;background:#ffffff12}
+aside a.active{border-color:var(--g);background:#ffffff26}
+main{padding:24px clamp(15px,3vw,40px);min-width:0;width:100%;max-width:1400px;margin:auto}
+h1{margin:0;color:#123a55;font-size:26px}h2{font-size:19px;color:#183e59;margin:0 0 10px}
+p{margin:5px 0 12px}.lead{color:#7a8995;font-size:12px}.chip{background:#fff9e8;border:1px solid #eddbaa;color:#846831;padding:5px 11px;border-radius:8px;font-size:12px}
+header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.warning{padding:12px 15px;background:#fff9ed;border:1px solid #edddb5;border-radius:10px;color:#795e2e;font-size:12px;margin:18px 0}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:23px;margin:17px 0;box-shadow:0 7px 25px #173b5908}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:4px}.wide{grid-column:1/-1}
+label{font-size:12px;font-weight:700;color:#375466}
+input,textarea,select{border-radius:7px;padding:10px 12px;border:1px solid #cfdbe2;background:#fcfdff;min-width:0;width:100%;color:#203c51}
+textarea{resize:vertical;min-height:90px}.hint{color:#758695;font-size:12px;margin-top:0}
+.evidence{display:grid;grid-template-columns:1fr 1.3fr auto;align-items:end;gap:10px;padding:12px;margin:10px 0;border:1px solid #e3ebef;border-radius:9px;background:#fafcfe}
+.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0}
+button{background:#fff;color:#26475e;border:1px solid #cbd6de;border-radius:8px;padding:9px 14px}
+button.primary{background:var(--n);color:#fff;border-color:var(--n)}
+button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
+#status{white-space:pre-line;border-radius:8px;background:#f2f8f8;padding:11px;margin:10px 0;border:1px solid #c9dcdb}
+#status.error{background:#fff4f2;color:#a83b32;border-color:#ebc0b9}
+#report[hidden],#output[hidden]{display:none!important}
+#report li{padding:3px 0}#report .bad{color:#a74734}#report .good{color:#22715e}
+.doc-scroll{background:#e8eef3;padding:14px;border-radius:12px;overflow-x:auto}
+.paper{font-family:"Simplified Arabic",Arial,serif;font-size:17px;color:#111;background:white;width:min(100%,850px);min-width:605px;margin:auto;padding:30px 36px;min-height:730px;border:1px solid #9fa8ae;box-shadow:0 8px 25px #0002;line-height:1.6}
+.paper.times{font-family:"Times New Roman",serif}
+.paper h2{text-align:center;color:#111;font-size:1.2em;margin:8px 0}
+.paper h3{color:#111;font-size:1.05em;margin:12px 0 3px}
+.paper p{margin:6px 0}.doc-head{display:flex;justify-content:space-between;border-bottom:1px solid #333;font-size:.83em}
+.source{padding:10px;border:1px solid #555;white-space:pre-wrap;text-align:justify}
+.source-ref{font-size:.78em;color:#555;text-align:left}
+.question{margin:9px 0;break-inside:avoid}.question:focus-within{background:#f5faf8}
+.paper table{border-collapse:collapse;width:100%;margin:8px 0;font-size:.87em}
+.paper th,.paper td{border:1px solid #555;padding:5px;text-align:center}
+.paper th{background:#f0f0f0}
+[contenteditable=true]:focus{outline:1px dashed var(--t);background:#f3faf8}
+.small{font-size:12px;color:#84919a}.checkbox-label{display:flex;gap:6px;align-items:center}.checkbox-label input{width:auto}
+@media(max-width:780px){.layout{display:block}aside{padding:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}aside h1{font-size:21px}aside p{display:none}aside a{margin:0;padding:7px;font-size:12px}main{padding:14px}.fields{grid-template-columns:1fr}.evidence{grid-template-columns:1fr}.panel{padding:16px}.paper{font-size:16px}}
+@media print{@page{size:A4 portrait;margin:13mm}body{background:white}.layout{display:block}aside,header,.warning,.panel,.actions,.small{display:none!important}main{max-width:none;margin:0;padding:0}#output{display:block!important}.doc-scroll{padding:0;background:white;overflow:visible}.paper{min-width:0;min-height:0;width:100%;border:0;box-shadow:none;padding:0;font-size:16px}.question{break-inside:avoid}#correction:not(.show-print){display:none}#correction.show-print{break-before:page}}
+</style></head><body>
+<div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab.html">▤ هندسة الاختبارات</a></aside><main>
+<header><div><h1>مختبر هندسة التقويم</h1><p class="lead">نموذج تطبيقي للرابعة متوسط — لغة عربية</p></div><span class="chip">تجربة V0.8</span></header>
+<div class="warning">هذا المحرك محلي وتجريبي: <b>لا يبحث في الإنترنت ولا يتحقق آليًا من المصادر أو صحة الإعراب.</b> يمنع اختلاق الشواهد، ويُنشئ مسودة متنوعة للمراجعة. لا تُعتمد الوثيقة دون تدقيق الأستاذ.</div>
+<section class="panel"><h2>01 — هدف التقويم</h2><div class="fields">
+<div class="field"><label for="kind">نوع التقويم</label><select id="kind"><option>اختبار الثلاثي الأول</option><option>فرض</option><option>تقويم</option><option>اختبار الثلاثي الثاني</option><option>اختبار الثلاثي الثالث</option></select></div>
+<div class="field"><label for="mode">طريقة البناء</label><select id="mode"><option value="balanced">متوازن ومتنوع</option><option value="analysis">تحليلي وتعليلي</option><option value="application">توظيفي وتطبيقي</option></select></div>
+<div class="field"><label for="segment">المقطع التعلمي (اختياري)</label><input id="segment" placeholder="وفق التوزيع الفعلي"></div>
+<div class="field"><label for="previous">مهام الفرض السابق (اختياري)</label><input id="previous" placeholder="مثال: إعراب البدل، استخراج صورة بيانية"></div>
+</div></section>
+<section class="panel"><h2>02 — السند الموثق</h2><p class="hint">أدخل نصًا أصيلًا يجيز مصدره هذا الاستعمال، مع بيانات مرجعية صحيحة. لا تدعي المنارة التحقق من صحتها.</p>
+<div class="fields"><div class="field"><label for="sourceTitle">عنوان السند *</label><input id="sourceTitle"></div><div class="field"><label for="author">الكاتب أو جهة النشر *</label><input id="author"></div>
+<div class="field wide"><label for="reference">اسم الكتاب والصفحة، أو رابط المصدر *</label><input id="reference"></div>
+<div class="field wide"><label for="passage">النص الأصلي للسند *</label><textarea id="passage" rows="8"></textarea></div>
+<div class="field wide"><label for="situation">موقف واقعي للوضعية الإدماجية (اختياري)</label><textarea id="situation" rows="2" placeholder="يحدده الأستاذ ويربطه بموضوع السند"></textarea></div>
+</div></section>
+<section class="panel"><h2>03 — الظواهر المراد تقويمها</h2><p class="hint">يمكن دمج ظواهر مقطعين، ولكن كل شاهد يجب أن يظهر حرفيًا داخل السند المدخل.</p><div id="evidence"></div><div class="actions"><button type="button" class="gold" id="add">+ إضافة ظاهرة وشاهد</button></div></section>
+<section class="panel"><h2>04 — بناء المسودة ومراجعتها</h2><div class="actions"><button type="button" class="primary" id="generate">✧ إعداد مسودة متنوعة</button><button type="button" id="restore">استعادة مسودة محفوظة</button></div><div id="status" role="status" aria-live="polite">أدخل السند وشواهده ثم أنشئ المسودة.</div></section>
+<section class="panel" id="report" hidden><h2>ملاحظات المدقق البنيوي</h2><ul id="reportItems"></ul><p class="hint">يستطيع المحرك إثبات وجود الاقتباس في النص المدخل فقط؛ لا يصحح الإعراب أو يكشف الإسناد الزائف تلقائيًا.</p></section>
+<section id="output" hidden>
+<div class="actions"><button id="save" type="button" class="primary">حفظ المسودة</button><button id="word" type="button">Word DOCX</button><button id="print" type="button">طباعة / حفظ PDF</button><label class="checkbox-label"><input type="checkbox" id="includeCorrection"> اطبع شبكة التصحيح أيضًا</label><label>الخط <select id="font"><option value="simplified">Simplified Arabic</option><option value="times">Times New Roman</option></select></label></div>
+<p class="small">انقر على أي سؤال أو خلية للتعديل. DOCX قابل للتحرير، وقد تختلف الهوامش قليلًا بحسب إصدار Word.</p>
+<div class="doc-scroll"><article class="paper" id="paper"></article></div>
+<div class="doc-scroll" style="margin-top:15px"><article class="paper" id="correction"></article></div>
+</section>
+<p class="small" style="text-align:center">من إعداد الأستاذ بن مزوز حمزة · المنارة — أداة تربوية قيد الاختبار</p>
+</main></div>
+<script>
+"use strict";
+(function(){
+const $=id=>document.getElementById(id),KEY="almanara_exam_lab_v08";
+const t=s=>String(s||"").trim(), norm=s=>t(s).normalize("NFC").replace(/[\u064B-\u065F\u0670\u0640]/g,"").replace(/\s+/g," ");
+const el=(name,text,cls)=>{const x=document.createElement(name);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x};
+const edit=(name,text)=>{const x=el(name,text);x.contentEditable="true";x.spellcheck=false;return x};
+function addSkill(name="",quote=""){
+ const row=el("div",undefined,"evidence");
+ const a=el("div",undefined,"field"),b=el("div",undefined,"field");
+ const ai=el("input"),bi=el("input");ai.value=name;bi.value=quote;ai.placeholder="مثال: البدل";bi.placeholder="عبارة مطابقة للسند";
+ a.append(el("label","الظاهرة أو المورد"),ai);b.append(el("label","شاهد من السند"),bi);
+ const del=el("button","حذف");del.type="button";del.onclick=()=>row.remove();
+ row.append(a,b,del);$("evidence").append(row);
+}
+addSkill();addSkill();$("add").onclick=()=>addSkill();
+const ids=["kind","mode","segment","previous","sourceTitle","author","reference","passage","situation"];
+const data=()=>Object.fromEntries(ids.map(id=>[id,$(id).value]));
+const skills=()=>[...$("evidence").children].map(r=>{const i=r.querySelectorAll("input");return{name:t(i[0].value),quote:t(i[1].value)}}).filter(x=>x.name||x.quote);
+function msg(message,error=false){$("status").textContent=message;$("status").className=error?"error":""}
+function addQ(paper,label,answer,tableRows){
+ const sec=el("section",undefined,"question");sec.append(edit("p",label));
+ if(tableRows){const tbl=el("table"),head=el("tr");["الشاهد","المورد","التعليل"].forEach(v=>head.append(el("th",v)));tbl.append(head);
+ tableRows.forEach(row=>{const tr=el("tr");[row.quote,row.name,"........................"].forEach(v=>tr.append(edit("td",v)));tbl.append(tr)});sec.append(tbl)}
+ paper.append(sec);return answer;
+}
+function plan(items,mode,previous){
+ const verbs=new Set(),chosen=[],used=norm(previous);
+ items.forEach((item,i)=>{
+  const rhetorical=/استعار|تشبيه|كناي|صورة|بلاغ|مجاز/.test(item.name);
+  const list=rhetorical?[
+   ["حلّل","حلّل الصورة البيانية الواردة في الشاهد «"+item.quote+"»، وبيّن أثرها في المعنى."],
+   ["فسّر","فسّر دلالة التعبير في «"+item.quote+"»، وعلّل إجابتك."]
+  ]:[
+   ["بيّن","بيّن وظيفة «"+item.name+"» في الشاهد «"+item.quote+"»، وعلّل حكمك."],
+   ["أعرب","أعرب التركيب المعني بظاهرة «"+item.name+"» في «"+item.quote+"» إعرابًا تامًا."],
+   ["علّل","علّل الحكم النحوي الذي يخصّ «"+item.name+"» في «"+item.quote+"»."],
+   ["وظّف","وظّف «"+item.name+"» في جملة من إنشائك، وقارن استعمالك بالشاهد «"+item.quote+"»."]
+  ];
+  if(mode==="application")list.reverse();
+  if(mode==="analysis")list.sort((x,y)=>Number(y[0]==="بيّن")-Number(x[0]==="بيّن"));
+  const ch=list.find(x=>!verbs.has(x[0])&&!used.includes(x[0]))||list.find(x=>!verbs.has(x[0]))||list[i%list.length];
+  verbs.add(ch[0]);chosen.push({verb:ch[0],text:ch[1],item,rhetorical});
+ });
+ return chosen;
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify({data:data(),skills:skills(),paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
+ catch(e){msg("تعذر الحفظ على هذا الجهاز: "+e.message,true)}
+}
+function build(){
+ const d=data(),arr=skills(),errors=[];
+ if(t(d.sourceTitle).length<2||t(d.author).length<3||t(d.reference).length<5)errors.push("أدخل عنوان السند، والكاتب، والمرجع.");
+ if(norm(d.passage).length<80)errors.push("أدخل سندًا أصيلًا بطول 80 حرفًا على الأقل.");
+ if(!arr.length)errors.push("أدخل ظاهرة واحدة مع شاهدها على الأقل.");
+ arr.forEach((s,i)=>{if(!s.name||!s.quote)errors.push("المورد رقم "+(i+1)+" غير مكتمل.");else if(!norm(d.passage).includes(norm(s.quote)))errors.push("الشاهد رقم "+(i+1)+" غير موجود في السند المدخل.");});
+ if(errors.length){msg(errors.join("\n"),true);return}
+ const paper=$("paper"),cor=$("correction");paper.replaceChildren();cor.replaceChildren();
+ const head=el("div",undefined,"doc-head");head.append(el("span","المؤسسة: ......................."),el("span","السنة الدراسية: ......................."));paper.append(head);
+ paper.append(edit("h2",d.kind+" — اللغة العربية — السنة الرابعة متوسط"));
+ paper.append(edit("p","المقطع التعلمي: "+(t(d.segment)||"يحدده الأستاذ")));
+ paper.append(edit("h3","السند: "+d.sourceTitle));
+ paper.append(edit("div",d.passage)).lastChild.className="source";
+ paper.append(edit("p","المصدر كما أدخله الأستاذ: "+d.author+" — "+d.reference)).lastChild.className="source-ref";
+ paper.append(edit("h3","الجزء الأول: البناء الفكري واللغوي"));
+ const answers=[];
+ answers.push(addQ(paper,"1. لخّص الفكرة المركزية للنص في عبارة دقيقة.","تراجع الفكرة المركزية مع مضمون السند."));
+ answers.push(addQ(paper,"2. وضّح صلة عنوان السند بمضمونه، مستدلًا بقرينة نصية.","تراجع العلاقة والدليل النصي."));
+ const jobs=plan(arr,d.mode,d.previous);
+ const gram=jobs.filter(x=>!x.rhetorical);
+ let index=3,grouped=new Set();
+ if(gram.length>=2&&d.mode!=="analysis"){
+  grouped.add(gram[0]);grouped.add(gram[1]);
+  answers.push(addQ(paper,(index++)+". أكمل الجدول ببيان المورد اللغوي في كل شاهد، ثم علّل حكمك.","تراجع أحكام الظاهرتين وشواهدهما.",[gram[0].item,gram[1].item]));
+ }
+ jobs.filter(x=>!grouped.has(x)).forEach(j=>answers.push(addQ(paper,(index++)+". "+j.text,"يحتاج إلى إجابة نموذجية مدقّقة من الأستاذ.")));
+ paper.append(edit("h3","الجزء الثاني: الوضعية الإدماجية"));
+ let situation=t(d.situation);
+ answers.push(addQ(paper,(situation?"انطلاقًا من الوضعية الواقعية الآتية: «"+situation+"»؛ اكتب نصًا متماسكًا يعالج المشكلة ويرتبط بقضية السند. حدّد مع أستاذك النمط والحجم والموارد المطلوب توظيفها.":"[يضيف الأستاذ موقفًا من الواقع المعاش متصلًا بالسند، ثم يحدد نوع الإنتاج وحجمه ومعايير تقويمه.]"),"تحتاج الوضعية إلى شبكة تقويم مناسبة ومراجعة." ));
+ cor.append(edit("h2","شبكة تصحيح أولية — لا تعتمد دون مراجعة"));answers.forEach((a,i)=>cor.append(edit("p",(i+1)+". "+a)));
+ cor.append(edit("p","التحقق المطلوب: صحة السند ومصدره، حقوق الاستخدام، الإعراب والشواهد، التدرج، علامات الأسئلة، الوضعية وشبكتها."));
+ const reports=[
+  [true,"الشواهد المدخلة موجودة حرفيًا في النص، بعد تسوية التشكيل والمسافات."],
+  [true,"عُرضت مهام فهم، ومهام لغوية، ووضعية إدماجية."],
+  [new Set(jobs.map(x=>x.verb)).size===jobs.length,"تنوعت أفعال الأسئلة اللغوية دون تكرار."],
+  [!!situation,"تضمنت الوضعية سياقًا واقعيًا حدده الأستاذ."],
+  [false,"لم تُتحقق بيانات المصدر وحقوق النشر أو الإجابات اللغوية أو المطابقة الرسمية تلقائيًا."]
+ ];
+ $("reportItems").replaceChildren(...reports.map(r=>el("li",(r[0]?"✓ ":"! ")+r[1],r[0]?"good":"bad")));
+ $("report").hidden=false;$("output").hidden=false;save();msg("أُنشئت مسودة قابلة للتحرير، مع بيان ما يحتاج إلى مراجعة.");$("output").scrollIntoView({behavior:"smooth"});
+}
+$("generate").onclick=build;$("save").onclick=()=>{save();msg("حُفظت المسودة على هذا المتصفح.")};
+$("restore").onclick=()=>{
+ try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(!s){msg("لا توجد مسودة محفوظة.",true);return}
+ ids.forEach(id=>{if(s.data&&Object.prototype.hasOwnProperty.call(s.data,id))$(id).value=s.data[id]});
+ $("evidence").replaceChildren();(s.skills||[]).forEach(x=>addSkill(x.name,x.quote));if(!s.skills?.length)addSkill();
+ $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
+ }catch(e){msg("تعذرت الاستعادة: "+e.message,true)}
+};
+function applyFont(){$("paper").classList.toggle("times",$("font").value==="times");$("correction").classList.toggle("times",$("font").value==="times")}
+$("font").onchange=()=>{applyFont();save()};
+let timer;["paper","correction"].forEach(id=>$(id).addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(save,450)}));
+$("print").onclick=()=>{save();$("correction").classList.toggle("show-print",$("includeCorrection").checked);window.print()};
+const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function pxml(text,bold){return '<w:p><w:pPr><w:bidi w:val="1"/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Simplified Arabic"/><w:rtl w:val="1"/>'+(bold?'<w:b/>':'')+'</w:rPr><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r></w:p>'}
+function xmlChildren(node){
+ let out="";
+ for(const e of node.children){
+  if(e.tagName==="TABLE"){out+='<w:tbl><w:tblPr><w:bidiVisual/><w:tblBorders><w:top w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/></w:tblBorders></w:tblPr>';
+    for(const row of e.rows){out+="<w:tr>";for(const cell of row.cells)out+='<w:tc>'+pxml(cell.innerText||cell.textContent,cell.tagName==="TH")+"</w:tc>";out+="</w:tr>"}out+="</w:tbl>";
+  }else if(["P","H2","H3"].includes(e.tagName)||e.classList.contains("source"))out+=pxml(e.innerText||e.textContent,e.tagName!=="P"&&!e.classList.contains("source"));
+  else out+=xmlChildren(e);
+ }return out;
+}
+function crc(bytes){let c=-1;for(const b of bytes){c^=b;for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^(-1))>>>0}
+function zip(files){
+ const te=new TextEncoder(),out=[],dir=[];let offset=0;
+ const u16=x=>[x&255,x>>>8&255],u32=x=>[x&255,x>>>8&255,x>>>16&255,x>>>24&255];
+ for(const name in files){const n=te.encode(name),b=te.encode(files[name]),c=crc(b);
+ const local=new Uint8Array([80,75,3,4,...u16(20),...u16(2048),0,0,0,0,0,0,...u32(c),...u32(b.length),...u32(b.length),...u16(n.length),0,0,...n]);
+ const central=new Uint8Array([80,75,1,2,...u16(20),...u16(20),...u16(2048),0,0,0,0,0,0,...u32(c),...u32(b.length),...u32(b.length),...u16(n.length),0,0,0,0,0,0,0,0,0,0,0,0,...u32(offset),...n]);
+ out.push(local,b);dir.push(central);offset+=local.length+b.length;
+ }
+ const size=dir.reduce((n,x)=>n+x.length,0);return new Blob([...out,...dir,new Uint8Array([80,75,5,6,0,0,0,0,...u16(dir.length),...u16(dir.length),...u32(size),...u32(offset),0,0])],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+$("word").onclick=()=>{
+ save();
+ const body=xmlChildren($("paper"))+($("includeCorrection").checked?pxml("شبكة التصحيح",true)+xmlChildren($("correction")):"");
+ const documentXML='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="850" w:right="850" w:bottom="850" w:left="850"/></w:sectPr></w:body></w:document>';
+ const blob=zip({"[Content_Types].xml":'<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>',"_rels/.rels":'<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>',"word/document.xml":documentXML});
+ const link=document.createElement("a"),url=URL.createObjectURL(blob);link.href=url;link.download="المنارة - مسودة اختبار.docx";document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);msg("طُلب حفظ DOCX؛ راجع الملف في تنزيلات المتصفح وافتحه في Word.");
+};
+applyFont();
+})();
+</script></body></html>
