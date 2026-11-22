@@ -174,7 +174,7 @@ function plan(items,mode,previous){
  return chosen;
 }
 function save(){
- try{localStorage.setItem(KEY,JSON.stringify({data:data(),skills:skills(),paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
+ try{localStorage.setItem(KEY,JSON.stringify({data:data(),skills:skills(),request:$("quickRequest").value,topic:$("topicQuery").value,paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
  catch(e){msg("تعذر الحفظ على هذا الجهاز: "+e.message,true)}
 }
 
@@ -251,6 +251,7 @@ $("generate").onclick=build;$("save").onclick=()=>{save();msg("حُفظت الم
 $("restore").onclick=()=>{
  try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(!s){msg("لا توجد مسودة محفوظة.",true);return}
  ids.forEach(id=>{if(s.data&&Object.prototype.hasOwnProperty.call(s.data,id))$(id).value=s.data[id]});
+ if(typeof s.request==="string")$("quickRequest").value=s.request;if(typeof s.topic==="string")$("topicQuery").value=s.topic;
  $("evidence").replaceChildren();(s.skills||[]).forEach(x=>addSkill(x.name,x.quote));if(!s.skills?.length)addSkill();
  $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
  }catch(e){msg("تعذرت الاستعادة: "+e.message,true)}
@@ -391,6 +392,7 @@ async function previewSource(base,title,url){
   pendingSource={title,url,base,text:cut};
   $("foundText").textContent=cut;
   quickMessage("جُلب مقتطف مباشر من الصفحة؛ اقْرأه وتحقق من مناسبة موضوعه وبنيته قبل إدراجه.");
+  state.scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){$("foundText").textContent="تعذرت المعاينة: "+e.message+"؛ افتح رابط المصدر واقتبس نصًا مسموحًا به يدويًا.";quickMessage("تعذر جلب المقتطف، ولم أختلق بديلًا عنه.",true)}
 }
 $("useSource").addEventListener("click",()=>{
