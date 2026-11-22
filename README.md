@@ -9,3 +9,12 @@
 - جميع المذكرات والنماذج تعليمية تجريبية، ولا يُدّعى اعتمادها وزاريًا.
 
 النسخة الخاصة ذات الخادم ليست منشورة في هذا المستودع العام. يحتفظ مشروع المنارة الكامل بها بصورة منفصلة.
+
+## تفعيل الرابط لأول مرة
+
+1. افتح [Settings → Pages](https://github.com/hamzarabaa33-netizen/manarat-arabic-beta/settings/pages).
+2. في **Build and deployment** اختر **Source: Deploy from a branch**.
+3. اختر **Branch: main** و **Folder: / (root)** واضغط **Save**.
+4. بعد اكتمال عملية النشر، افتح https://hamzarabaa33-netizen.github.io/manarat-arabic-beta/ .
+
+هذه خطوة إعداد تحتاج إجراءً من مالك المستودع؛ مجرد رفع الملفات لا يفعّل Pages تلقائيًا.
