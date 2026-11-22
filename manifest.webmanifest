@@ -1,0 +1,20 @@
+{
+  "name": "المنارة — استوديو المذكرات البيداغوجية (نسخة تجريبية)",
+  "short_name": "المنارة",
+  "description": "نسخة عامة تجريبية من محرر المذكرات. التوليد الذكي يحتاج خادمًا خاصًا مستقلًا.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fa",
+  "theme_color": "#102b46",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
