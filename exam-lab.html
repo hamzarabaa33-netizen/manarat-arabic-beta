@@ -147,9 +147,9 @@ const ids=["kind","mode","segment","previous","sourceTitle","author","reference"
 const data=()=>Object.fromEntries(ids.map(id=>[id,$(id).value]));
 const skills=()=>[...$("evidence").children].map(r=>{const i=r.querySelectorAll("input");return{name:t(i[0].value),quote:t(i[1].value)}}).filter(x=>x.name||x.quote);
 function msg(message,error=false){$("status").textContent=message;$("status").className=error?"error":""}
-function addQ(paper,label,answer,tableRows){
+function addQ(paper,label,answer,tableRows,headings=["الشاهد","المورد","التعليل"]){
  const sec=el("section",undefined,"question");sec.append(edit("p",label));
- if(tableRows){const tbl=el("table"),head=el("tr");["الشاهد","المورد","التعليل"].forEach(v=>head.append(el("th",v)));tbl.append(head);
+ if(tableRows){const tbl=el("table"),head=el("tr");headings.forEach(v=>head.append(el("th",v)));tbl.append(head);
  tableRows.forEach(row=>{const tr=el("tr");[row.quote,row.name,"........................"].forEach(v=>tr.append(edit("td",v)));tbl.append(tr)});sec.append(tbl)}
  paper.append(sec);return answer;
 }
@@ -221,7 +221,7 @@ function build(){
  let index=1;
  reading.forEach(q=>{
   if(q.table){
-   answers.push(addQ(paper,(index++)+". "+q.text,q.answer,[{name:"سبب ورد في النص",quote:"........................"},{name:"نتيجة مرتبطة به",quote:"........................"}]));
+   answers.push(addQ(paper,(index++)+". "+q.text,q.answer,[{name:"........................",quote:"........................"}],["السبب","النتيجة","القرينة الدالة"]));
   }else answers.push(addQ(paper,(index++)+". "+q.text,q.answer));
  });
  const jobs=plan(arr,d.mode,d.previous);
