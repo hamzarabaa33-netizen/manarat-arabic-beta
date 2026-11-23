@@ -132,7 +132,7 @@ function exportPrint(){
 async function generateAI(){
  const cfg=config();if(cfg.error){setStatus(cfg.error,true);$("aiSettings").open=true;return}
  const {body,excerpt}=payload();
- if(body.passage.length<180){setStatus("لم يُحدّد نص أصيل كافٍ. اختر سندًا من مكتبة المنارة أولًا ثم أنشئ الاختبار.",true);return}
+ if(body.passage.length<180){if($("advanced"))$("advanced").open=true;setStatus("لم يُحدّد نص أصيل كافٍ. اختره من مكتبة المنارة أو أدرجه في خانة السند المفتوحة الآن.",true);$("passage")?.scrollIntoView({behavior:"smooth",block:"center"});return}
  const btn=$("aiGenerate");btn.disabled=true;
  setStatus(excerpt.clipped?"يجري تحليل مقتطف من النص الطويل. سنعرض تنبيهًا إلى احتمال عدم اكتماله.":"يجري إنشاء الأسئلة وربطها بالشواهد ثم التدقيق المستقل...");
  const controller=new AbortController(),kill=setTimeout(()=>controller.abort(),API_TIMEOUT);
