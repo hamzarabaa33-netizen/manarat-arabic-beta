@@ -164,6 +164,30 @@ main{max-width:1250px}
 .question-preview ol{margin:10px 20px 12px 0;padding:0;line-height:2.0}
 .question-preview li{padding:3px 0;font-size:15px}
 .question-preview .hint{color:#43636e}
+
+/* School-style A4 preview: compact source, readable tasks, usable writing spaces */
+.paper{max-width:210mm;min-height:0;line-height:1.65}
+.paper .source{font-size:.94em;line-height:1.75;padding:11px 14px;border:1px solid #555;white-space:pre-line;overflow-wrap:break-word}
+.paper .question{padding:5px 0 8px;border-bottom:1px dotted #b5bbc0;margin:6px 0 10px}
+.paper .question>p{font-weight:600;font-size:1em;line-height:1.8;margin:0}
+.paper .question>p:first-child{white-space:pre-line}
+.paper .question .answer-space{height:27px;border-bottom:1px dotted #b9c4c8;margin:0 12px}
+.paper .source-note{font-size:.75em;color:#85602e;background:#fff9ee;border:1px solid #e8d9bd;padding:5px 8px}
+.paper .source-ref{font-size:.74em;line-height:1.4;overflow-wrap:anywhere}
+.paper .doc-head{gap:8px}
+.paper h3{margin:12px 0 6px;padding:3px 4px;border-bottom:1px solid #4e5961}
+.correction-details{margin-top:15px;border:1px solid #d7e1e7;border-radius:9px;background:#f9fcfd;padding:10px 15px}
+.correction-details summary{cursor:pointer;font-weight:700;color:#24536d;font-size:14px}
+@media print{
+ .correction-details{border:0;padding:0;margin:0}
+ .correction-details:not(.show-print){display:none!important}
+ .correction-details.show-print{display:block!important}
+ .correction-details summary{display:none!important}
+ .paper{max-width:none;min-height:0;width:100%;line-height:1.6;font-size:15px}
+ .paper .source{font-size:15px;line-height:1.7;padding:8px;border:1px solid #444}
+ .paper .question{padding:4px 0 7px;margin:4px 0 8px}
+ .paper .source-note{font-size:10px}
+}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v022.html">▤ هندسة الاختبارات</a><a href="schoolbooks-v022.html">▣ كتب القراءة القديمة</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a><a href="pedagogical-references-v1.html">▣ الوثائق التربوية وبلوم</a></aside><main>
 <header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.22 — 23 نوفمبر 2026</span></header>
@@ -314,7 +338,7 @@ main{max-width:1250px}
 <div class="actions"><button id="save" type="button" class="primary">حفظ المسودة</button><button id="word" type="button">Word DOCX</button><button id="print" type="button">طباعة / حفظ PDF</button><label class="checkbox-label"><input type="checkbox" id="includeCorrection"> اطبع شبكة التصحيح أيضًا</label><label>الخط <select id="font"><option value="simplified">Simplified Arabic</option><option value="times">Times New Roman</option></select></label></div>
 <p class="small">انقر على أي سؤال أو خلية للتعديل. DOCX قابل للتحرير، وقد تختلف الهوامش قليلًا بحسب إصدار Word.</p>
 <div class="doc-scroll"><article class="paper" id="paper"></article></div>
-<div class="doc-scroll" style="margin-top:15px"><article class="paper" id="correction"></article></div>
+<details id="correctionDetails" class="correction-details"><summary>عرض مفتاح الإجابات الإرشادي (خاص بالأستاذ)</summary><div class="doc-scroll" style="margin-top:15px"><article class="paper" id="correction"></article></div></details>
 </section>
 <p class="small" style="text-align:center">من إعداد الأستاذ بن مزوز حمزة · المنارة — أداة تربوية قيد الاختبار</p>
 </main></div>
@@ -426,6 +450,7 @@ const skills=()=>[...$("evidence").children].map(r=>{const i=r.querySelectorAll(
 function msg(message,error=false){$("status").textContent=message;$("status").className=error?"error":""}
 function addQ(paper,label,answer,tableRows,headings=["الشاهد","المورد","التعليل"]){
  const sec=el("section",undefined,"question");sec.append(edit("p",label));
+ if(!tableRows&&!label.startsWith("السياق:")){const lines=el("div",undefined,"answer-space");sec.append(lines)}
  if(tableRows){const tbl=el("table"),head=el("tr");headings.forEach(v=>head.append(el("th",v)));tbl.append(head);
  tableRows.forEach(row=>{const tr=el("tr");[row.quote,row.name,"........................"].forEach(v=>tr.append(edit("td",v)));tbl.append(tr)});sec.append(tbl)}
  paper.append(sec);return answer;
@@ -579,14 +604,39 @@ function structuralReport({arr,passage,jobs,reading,writingText,suppliedSituatio
  return items;
 }
 
+
+/* Build the page from a bounded, legible excerpt without modifying the saved
+   historical source. We never claim the OCR is corrected. */
+function preparePrintExcerpt(original,maxLength=1500){
+ const all=String(original||"").replace(/\r/g,"");
+ const withoutPageNumbers=all.split("\n").filter(line=>!/^\s*[0-9٠-٩]{1,4}\s*$/.test(line)).join("\n");
+ const cleaned=withoutPageNumbers.replace(/[ \t]+/g," ")
+  .replace(/\n[ \t]*\n[ \t]*\n+/g,"\n\n")
+  .split(/\n{2,}/).map(p=>p.replace(/\n/g," ").replace(/[ \t]{2,}/g," ").trim())
+  .filter(Boolean).join("\n\n").trim();
+ if(cleaned.length<=maxLength)return {text:cleaned,shortened:false,originalLength:all.length};
+ let end=maxLength;
+ for(const char of ["۔","。","؟",".","!","؛"]){
+  const pos=cleaned.lastIndexOf(char,maxLength);
+  if(pos>=maxLength*.67&&pos+1>end*.67){end=pos+1;break}
+ }
+ if(end===maxLength){
+  const space=cleaned.lastIndexOf(" ",maxLength);
+  if(space>maxLength*.75)end=space;
+ }
+ return {text:cleaned.slice(0,end).trim(),shortened:true,originalLength:all.length};
+}
+
 function build(){
  synchronizeSelectedSegment();
  if(lastResourceScan!==t($("passage").value))reviewResourceHints();
  const d=data(),allResources=skills();
- const arr=allResources.filter(x=>x.name&&x.quote&&norm(x.quote).length>=5&&norm(d.passage).includes(norm(x.quote)));
+ const assessed=preparePrintExcerpt(d.passage);
+ const assessedText=assessed.text;
+ const arr=allResources.filter(x=>x.name&&x.quote&&norm(x.quote).length>=5&&norm(assessedText).includes(norm(x.quote)));
  const skipped=allResources.length-arr.length;
  const desiredGenre=$("requestedGenre").value;
- if(norm(d.passage).length<80){
+ if(norm(assessedText).length<80){
   const blueprint=desiredGenre==="story"?narrativeReading("",""):planReading("سند لم يُحدّد بعد","",d.mode);
   const mentor=window.ManaraBemMentor;
   const adapted=mentor?mentor.adaptReading(blueprint,localStorage):blueprint;
@@ -601,19 +651,23 @@ function build(){
  const authorConfirmed=t(d.author).length>=3&&!/غير مؤكد|غير معروف|يجب تحديده|غير محدد|جهة الإتاحة/.test(t(d.author));
  const sourceConfirmed=t(d.sourceTitle).length>=2&&authorConfirmed&&t(d.reference).length>=5;
  if(!sourceConfirmed)sourceWarnings.push("بيانات المصدر غير مكتملة؛ لا تعتمد الاختبار قبل توثيق العنوان والمؤلف والمرجع.");
- if(skipped)sourceWarnings.push("تجاوزت المنارة "+skipped+" من الشواهد غير المكتملة أو غير الموجودة حرفيًا في النص، دون إنشاء أسئلة لغوية منها.");
+ if(skipped)sourceWarnings.push("تجاوزت المنارة "+skipped+" من الشواهد غير المكتملة أو التي لم ترد في المقتطف، دون إنشاء أسئلة لغوية منها.");
+ if(assessed.shortened)sourceWarnings.push("الكتاب الممسوح أو النص المدخل طويل؛ عرضت المنارة مقتطفًا أوليًا من بدايته فقط مع الحفاظ على النص الكامل في المحرر. راجع اكتمال الأحداث وحدود الاقتطاع قبل الاعتماد.");
  const paper=$("paper"),cor=$("correction");paper.replaceChildren();cor.replaceChildren();
  const head=el("div",undefined,"doc-head");head.append(el("span","المؤسسة: ......................."),el("span","السنة الدراسية: ......................."));paper.append(head);
  paper.append(edit("h2",(arr.length===0?"مسودة تدريب في فهم المكتوب":"مسودة "+d.kind)+" — اللغة العربية — "+$("chosenLevel").value));
  if(arr.length===0)paper.append(edit("p","وثيقة تدريب أولية غير معتمدة: لا تتضمن البناء اللغوي أو التنقيط الرسمي أو تصحيحًا نهائيًا."));
  paper.append(edit("p","المقطع التعلمي: "+(t(d.segment)||"يحدده الأستاذ")));
  paper.append(edit("h3","السند: "+(t(d.sourceTitle)||"عنوان بحاجة إلى توثيق")));
- const sourceBox=edit("div",d.passage);sourceBox.className="source";paper.append(sourceBox);
+ const sourceBox=edit("div",assessedText);sourceBox.className="source";paper.append(sourceBox);
+ if(assessed.shortened){
+  const sourceNote=el("p","تنبيه للمراجعة: هذا مقتطف أولي من السند الطويل؛ قد لا يتضمن خاتمة القصة. عدّل النص داخل الإطار بعد مراجعته مع الأصل.");sourceNote.className="source-note";paper.append(sourceNote);
+ }
  const sourceRef=edit("p",sourceConfirmed?"المصدر للمراجعة: "+d.author+" — "+d.reference:"بيانات المصدر غير مكتملة؛ تُستكمل قبل اعتماد الاختبار.");sourceRef.className="source-ref";paper.append(sourceRef);
  paper.append(edit("h3",arr.length?"الجزء الأول: البناء الفكري واللغوي":"الجزء الأول: البناء الفكري (دون بناء لغوي معتمد)"));
  const answers=[];
  const narrative=isNarrativeRequest(desiredGenre);
- const initialReading=narrative?narrativeReading(d.passage,d.sourceTitle):planReading(d.passage,d.previous,d.mode);
+ const initialReading=narrative?narrativeReading(assessedText,d.sourceTitle):planReading(assessedText,d.previous,d.mode);
  const mentor=window.ManaraBemMentor;
  const adaptedReading=mentor?mentor.adaptReading(initialReading,localStorage):initialReading;
  const pedagogy=window.ManaraPedagogyCore;
@@ -642,14 +696,14 @@ function build(){
  answers.forEach((a,i)=>cor.append(edit("p",(i+1)+". "+a)));
  cor.append(edit("p","ملاحظة: هذا مفتاح مراجعة وليس تصحيحًا نموذجيًا مكتملًا؛ لا توجد علامات موزعة أو تبريرات إعرابية مصادق عليها."));
  cor.append(edit("p","التحقق المطلوب: اكتمال السند وملاءمة السنة والمقطع، ومطابقة الشواهد، وصحة الإجابات، وشبكة التنقيط قبل الطباعة للتلاميذ."));
- const reports=structuralReport({arr,passage:d.passage,jobs,reading,writingText,suppliedSituation});
+ const reports=structuralReport({arr,passage:assessedText,jobs,reading,writingText,suppliedSituation});
  if(pedagogy){
   reports.push(...pedagogy.auditContext({level:$("chosenLevel").value,segment:d.segment,kind:d.kind,genre:desiredGenre,pattern:$("requestedPattern").value}));
   reports.push(...pedagogy.auditReading(reading));
  }
  const marks={good:"✓ ",bad:"! ",pending:"— "};
  $("reportItems").replaceChildren(...reports.map(r=>el("li",(marks[r.status]||"— ")+r.text,r.status)));
- renderBemReview({reading,passage:d.passage,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
+ renderBemReview({reading,passage:assessedText,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
  $("report").hidden=false;$("output").hidden=false;
  renderQuestionPreview(reading,sourceWarnings.length?
    "أُنشئت أسئلة من نص السند. "+sourceWarnings.join(" ")+" لا يُعد هذا اختبارًا نهائيًا.":
@@ -738,7 +792,14 @@ $("restore").onclick=()=>{
 function applyFont(){$("paper").classList.toggle("times",$("font").value==="times");$("correction").classList.toggle("times",$("font").value==="times")}
 $("font").onchange=()=>{applyFont();save()};
 let timer;["paper","correction"].forEach(id=>$(id).addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(save,450)}));
-$("print").onclick=()=>{save();$("correction").classList.toggle("show-print",$("includeCorrection").checked);window.print()};
+$("print").onclick=()=>{
+ save();
+ const withAnswerKey=$("includeCorrection").checked;
+ $("correction").classList.toggle("show-print",withAnswerKey);
+ $("correctionDetails").classList.toggle("show-print",withAnswerKey);
+ $("correctionDetails").open=withAnswerKey;
+ window.print();
+};
 const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 function pxml(text,bold){return '<w:p><w:pPr><w:bidi w:val="1"/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Simplified Arabic"/><w:rtl w:val="1"/>'+(bold?'<w:b/>':'')+'</w:rPr><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r></w:p>'}
 function xmlChildren(node){
