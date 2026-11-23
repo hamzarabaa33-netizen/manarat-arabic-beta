@@ -154,7 +154,7 @@ main{max-width:1250px}
 .bem-feedback-card .actions{margin:6px 0;gap:8px}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v021.html">▤ هندسة الاختبارات</a><a href="smart-library-v016.html">▣ الباحث التربوي</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a></aside><main>
-<header><div><h1>مختبر هندسة التقويم</h1><p class="lead">نموذج مساعد للرابعة متوسط — لغة عربية، قابل للتطوير لبقية المستويات</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.21 — 23 نوفمبر 2026</span></header>
+<header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.21 — 23 نوفمبر 2026</span></header>
 <div class="warning">تبحث المنارة الآن في نواة فهرس تربوي أعددناه مسبقًا، دون إلزام الأستاذ بتحميل الكتب. <b>المتوفر حاليًا هو بيانات موثقة لعناوين بعض النصوص وأنواعها وأنماطها، وليس نصوصها الكاملة.</b> لا يُولد اختبار من بطاقة لا تتضمن سندًا حقيقيًا قابلًا للمراجعة.</div>
 
 <div class="status-version" role="note">✓ أنت تشاهد مختبر انتقاء السندات V0.21 — إذا لم يظهر هذا الشريط فالمتصفح يعرض نسخة أخرى.</div>
@@ -1235,7 +1235,7 @@ function recoverPriorSource(){
  try{
   if(localStorage.getItem(KEY))return;
   let restored=null;
-  for(const key of ["almanara_exam_lab_v019_qa","almanara_exam_lab_v018_qa","almanara_exam_lab_v017_qa"]){
+  for(const key of ["almanara_exam_lab_v020_qa","almanara_exam_lab_v019_qa","almanara_exam_lab_v018_qa","almanara_exam_lab_v017_qa"]){
    const previous=JSON.parse(localStorage.getItem(key)||"null");
    if(previous?.data?.passage?.length>=80 && previous?.data?.sourceTitle && previous?.data?.author && previous?.data?.reference){
     restored=previous;break;
