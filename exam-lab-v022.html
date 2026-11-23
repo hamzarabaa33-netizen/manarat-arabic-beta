@@ -715,7 +715,9 @@ function build(){
  const knownBio=authorBiographyFor(d.author);
  const authorLabel=sourceConfirmed||t(d.author).length>=3&&!/غير مؤكد|غير معروف|يجب تحديده|مجهول/.test(t(d.author))?
    t(d.author):"لم تُوثّق نسبة النص إلى مؤلف محدد";
- const authorLine=edit("p","المؤلف: "+authorLabel);authorLine.className="author-line";paper.append(authorLine);
+ const ibnMuqaffa=knownBio?.names?.some(x=>normalizeAuthorName(x)==="ابن المقفع")&&
+  /كليلة|دمنة|الحمامة المطوقة|الثعلب ومالك الحزين/.test(t(d.sourceTitle));
+ const authorLine=edit("p",(ibnMuqaffa?"نقله إلى العربية: ":"المؤلف: ")+authorLabel);authorLine.className="author-line";paper.append(authorLine);
  const authorDescription=t(d.authorBio)||knownBio?.bio||"";
  if(authorDescription){
   const bio=edit("p","لمحة عن المؤلف: "+authorDescription);bio.className="author-biography";paper.append(bio);
