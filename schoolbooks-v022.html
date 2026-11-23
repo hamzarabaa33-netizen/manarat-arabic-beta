@@ -1,0 +1,61 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>المنارة — كتب القراءة الجزائرية القديمة V0.22</title>
+<style>
+:root{--nav:#112f49;--gold:#c5a465;--border:#d7e3e7}
+*{box-sizing:border-box}body{background:#f5f7fa;color:#24445a;margin:0;font:15px/1.85 Tahoma,Arial}
+main{max-width:1130px;padding:24px;margin:auto}
+header,.panel,.card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin:15px 0}
+h1,h2,h3{color:var(--nav);margin:0 0 12px}h1{font-size:26px}h2{font-size:20px}h3{font-size:17px}
+a{color:#205f79}button,select{font:inherit}button{border:0;border-radius:8px;background:var(--nav);color:white;padding:8px 17px;cursor:pointer}
+select{border:1px solid #bbcdd5;border-radius:8px;background:white;padding:7px;width:100%}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:13px;font-weight:bold}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:12px}
+.card{margin:0;display:flex;flex-direction:column;gap:7px}.card p{font-size:13px;margin:0}.card .actions{margin-top:auto}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:15px}.chip{display:inline-block;border-radius:20px;background:#fbf1de;color:#705630;padding:3px 12px;font-size:12px}
+.note{border-right:3px solid var(--gold);background:#fffbf3;padding:11px;font-size:13px}
+footer{text-align:center;color:#617989;padding:15px}
+@media(max-width:720px){.fields{grid-template-columns:1fr}main{padding:12px}}
+</style></head><body><main>
+<header><h1>المكتبة المدرسية الجزائرية القديمة — V0.22</h1>
+<p>هذه المكتبة تعدها المنارة مسبقًا من كتب القراءة والنصوص. لا تحميل ولا إدخال يدوي من الأستاذ. ابدأ بترشيح نص ثم افتح مصدره الأصلي.</p>
+<nav class="actions"><a href="exam-lab-v022.html">مختبر الاختبارات</a><a href="index.html">الصفحة الرئيسية</a><a href="sources-library-v02.html">الأرشيف الأوسع</a></nav></header>
+<section class="panel"><h2>ابحث في النصوص المدرسية المحققة</h2>
+<div class="fields">
+<div class="field"><label for="topic">المقطع</label><select id="topic"><option>التضامن الإنساني</option><option>قضايا اجتماعية</option><option>القيم الإنسانية</option><option>العلم والتقدم التكنولوجي</option><option>الطبيعة والبيئة</option><option>شعوب العالم</option></select></div>
+<div class="field"><label for="genre">نوع النص</label><select id="genre"><option value="story">قصة / حكاية</option><option value="article">مقال</option><option value="poem">قصيدة</option><option value="play">مسرحية</option><option value="any">جميع الأنواع</option></select></div>
+<div class="field"><label for="pattern">النمط</label><select id="pattern"><option value="narrative">سردي</option><option value="expository">تفسيري</option><option value="directive">توجيهي</option><option value="argumentative">حجاجي</option><option value="any">جميع الأنماط</option></select></div>
+</div>
+<div class="actions"><button type="button" id="search">ابحث في الكتب</button><a id="toExam" href="exam-lab-v022.html">الانتقال إلى بناء الاختبار بنفس الاختيار</a></div>
+<p id="status" aria-live="polite" class="note"></p><div class="cards" id="results"></div></section>
+<section class="panel"><h2>الكتب التي بدأنا فهرستها من أصل النسخ المصورة</h2><div class="cards" id="books"></div></section>
+<p class="note">هذه بداية فهرسة فعلية من أصل الكتب، وليست مكتبة مكتملة بعد. بيانات العنوان والطبعة ونوع النص مستندة إلى معاينة الكتاب وOCR، وبعض التصنيفات والصفحات تقديرية؛ تُراجع صورة الصفحة قبل اعتماد أي شاهد أو إعداد سؤال نحوي.</p>
+<footer>من إعداد الأستاذ بن مزوز حمزة — منارة اللغة العربية</footer></main>
+<script src="schoolbook-archive-v022.js"></script><script>
+(()=>{"use strict";const db=window.ManaraSchoolbookArchive,$=x=>document.getElementById(x);
+function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+if(!db){$("status").textContent="تعذر تحميل فهرس الكتب الأصيلة";return}
+function render(){
+ const topic=$("topic").value,genre=$("genre").value,pattern=$("pattern").value,results=db.rank(topic,genre,pattern,"الرابعة متوسط"),root=$("results");
+ root.replaceChildren();
+ $("status").textContent="في المكتبة حاليًا "+db.books.length+" من الكتب المحققة الأصل و"+db.records.length+" نصوص محددة. المرشحات المطابقة: "+results.length+".";
+ const params=new URLSearchParams({segment:topic,genre,pattern,level:"الرابعة متوسط"});$("toExam").href="exam-lab-v022.html?"+params;
+ if(!results.length)root.append(el("p","لم نعثر بعد على مرشح يحقق كل الشروط من الكتابين. لا نعرض نصًا من نوع خاطئ.","card"));
+ for(const item of results){
+  const card=el("article",undefined,"card");
+  card.append(el("span",item.genre+" — "+item.pattern,"chip"),el("h3",item.title),el("p",item.bookInfo.name+"، "+item.bookInfo.year),el("p",item.pageNote),el("p",item.evidence));
+  if(!item.levelMatch)card.append(el("p","مستوى الكتاب مختلف عن المستوى المختار."));
+  const actions=el("div",undefined,"actions"),a=el("a","النسخة المصورة");a.href=item.bookInfo.viewer;a.target="_blank";a.rel="noopener noreferrer";
+  const b=el("a","بحث النص في المختبر");b.href="exam-lab-v022.html?"+params;
+  actions.append(a,b);card.append(actions);root.append(card);
+ }
+}
+function renderBooks(){
+ for(const book of db.books){
+  const card=el("article",undefined,"card");card.append(el("h3",book.name),el("p",book.level+"، "+book.year),el("p",book.publisher),el("p",book.note));
+  const actions=el("div",undefined,"actions"),a=el("a","الكتاب المصور"),b=el("a","النص المستخرج آليًا");a.href=book.viewer;b.href=book.ocr;a.target=b.target="_blank";a.rel=b.rel="noopener noreferrer";actions.append(a,b);card.append(actions);$("books").append(card);
+ }
+}
+$("search").onclick=render;["topic","genre","pattern"].forEach(k=>$(k).onchange=render);
+renderBooks();render();
+})();
+</script></body></html>
