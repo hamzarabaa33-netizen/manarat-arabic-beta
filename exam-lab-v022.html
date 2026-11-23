@@ -188,6 +188,21 @@ main{max-width:1250px}
  .paper .question{padding:4px 0 7px;margin:4px 0 8px}
  .paper .source-note{font-size:10px}
 }
+
+/* Author information precedes the text in a compact formal school layout */
+.paper .author-line{font-weight:700;font-size:.92em;margin:6px 0 2px;padding:3px 8px;background:#f4f7f8;border-right:3px solid #6c8794}
+.paper .author-biography{font-size:.84em;line-height:1.7;margin:3px 8px 6px;text-align:justify}
+.paper .author-bio-note{font-size:.69em;color:#8a6b3f;margin:2px 8px}
+.paper h2,.paper .doc-head,.paper .author-line{break-after:avoid}
+.paper h3{break-after:avoid}
+.paper .source{orphans:3;widows:3}
+#report .info{color:#607789;font-size:12px;list-style:none;background:#f4f8fa;border-radius:7px;padding:7px 10px;margin-top:9px}
+#report li.info::marker{content:""}
+@media print{
+ .paper .author-line{font-size:13px;padding:2px 6px;margin:4px 0 2px}
+ .paper .author-biography{font-size:12px;line-height:1.55;margin:2px 6px 4px}
+ .paper .author-bio-note{font-size:9px}
+}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v022.html">▤ هندسة الاختبارات</a><a href="schoolbooks-v022.html">▣ كتب القراءة القديمة</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a><a href="pedagogical-references-v1.html">▣ الوثائق التربوية وبلوم</a></aside><main>
 <header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.22 — 23 نوفمبر 2026</span></header>
@@ -305,6 +320,7 @@ main{max-width:1250px}
 <section class="panel"><h2>02 — السند والمصدر (للمراجعة)</h2><p class="hint">عند اختيار سند من المكتبة تُملأ بياناته المتاحة تلقائيًا. عنوان السند ومؤلفه ومرجعه ليست شروطًا لإظهار الأسئلة التجريبية؛ توثيقها لازم قبل اعتماد الاختبار النهائي.</p>
 <div class="fields"><div class="field"><label for="sourceTitle">عنوان السند (اختياري للمسودة)</label><input id="sourceTitle"></div><div class="field"><label for="author">الكاتب أو جهة النشر (اختياري للمسودة)</label><input id="author"></div>
 <div class="field wide"><label for="reference">اسم الكتاب والصفحة أو رابط المصدر (اختياري للمسودة)</label><input id="reference"></div>
+<div class="field wide"><label for="authorBio">لمحة عن حياة المؤلف (تُقترح تلقائيًا عند توفر سيرة موثقة)</label><textarea id="authorBio" rows="2" placeholder="تظهر تلقائيًا للمؤلفين المعروفين في مكتبة المنارة، أو تبقى فارغة إلى حين التوثيق"></textarea><div id="authorBioStatus" class="hint" role="status">لا تُنسب سيرة إلى مؤلف مجهول أو نص لم تثبت نسبته.</div></div>
 <div class="field wide"><label for="passage">النص الأصلي للسند *</label><textarea id="passage" rows="8"></textarea></div>
 <div class="field wide"><label for="situation">موقف واقعي للوضعية الإدماجية (اختياري)</label><textarea id="situation" rows="2" placeholder="يحدده الأستاذ ويربطه بموضوع السند"></textarea></div>
 </div></section>
@@ -444,7 +460,7 @@ $("passage").addEventListener("input",()=>{
  resourceScanTimer=setTimeout(reviewResourceHints,300);
 });
 
-const ids=["kind","mode","segment","previous","sourceTitle","author","reference","passage","situation"];
+const ids=["kind","mode","segment","previous","sourceTitle","author","authorBio","reference","passage","situation"];
 const data=()=>Object.fromEntries(ids.map(id=>[id,$(id).value]));
 const skills=()=>[...$("evidence").children].map(r=>{const i=r.querySelectorAll("input");return{name:t(i[0].value),quote:t(i[1].value)}}).filter(x=>x.name||x.quote);
 function msg(message,error=false){$("status").textContent=message;$("status").className=error?"error":""}
@@ -475,6 +491,43 @@ function plan(items,mode,previous){
  });
  return chosen;
 }
+/* Short author biographies written from cited public reference sources.
+   A literary translation/retelling must NOT be attributed to the translator
+   as original author. For unknown authors, leave biography blank. */
+const AUTHOR_BIOGRAPHIES=[
+ {names:["عبد الله بن المقفع","ابن المقفع","عبدالله بن المقفع"],
+  bio:"عبد الله بن المقفّع أديب ومترجم عاش في القرن الثامن الميلادي، ومن أشهر أعماله نقله كتاب «كليلة ودمنة» من الفهلوية إلى العربية.",
+  source:"مكتبة الكونغرس",link:"https://www.loc.gov/item/2021667224/"},
+ {names:["حافظ إبراهيم","حافظ ابراهيم","محمد حافظ إبراهيم"],
+  bio:"حافظ إبراهيم شاعر مصري (1872–1932)، عُرف بلقب «شاعر النيل»، وتناول في شعره قضايا وطنية واجتماعية.",
+  source:"الهيئة العامة للاستعلامات المصرية",link:"https://sis.gov.eg/en/egypt/egyptian-figures/hafez-ibrahim/"},
+ {names:["أو هنري","أو. هنري","O. Henry","O Henry","وليام سيدني بورتر"],
+  bio:"«أو. هنري» الاسم الأدبي لوليام سيدني بورتر (1862–1910)، وهو كاتب أمريكي اشتهر بفن القصة القصيرة.",
+  source:"Penguin Random House",link:"https://www.penguinrandomhouse.com/authors/12671/o-henry/"}
+];
+function normalizeAuthorName(x){return String(x||"").normalize("NFC").toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,"").replace(/[إأآ]/g,"ا").replace(/[.،\-–]/g," ").replace(/\s+/g," ").trim()}
+function authorBiographyFor(author){
+ const n=normalizeAuthorName(author);
+ if(n.length<4||/غير مؤكد|غير معروف|مجهول|يجب تحديد|جهة النشر|غير محدد/.test(n))return null;
+ return AUTHOR_BIOGRAPHIES.find(record=>record.names.some(name=>normalizeAuthorName(name)===n))||null;
+}
+let lastAutomaticBiography="";
+function syncAuthorBiography(){
+ const author=$("author").value,matched=authorBiographyFor(author),current=$("authorBio").value.trim();
+ const mayReplace=!current||current===lastAutomaticBiography||AUTHOR_BIOGRAPHIES.some(x=>x.bio===current);
+ if(mayReplace){
+  $("authorBio").value=matched?matched.bio:"";
+  lastAutomaticBiography=matched?matched.bio:"";
+ }
+ const verified=matched&&$("authorBio").value.trim()===matched.bio;
+ $("authorBioStatus").textContent=verified?
+  "نبذة موجزة موثقة: "+matched.source+". المرجع: "+matched.link:
+  $("authorBio").value.trim()?"نبذة مدخلة أو معدلة يدويًا؛ راجع مرجعها وصحة نسبتها قبل اعتماد الاختبار.":"لا تتوفر سيرة موثقة لهذا الاسم في المكتبة الحالية؛ لن تُنشئ المنارة سيرة من التخمين.";
+}
+$("author").addEventListener("change",syncAuthorBiography);
+$("author").addEventListener("input",syncAuthorBiography);
+$("authorBio").addEventListener("input",()=>{lastAutomaticBiography="";syncAuthorBiography()});
+
 function save(){
  try{localStorage.setItem(KEY,JSON.stringify({data:data(),teacherChoice:teacherChoice(),skills:skills(),request:$("quickRequest").value,topic:$("topicQuery").value,paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
  catch(e){msg("تعذر الحفظ على هذا الجهاز: "+e.message,true)}
@@ -600,7 +653,7 @@ function structuralReport({arr,passage,jobs,reading,writingText,suppliedSituatio
   (suppliedSituation?"صيغت وضعية إنتاج كتابي من موقف الأستاذ بسياق وتعليمة، وتحتاج تدقيق الملاءمة والتنقيط.":
    "صيغت وضعية إنتاج كتابي أولية بسياق وتعليمة؛ صلاحيتها للمستوى والمنهاج والتنقيط غير مُتحقق منها."):
   "وضعية الإنتاج الكتابي بحاجة إلى سياق وتعليمة واضحين.");
- row("bad","ما زالت مراجعة ملاءمة الموارد للمخطط والتوزيع الفعلي، وموثوقية المصدر، وصحة الأجوبة، وشبكة التنقيط مطلوبة قبل اعتماد الاختبار.");
+ row("info","قبل اعتماد الاختبار النهائي: راجع مطابقة الموارد للتوزيع الفعلي، وتوثيق السند، وصحة الأجوبة، وشبكة التنقيط. هذه قائمة تحقق وليست خطأً في إنشاء المسودة.");
  return items;
 }
 
@@ -658,12 +711,23 @@ function build(){
  paper.append(edit("h2",(arr.length===0?"مسودة تدريب في فهم المكتوب":"مسودة "+d.kind)+" — اللغة العربية — "+$("chosenLevel").value));
  if(arr.length===0)paper.append(edit("p","وثيقة تدريب أولية غير معتمدة: لا تتضمن البناء اللغوي أو التنقيط الرسمي أو تصحيحًا نهائيًا."));
  paper.append(edit("p","المقطع التعلمي: "+(t(d.segment)||"يحدده الأستاذ")));
+ const knownBio=authorBiographyFor(d.author);
+ const authorLabel=sourceConfirmed||t(d.author).length>=3&&!/غير مؤكد|غير معروف|يجب تحديده|مجهول/.test(t(d.author))?
+   t(d.author):"لم تُوثّق نسبة النص إلى مؤلف محدد";
+ const authorLine=edit("p","المؤلف: "+authorLabel);authorLine.className="author-line";paper.append(authorLine);
+ const authorDescription=t(d.authorBio)||knownBio?.bio||"";
+ if(authorDescription){
+  const bio=edit("p","لمحة عن المؤلف: "+authorDescription);bio.className="author-biography";paper.append(bio);
+  if(!knownBio||authorDescription!==knownBio.bio){
+   const note=el("p","النبذة تحتاج إلى مراجعة مصدرها قبل اعتمادها.");note.className="author-bio-note";paper.append(note);
+  }
+ }
  paper.append(edit("h3","السند: "+(t(d.sourceTitle)||"عنوان بحاجة إلى توثيق")));
  const sourceBox=edit("div",assessedText);sourceBox.className="source";paper.append(sourceBox);
  if(assessed.shortened){
   const sourceNote=el("p","تنبيه للمراجعة: هذا مقتطف أولي من السند الطويل؛ قد لا يتضمن خاتمة القصة. عدّل النص داخل الإطار بعد مراجعته مع الأصل.");sourceNote.className="source-note";paper.append(sourceNote);
  }
- const sourceRef=edit("p",sourceConfirmed?"المصدر للمراجعة: "+d.author+" — "+d.reference:"بيانات المصدر غير مكتملة؛ تُستكمل قبل اعتماد الاختبار.");sourceRef.className="source-ref";paper.append(sourceRef);
+ const sourceRef=edit("p",sourceConfirmed?"مرجع النص: "+d.reference:"مرجع النص غير مكتمل؛ يُستكمل قبل اعتماد الاختبار.");sourceRef.className="source-ref";paper.append(sourceRef);
  paper.append(edit("h3",arr.length?"الجزء الأول: البناء الفكري واللغوي":"الجزء الأول: البناء الفكري (دون بناء لغوي معتمد)"));
  const answers=[];
  const narrative=isNarrativeRequest(desiredGenre);
@@ -701,7 +765,7 @@ function build(){
   reports.push(...pedagogy.auditContext({level:$("chosenLevel").value,segment:d.segment,kind:d.kind,genre:desiredGenre,pattern:$("requestedPattern").value}));
   reports.push(...pedagogy.auditReading(reading));
  }
- const marks={good:"✓ ",bad:"! ",pending:"— "};
+ const marks={good:"✓ ",bad:"! ",pending:"— ",info:"معلومة: "};
  $("reportItems").replaceChildren(...reports.map(r=>el("li",(marks[r.status]||"— ")+r.text,r.status)));
  renderBemReview({reading,passage:assessedText,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
  $("report").hidden=false;$("output").hidden=false;
@@ -1472,6 +1536,7 @@ $("schoolbookClosePreview").onclick=()=>{$("schoolbookPreview").hidden=true;pend
 $("searchSegment").addEventListener("click",searchVerifiedTexts);
 $("searchPublicSources").addEventListener("click",searchSegmentSources);
 loadTeacherChoice();
+syncAuthorBiography();
 // A previous experimental version already saved the teacher's actual source passage.
 // Carry forward that source, NOT the old generic questions or unverified correction.
 function recoverPriorSource(){
@@ -1485,12 +1550,13 @@ function recoverPriorSource(){
    }
   }
   if(!restored)return;
-  for(const field of ["sourceTitle","author","reference","passage","situation","previous","kind","mode"]){
+  for(const field of ["sourceTitle","author","authorBio","reference","passage","situation","previous","kind","mode"]){
    if(typeof restored.data[field]==="string")$(field).value=restored.data[field];
   }
   if(!getSegment()&&restored.data.segment)setChosenSegmentFromText(restored.data.segment);
   $("evidence").replaceChildren();
   (restored.skills||[]).filter(x=>x?.name&&x?.quote&&norm(restored.data.passage).includes(norm(x.quote))).forEach(x=>addSkill(x.name,x.quote));
+  syncAuthorBiography();
   msg("أعدتُ السند المحفوظ من النسخة السابقة، دون أسئلتها القديمة. يمكن إنشاء مسودة محسّنة مباشرة.");
  }catch(e){/* No prior draft, or storage blocked; keep a clean form. */}
 }
