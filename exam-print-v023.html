@@ -33,12 +33,12 @@ td,th{border:1px solid #333;padding:5px;text-align:right}
 .pagedjs_page{background:white;box-shadow:0 5px 18px #2343;margin:20px auto!important}
 .pagedjs_pages{display:block}
 @page{size:A4;margin:16mm 14mm 17mm;}
-@media screen{#pages:not(:empty)+#printContent{display:none}}
+@media screen{body.paged-ready #printContent{display:none}}
 @media print{
  .toolbar{display:none!important}
  body{background:white}
  #printContent{box-shadow:none;border:0;margin:0;padding:0;max-width:none;min-height:0}
- #pages:not(:empty)+#printContent{display:none}
+ body.paged-ready #printContent{display:none}
  .pagedjs_page{margin:0!important;box-shadow:none}
  h2,h3{break-after:avoid}
  .source,.question,.writing{orphans:3;widows:3}
@@ -87,8 +87,9 @@ async function paginate(){
  }
  try{
   await window.PagedPolyfill.preview(page,[],document.getElementById("pages"));
+  document.body.classList.add("paged-ready");
   status.textContent="صفحات A4 جاهزة. اختر طباعة ثم حفظ PDF. إن لم تطابق الصفحة ورقة Word فصدّرها منفصلة.";
- }catch(e){document.getElementById("pages").replaceChildren();
+ }catch(e){document.body.classList.remove("paged-ready");document.getElementById("pages").replaceChildren();
   status.textContent="تعذر التقسيم المحسّن. المعاينة الأساسية متاحة للطباعة. "+String(e.message||"").slice(0,80)}
 }
 window.addEventListener("load",paginate);
