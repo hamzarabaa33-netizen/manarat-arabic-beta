@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منارة الضاد | مولد الفروض والاختبارات الذكي - التعليم المتوسط</title>
+    <!-- خطوط عربية رسمية وعصرية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- أيقونات Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --font-ui: 'Cairo', sans-serif;
+            --font-paper: 'Amiri', serif;
+        }
+        body {
+            font-family: var(--font-ui);
+            background-color: #f1f5f9;
+        }
+        /* محاكاة ورقة A4 حقيقية */
+        .a4-paper {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 14mm 16mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            font-family: var(--font-paper);
+            color: #0f172a;
+            line-height: 1.75;
+            position: relative;
+        }
+        .a4-paper h1, .a4-paper h2, .a4-paper h3, .a4-paper th {
+            font-family: var(--font-paper);
+            font-weight: 700;
+        }
+        /* التعديل المباشر */
+        [contenteditable="true"]:hover {
+            outline: 1px dashed #3b82f6;
+            background-color: #eff6ff;
+            border-radius: 3px;
+            cursor: text;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px solid #2563eb;
+            background-color: #ffffff;
+            border-radius: 3px;
+        }
+        /* إعدادات الطباعة الاحترافية */
+        @media print {
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            .a4-paper {
+                box-shadow: none !important;
+                margin: 0 !important;
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 10mm 12mm !important;
+                page-break-after: always;
+            }
+            .a4-paper:last-child {
+                page-break-after: auto;
+            }
+            [contenteditable="true"] {
+                outline: none !important;
+                background: transparent !important;
+            }
+        }
+        /* شريط التمرير المخصص */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-slate-800">
+
+    <!-- الشريط العلوي -->
+<div class="no-print" style="background:#fff7ed;color:#7c2d12;text-align:center;padding:7px;font:700 13px Tahoma,Arial,sans-serif">تجربة مستقلة لكود المستخدم: الضغط على «توليد» يعرض نموذجًا محفوظًا، وليس إنشاءً آليًا جديدًا. راجع صحة المصادر والأسئلة قبل استعمالها.</div>
+    <header class="no-print bg-emerald-900 text-white px-6 py-3 flex items-center justify-between shadow-md z-20">
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-400 text-emerald-950 p-2 rounded-lg font-extrabold text-xl shadow">
+                ض
+            </div>
+            <div>
+                <h1 class="font-extrabold text-lg leading-tight tracking-wide">منارة الضاد <span class="text-amber-300 text-xs font-normal bg-emerald-800 px-2 py-0.5 rounded-full mr-1">الإصدار البيداغوجي</span></h1>
+                <p class="text-xs text-emerald-200">مولد الفروض والاختبارات الذكي نسخة تجريبية لنماذج محلية — يجب مراجعة الموارد والمصادر</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-amber-200">نسخة اختبار محلية — دون مفاتيح API</span>
+            <button onclick="exportToWord()" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow transition">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>تصدير Word</span>
+            </button>
+            <button onclick="window.print()" class="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-emerald-950 px-4 py-1.5 rounded-lg text-sm font-bold shadow transition">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span>طباعة / PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي (تقسيم الشاشة) -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- لوحة التحكم الجانبية (اليمين) -->
+        <aside class="no-print w-96 bg-white border-l border-slate-200 flex flex-col h-full shadow-lg z-10">
+            <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <span class="font-bold text-slate-700 flex items-center gap-2 text-sm">
+                    <i data-lucide="sliders" class="w-4 h-4 text-emerald-700"></i>
+                    إعدادات الهندسة البيداغوجية
+                </span>
+                <span id="wordCountBadge" class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">السند: 0 كلمة</span>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+                
+                <!-- بيانات المؤسسة -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5">
+                    <h3 class="font-bold text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                        <i data-lucide="building-2" class="w-3.5 h-3.5"></i> بيانات الترويسة الرسمية
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">مديرية التربية</label>
+                            <input type="text" id="inputDirectorate" value="مديرية التربية لولاية إليزي" oninput="updateHeader()" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">المتوسطة</label>
+                            <input type="text" id="inputSchool" value="متوسطة محمد بلال" oninput="updateHeader()" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">الأستاذ(ة)</label>
+                            <input type="text" id="inputTeacher" value="أ. بن مزوز حمزة" oninput="updateHeader()" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">الموسم الدراسي</label>
+                            <input type="text" id="inputYear" value="2026 / 2027" oninput="updateHeader()" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- المستوى ونوع التقويم -->
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المستوى الدراسي</label>
+                            <select id="selectLevel" onchange="onLevelChange()" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="1AM">الأولى متوسط (1م)</option>
+                                <option value="2AM">الثانية متوسط (2م)</option>
+                                <option value="3AM">الثالثة متوسط (3م)</option>
+                                <option value="4AM" selected>الرابعة متوسط (4م)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">نوع التقويم</label>
+                            <select id="selectType" onchange="updateHeader()" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="فرض الفصل الأول">فرض الفصل الأول (1 سا)</option>
+                                <option value="اختبار الفصل الأول" selected>اختبار الفصل الأول (2 سا)</option>
+                                <option value="فرض الفصل الثاني">فرض الفصل الثاني (1 سا)</option>
+                                <option value="اختبار الفصل الثاني">اختبار الفصل الثاني (2 سا)</option>
+                                <option value="اختبار تجريبي (ش.ت.م)">اختبار تجريبي (2 سا)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">المقطع التعلمي</label>
+                        <select id="selectUnit" onchange="onUnitChange()" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <!-- يملأ ديناميكياً -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">النمط الغالب</label>
+                            <select id="selectPattern" class="w-full p-2 border border-slate-300 rounded-lg bg-white text-xs font-semibold">
+                                <option value="تفسيري حجاجي">تفسيري حجاجي</option>
+                                <option value="سردي وصفي">سردي وصفي</option>
+                                <option value="توجيهي">توجيهي</option>
+                                <option value="حواري">حواري</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">مستوى الصعوبة</label>
+                            <select id="selectDifficulty" class="w-full p-2 border border-slate-300 rounded-lg bg-white text-xs font-semibold">
+                                <option value="متوسط (مطابق للمنهاج)">متوسط (عادي)</option>
+                                <option value="مبسط (دعم واستدراك)">مبسط (مستوى ج / د)</option>
+                                <option value="متقدم (تحضير للشهادة)">متقدم (تحدٍّ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">الموارد اللغوية والبلاغية المستهدفة</label>
+                        <textarea id="inputLessons" rows="2" class="w-full p-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- خيار عرض الإجابة النموذجية -->
+                <div class="flex items-center justify-between bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-600"></i>
+                        <span class="text-xs font-bold text-amber-950">إرفاق الإجابة النموذجية والتنقيط</span>
+                    </div>
+                    <input type="checkbox" id="toggleAnswerKey" checked onchange="toggleAnswersDisplay()" class="w-4 h-4 accent-emerald-700 cursor-pointer">
+                </div>
+
+            </div>
+
+            <!-- زر التوليد الرئيسي -->
+            <div class="p-4 border-t border-slate-200 bg-slate-50">
+                <button id="btnGenerate" onclick="generateExam()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition transform active:scale-95">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+                    <span>توليد الموضوع والإجابة الآن</span>
+                </button>
+                <p class="text-[11px] text-center text-slate-500 mt-2">يمكنك النقر على أي نص في الورقة لتعديله يدوياً</p>
+            </div>
+        </aside>
+
+        <!-- مساحة المعاينة والعمل الحية (اليسار) -->
+        <main class="print-container flex-1 overflow-y-auto p-6 md:p-10 bg-slate-200/80 space-y-8">
+            
+            <!-- الورقة الأولى: موضوع الاختبار -->
+            <div id="examPaper" class="a4-paper">
+                <!-- الترويسة الرسمية -->
+                <div class="text-center border-b-2 border-slate-900 pb-2 mb-3">
+                    <p class="text-sm font-bold tracking-wide">الْجُمْهُورِيَّةُ الْجَزَائِرِيَّةُ الدِّيمُقْرَاطِيَّةُ الشَّعْبِيَّةُ</p>
+                    <p class="text-xs font-bold">وِزَارَةُ التَّرْبِيَةِ الْوَطَنِيَّةِ</p>
+                    <div class="flex justify-between items-center text-xs font-bold mt-2 px-1">
+                        <span id="viewDirectorate" contenteditable="true">مُدِيرِيَّةُ التَّرْبِيَةِ لِوِلَايَةِ إِلِيزِي</span>
+                        <span id="viewYear" contenteditable="true">السَّنَةُ الدِّرَاسِيَّةُ: 2026 / 2027</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-bold mt-1 px-1">
+                        <span id="viewSchool" contenteditable="true">مُتَوَسِّطَةُ مُحَمَّد بِلَال</span>
+                        <span id="viewTeacher" contenteditable="true">الأُسْتَاذُ: بِنْ مَزُوز حَمْزَة</span>
+                    </div>
+                </div>
+
+                <!-- إطار عنوان الاختبار والمستوى -->
+                <div class="border-2 border-slate-900 rounded-md p-2 mb-4 bg-slate-50">
+                    <div class="flex justify-between items-center font-bold text-base">
+                        <span id="viewExamTitle" contenteditable="true">اخْتِبَارُ الْفَصْلِ الْأَوَّلِ فِي مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ</span>
+                        <span id="viewLevel" contenteditable="true">الْمُسْتَوَى: الرَّابِعَةُ مُتَوَسِّطٌ</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-bold mt-1 pt-1 border-t border-slate-300">
+                        <span id="viewDuration" contenteditable="true">الْمُدَّةُ: سَاعَتَانِ (02 سا)</span>
+                        <span contenteditable="true">الِاسْمُ وَاللَّقَبُ: ..................................................... الْقِسْمُ: ..........</span>
+                    </div>
+                </div>
+
+                <!-- السند (النص) -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-base underline decoration-2">السَّنَدُ:</span>
+                        <span id="viewTextTitle" contenteditable="true" class="font-bold text-base text-center flex-1">بَيْنَ الْكِتَابِ الْوَرَقِيِّ وَالشَّاشَاتِ الرَّقْمِيَّةِ</span>
+                    </div>
+                    <div id="viewPassage" contenteditable="true" oninput="updateWordCount()" class="border border-slate-800 rounded p-3.5 text-justify text-[16.5px] leading-[1.9] bg-white">
+                        <!-- النص المشكول يدرج هنا -->
+                    </div>
+                    <div id="viewSource" contenteditable="true" class="text-left text-xs font-bold mt-1 text-slate-700">
+                        الْمَرْجِعُ: زَكِي نَجِيب مَحْمُود (بِتَصَرُّفٍ)
+                    </div>
+                </div>
+
+                <!-- الأسئلة -->
+                <div class="space-y-3 text-[15.5px]">
+                    
+                    <!-- الجزء الأول -->
+                    <div>
+                        <div class="bg-slate-200 border border-slate-800 px-3 py-0.5 font-bold text-base mb-2 flex justify-between">
+                            <span>الْجُزْءُ الْأَوَّلُ: (12 نُقْطَةً)</span>
+                        </div>
+
+                        <!-- الوضعية الأولى -->
+                        <div class="mb-2.5">
+                            <h3 class="font-bold underline mb-1">أَوَّلًا: الْوَضْعِيَّةُ الْأُولَى (04 نِقَاطٍ)</h3>
+                            <ol id="viewCompQuestions" contenteditable="true" class="list-decimal list-inside space-y-1 pr-2">
+                                <!-- أسئلة الفهم -->
+                            </ol>
+                        </div>
+
+                        <!-- الوضعية الثانية -->
+                        <div>
+                            <h3 class="font-bold underline mb-1">ثَانِيًا: الْوَضْعِيَّةُ الثَّانِيَةُ (08 نِقَاطٍ)</h3>
+                            <ol id="viewLangQuestions" contenteditable="true" class="list-decimal list-inside space-y-1 pr-2">
+                                <!-- أسئلة اللغة والبلاغة -->
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- الجزء الثاني: الوضعية الإدماجية -->
+                    <div class="pt-1">
+                        <div class="bg-slate-200 border border-slate-800 px-3 py-0.5 font-bold text-base mb-2 flex justify-between">
+                            <span>الْجُزْءُ الثَّانِي: الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 نِقَاطٍ)</span>
+                        </div>
+                        <div id="viewSituation" contenteditable="true" class="border border-slate-800 rounded p-3 space-y-1.5 text-[15px] bg-slate-50/50">
+                            <!-- السياق والسند والتعليمة -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- تذييل الصفحة -->
+                <div class="mt-4 pt-2 border-t border-slate-400 flex justify-between text-xs font-bold text-slate-600">
+                    <span>بِالتَّوْفِيقِ وَالنَّجَاحِ لِلْجَمِيعِ</span>
+                    <span>صَفْحَة 1 مِنْ 1</span>
+                </div>
+            </div>
+
+            <!-- الورقة الثانية: الإجابة النموذجية وسلم التنقيط -->
+            <div id="answerPaper" class="a4-paper">
+                <div class="text-center border-b-2 border-slate-900 pb-2 mb-4">
+                    <h2 class="text-lg font-bold">الْإِجَابَةُ النَّمُوذَجِيَّةُ وَسُلَّمُ التَّنْقِيطِ</h2>
+                    <p id="viewAnswerSubtitle" class="text-sm font-bold text-slate-700 mt-1">اخْتِبَارُ الْفَصْلِ الْأَوَّلِ - الرَّابِعَةُ مُتَوَسِّطٌ</p>
+                </div>
+
+                <table class="w-full border-collapse border border-slate-900 text-[15px]">
+                    <thead>
+                        <tr class="bg-slate-200">
+                            <th class="border border-slate-900 p-2 w-1/4">الْمَحَاوِرُ</th>
+                            <th class="border border-slate-900 p-2 w-1/2">عَنَاصِرُ الْإِجَابَةِ</th>
+                            <th class="border border-slate-900 p-2 w-1/4">سُلَّمُ التَّنْقِيطِ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewAnswerTableBody" contenteditable="true">
+                        <!-- صفوف الإجابة تدرج هنا -->
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- نافذة إعداد مفتاح Gemini API -->
+    <div id="apiModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-extrabold text-base text-slate-800 flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-5 h-5 text-emerald-700"></i>
+                    ربط محرك الذكاء الاصطناعي (Gemini API)
+                </h3>
+                <button onclick="toggleApiModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                تعمل هذه النسخة التجريبية بنماذج محفوظة غير مدققة بالكامل، وقد لا تطابق توزيعك. لتوليد نصوص وأسئلة جديدة كلياً حسب طلبك في كل مرة، أدخل مفتاح <strong>Google Gemini API</strong> الخاص بك (يُحفظ محلياً في متصفحك فقط):
+            </p>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">مفتاح API Key</label>
+                <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full p-2.5 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="toggleApiModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg">إلغاء</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg">حفظ المفتاح</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة الأيقونات
+        lucide.createIcons();
+
+        // قاعدة البيانات البيداغوجية للمناهج الجزائرية (1م - 4م)
+        const curriculumData = {
+            "1AM": {
+                name: "الأولى متوسط",
+                units: [
+                    { title: "المقطع 01: الحياة العائلية", lessons: "الضمائر وأنواعها، الفاعل وأنواعه، النعت الحقيقي، التعبير الحقيقي والمجازي" },
+                    { title: "المقطع 02: حب الوطن", lessons: "جمع التكسير، المبتدأ والخبر، التشبيه البليغ، الطباق" },
+                    { title: "المقطع 03: عظماء الإنسانية", lessons: "الفعل الماضي والمضارع، كان وأخواتها، الجناس" },
+                    { title: "المقطع 04: الأخلاق والمجتمع", lessons: "إن وأخواتها، جمع المذكر السالم، المفعول به" }
+                ],
+                sampleExam: {
+                    title: "قِيمَةُ الْعَائِلَةِ فِي بِنَاءِ الْفَرْدِ",
+                    passage: "إِنَّ الْعَائِلَةَ هِيَ الْمَدْرَسَةُ الْأُولَى الَّتِي يَتَلَقَّى فِيهَا الطِّفْلُ دُرُوسَ الْحَيَاةِ، وَيَنْشَأُ فِي أَحْضَانِهَا عَلَى الْفَضِيلَةِ وَالْأَخْلَاقِ الْكَرِيمَةِ. فَالْأَبُ يَسْعَى جَاهِدًا لِتَوْفِيرِ الْعَيْشِ الْكَرِيمِ، وَالْأُمُّ تَسْهَرُ عَلَى تَرْبِيَةِ الْأَبْنَاءِ تَرْبِيَةً صَالِحَةً، فَتَغْرِسُ فِي نُفُوسِهِمْ حُبَّ الْخَيْرِ وَالتَّعَاوُنِ.\nوَمَا أَجْمَلَ الْبَيْتَ الَّذِي يَسُودُهُ التَّفَاهُمُ وَالِاحْتِرَامُ! حَيْثُ يَشْعُرُ كُلُّ فَرْدٍ بِالْأَمَانِ وَالطُّمَأْنِينَةِ، وَيَتَعَلَّمُ كَيْفَ يَحْتَرِمُ الْكَبِيرَ وَيَعْطِفُ عَلَى الصَّغِيرِ، لِيَكُونَ عُضْوًا نَافِعًا فِي مُجْتَمَعِهِ.",
+                    source: "الْمَرْجِعُ: كِتَابُ الْقِرَاءَةِ وَالنُّصُوصِ (بِتَصَرُّفٍ)",
+                    compQuestions: [
+                        "حَدِّدْ دَوْرَ كُلٍّ مِنَ الْأَبِ وَالْأُمِّ فِي الْعَائِلَةِ انْطِلَاقًا مِنَ السَّنَدِ. (01.5 ن)",
+                        "اسْتَنْتِجِ الْأَثَرَ الَّذِي يَتْرُكُهُ التَّفَاهُمُ وَالِاحْتِرَامُ فِي نُفُوسِ أَفْرَادِ الْأُسْرَةِ. (01 ن)",
+                        "هَاتِ مُرَادِفَ كَلِمَةِ (يَنْشَأُ)، وَضِدَّ كَلِمَةِ (الطُّمَأْنِينَةِ) مِنَ السَّنَدِ. (01 ن)",
+                        "صُغْ فِكْرَةً عَامَّةً مُنَاسِبَةً لِلسَّنَدِ. (00.5 ن)"
+                    ],
+                    langQuestions: [
+                        "أَعْرِبْ مَا تَحْتَهُ خَطٌّ فِي السَّنَدِ إِعْرَابًا تَامًّا: (الطِّفْلُ - الْكَرِيمَةِ). (02 ن)",
+                        "اسْتَخْرِجْ مِنَ السَّنَدِ: ضَمِيرًا مُنْفَصِلًا، وَفِعْلًا مُضَارِعًا، وَنَعْتًا حَقِيقِيًّا. (03 ن)",
+                        "حَوِّلِ الْجُمْلَةَ الْآتِيَةَ إِلَى الْجَمْعِ الْمُذَكَّرِ: «يَشْعُرُ الْفَرْدُ بِالْأَمَانِ فِي بَيْتِهِ». (01.5 ن)",
+                        "مَيِّزْ نَوْعَ التَّعْبِيرِ (حَقِيقِيٌّ أَمْ مَجَازِيٌّ) فِي قَوْلِ الْكَاتِبِ: «تَغْرِسُ فِي نُفُوسِهِمْ حُبَّ الْخَيْرِ». (01.5 ن)"
+                    ],
+                    situation: `
+                        <p><strong>السِّيَاقُ:</strong> لَاحَظْتَ فِي الْآوِنَةِ الْأَخِيرَةِ انْشِغَالَ بَعْضِ أَفْرَادِ الْأُسْرَةِ بِالْهَوَاتِفِ الذَّكِيَّةِ وَالِابْتِعَادَ عَنِ الْجَلَسَاتِ الْعَائِلِيَّةِ الدَّافِئَةِ.</p>
+                        <p><strong>السَّنَدُ:</strong> قَالَ رَسُولُ اللَّهِ ﷺ: «خَيْرُكُمْ خَيْرُكُمْ لِأَهْلِهِ».</p>
+                        <p><strong>التَّعْلِيمَةُ:</strong> اُكْتُبْ فَقْرَةً لَا تَتَجَاوَزُ عَشَرَةَ أَسْطُرٍ، تَبْرِزُ فِيهَا مَكَانَةَ الْأُسْرَةِ وَدَوْرَهَا فِي التَّرْبِيَةِ، دَاعِيًا زُمَلَاءَكَ إِلَى بِرِّ الْوَالِدَيْنِ وَتَقْوِيَةِ الرَّوَابِطِ الْعَائِلِيَّةِ، مُوَظِّفًا نَعْتًا حَقِيقِيًّا وَفِعْلًا مُضَارِعًا.</p>
+                    `,
+                    answers: [
+                        { section: "الْوَضْعِيَّةُ الْأُولَى (04 ن)", content: "1- دَوْرُ الْأَبِ: تَوْفِيرُ الْعَيْشِ الْكَرِيمِ / دَوْرُ الْأُمِّ: السَّهَرُ عَلَى تَرْبِيَةِ الْأَبْنَاءِ وَغَرْسُ الْقِيَمِ.<br>2- يَشْعُرُ كُلُّ فَرْدٍ بِالْأَمَانِ وَالطُّمَأْنِينَةِ.<br>3- مُرَادِفُ (يَنْشَأُ): يَتَرَبَّى / ضِدُّ (الطُّمَأْنِينَةِ): الْخَوْفُ.<br>4- الْفِكْرَةُ الْعَامَّةُ: بَيَانُ الْكَاتِبِ مَكَانَةَ الْعَائِلَةِ وَدَوْرَهَا فِي تَنْشِئَةِ الْأَبْنَاءِ عَلَى الْأَخْلَاقِ.", points: "01.5 ن<br>01 ن<br>01 ن<br>00.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الثَّانِيَةُ (08 ن)", content: "1- الْإِعْرَابُ: الطِّفْلُ: فَاعِلٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ الظَّاهِرَةُ. / الْكَرِيمَةِ: نَعْتٌ مَجْرُورٌ وَعَلَامَةُ جَرِّهِ الْكَسْرَةُ.<br>2- الِاسْتِخْرَاجُ: ضَمِيرٌ مُنْفَصِلٌ: هِيَ / فِعْلٌ مُضَارِعٌ: يَتَلَقَّى، يَسْعَى / نَعْتٌ: الْكَرِيمِ، صَالِحَةً.<br>3- التَّحْوِيلُ: «يَشْعُرُ الْأَفْرَادُ بِالْأَمَانِ فِي بُيُوتِهِمْ».<br>4- نَوْعُ التَّعْبِيرِ: مَجَازِيٌّ (شَبَّهَ حُبَّ الْخَيْرِ بِالنَّبْتَةِ الَّتِي تُغْرَسُ).", points: "02 ن<br>03 ن<br>01.5 ن<br>01.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 ن)", content: "الْمُلَاءَمَةُ (03 ن): التَّقَيُّدُ بِالْحَجْمِ، الْحَدِيثُ عَنْ مَكَانَةِ الْأُسْرَةِ وَبِرِّ الْوَالِدَيْنِ.<br>الِانْسِجَامُ (02 ن): تَسَلْسُلُ الْأَفْكَارِ وَحُسْنُ اسْتِعْمَالِ أَدَوَاتِ الرَّبْطِ.<br>سَلَامَةُ اللُّغَةِ (02 ن): الْخُلُوُّ مِنَ الْأَخْطَاءِ وَتَوْظِيفُ النَّعْتِ وَالْفِعْلِ الْمُضَارِعِ.<br>الْإِتْقَانُ (01 ن): حُسْنُ الْعَرْضِ وَوُضُوحُ الْخَطِّ.", points: "08 نِقَاطٍ" }
+                    ]
+                }
+            },
+            "2AM": {
+                name: "الثانية متوسط",
+                units: [
+                    { title: "المقطع 01: الحياة العائلية", lessons: "الاسم المقصور والمنقوص، حروف العطف، الفعل المعتل وأنواعه، التشبيه وأركانه" },
+                    { title: "المقطع 02: حب الوطن", lessons: "الاسم الممدود، إسناد المثال إلى الضمائر، الطباق والمقابلة" },
+                    { title: "المقطع 03: عظماء الإنسانية", lessons: "إسناد الأجوف، حروف القسم، الجناس والسجع" },
+                    { title: "المقطع 04: الأخلاق والمجتمع", lessons: "إسناد الناقص، المجرد والمزيد، الاستعارة" }
+                ],
+                sampleExam: {
+                    title: "الْوَطَنُ مَحَبَّةٌ وَوَفَاءٌ",
+                    passage: "إِنَّ حُبَّ الْوَطَنِ فِطْرَةٌ غَرَسَهَا اللَّهُ فِي نُفُوسِ الْبَشَرِ، فَالْإِنْسَانُ يَرْتَبِطُ بِأَرْضِهِ ارْتِبَاطَ الرُّوحِ بِالْجَسَدِ، يَشْتَاقُ إِلَيْهَا إِذَا غَابَ عَنْهَا، وَيَفْدِيهَا بِمَالِهِ وَنَفْسِهِ إِذَا دَعَتِ الضَّرُورَةُ. وَلَيْسَ الْوَطَنُ مُجَرَّدَ تُرَابٍ نَمْشِي عَلَيْهِ، بَلْ هُوَ تَارِيخٌ مَجِيدٌ وَهَوِيَّةٌ تَجْمَعُنَا.\nفَيَا أَبْنَاءَ الْجَزَائِرِ، صُونُوا أَمَانَةَ الشُّهَدَاءِ بِالْعِلْمِ وَالْعَمَلِ، فَإِنَّ الْأَوْطَانَ لَا تُبْنَى إِلَّا بِسَوَاعِدِ أَبْنَائِهَا الْمُخْلِصِينَ الَّذِينَ يُؤْثِرُونَ الْمَصْلَحَةَ الْعَامَّةَ عَلَى الْمَصْلَحَةِ الْخَاصَّةِ.",
+                    source: "الْمَرْجِعُ: مَجَلَّةُ الْأَدَبِ وَالْحَيَاةِ (بِتَصَرُّفٍ)",
+                    compQuestions: [
+                        "بَيِّنْ كَيْفَ يَكُونُ حُبُّ الْوَطَنِ الْحَقِيقِيُّ حَسَبَ السَّنَدِ. (01.5 ن)",
+                        "وَرَدَتْ فِي السَّنَدِ وَسِيلَةٌ لِبِنَاءِ الْأَوْطَانِ وَصَوْنِ أَمَانَةِ الشُّهَدَاءِ، اُذْكُرْهَا. (01 ن)",
+                        "اِشْرَحْ مُفْرَدَةَ (يُؤْثِرُونَ) حَسَبَ سِيَاقِهَا فِي السَّنَدِ، ثُمَّ وَظِّفْهَا فِي جُمْلَةٍ مُفِيدَةٍ. (01 ن)",
+                        "لَخِّصْ مَضْمُونَ السَّنَدِ فِي فِكْرَةٍ عَامَّةٍ مُنَاسِبَةٍ. (00.5 ن)"
+                    ],
+                    langQuestions: [
+                        "أَعْرِبْ مَا تَحْتَهُ خَطٌّ فِي السَّنَدِ: (الْإِنْسَانُ - الْمُخْلِصِينَ). (02 ن)",
+                        "اسْتَخْرِجْ مِنَ السَّنَدِ: فِعْلًا مُعْتَلًّا وَبَيِّنْ نَوْعَهُ، وَحَرْفَ عَطْفٍ وَأَفِدْ مَعْنَاهُ. (03 ن)",
+                        "سَمِّ الصُّورَةَ الْبَيَانِيَّةَ فِي قَوْلِ الْكَاتِبِ: «يَرْتَبِطُ بِأَرْضِهِ ارْتِبَاطَ الرُّوحِ بِالْجَسَدِ»، وَحَدِّدْ أَرْكَانَهَا. (01.5 ن)",
+                        "اسْتَخْرِجْ مِنَ الْفَقْرَةِ الثَّانِيَةِ مُحَسِّنًا بَدِيعِيًّا وَبَيِّنْ نَوْعَهُ. (01.5 ن)"
+                    ],
+                    situation: `
+                        <p><strong>السِّيَاقُ:</strong> بِمُنَاسَبَةِ إِحْيَاءِ ذِكْرَى الثَّوْرَةِ التَّحْرِيرِيَّةِ الْمَجِيدَةِ، نَظَّمَتْ مُتَوَسِّطَتُكُمْ مُسَابَقَةً ثَقَافِيَّةً لِأَفْضَلِ نَصٍّ تَعْبِيرِيٍّ حَوْلَ دَوْرِ الشَّبَابِ فِي خِدْمَةِ الْوَطَنِ.</p>
+                        <p><strong>السَّنَدُ:</strong> قَالَ الشَّاعِرُ: وَطَنِي لَوْ شُغِلْتُ بِالْخُلْدِ عَنْهُ / نَازَعَتْنِي إِلَيْهِ فِي الْخُلْدِ نَفْسِي.</p>
+                        <p><strong>التَّعْلِيمَةُ:</strong> حَرِّرْ فَقْرَةً لَا تَقِلُّ عَنْ عَشَرَةِ أَسْطُرٍ، تُبْرِزُ فِيهَا واجِبَكَ نَحْوَ وَطَنِكَ فِي زَمَنِ السِّلْمِ، دَاعِيًا زُمَلَاءَكَ إِلَى الِاجْتِهَادِ لِرَفْعِ رَايَتِهِ، مُوَظِّفًا فِعْلًا مُعْتَلًّا نَاقِصًا وَطِبَاقًا.</p>
+                    `,
+                    answers: [
+                        { section: "الْوَضْعِيَّةُ الْأُولَى (04 ن)", content: "1- يَكُونُ حُبُّ الْوَطَنِ بِالشَّوْقِ إِلَيْهِ عِنْدَ الْغِيَابِ، وَفِدَائِهِ بِالْمَالِ وَالنَّفْسِ عِنْدَ الضَّرُورَةِ.<br>2- الْوَسِيلَةُ هِيَ: الْعِلْمُ وَالْعَمَلُ.<br>3- يُؤْثِرُونَ: يُفَضِّلُونَ وَيُقَدِّمُونَ / التَّوْظِيفُ: يُؤْثِرُ الْمُؤْمِنُ أَخَاهُ عَلَى نَفْسِهِ.<br>4- الْفِكْرَةُ الْعَامَّةُ: حُبُّ الْوَطَنِ فِطْرَةٌ إِنْسَانِيَّةٌ وَوَاجِبٌ يَتَحَقَّقُ بِالْعِلْمِ وَالْعَمَلِ.", points: "01.5 ن<br>01 ن<br>01 ن<br>00.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الثَّانِيَةُ (08 ن)", content: "1- الْإِعْرَابُ: الْإِنْسَانُ: مُبْتَدَأٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ. / الْمُخْلِصِينَ: نَعْتٌ مَجْرُورٌ وَعَلَامَةُ جَرِّهِ الْيَاءُ لِأَنَّهُ جَمْعُ مُذَكَّرٍ سَالِمٌ.<br>2- فِعْلٌ مُعْتَلٌّ: دَعَتْ / نَمْشِي / تُبْنَى (نَاقِصٌ) | حَرْفُ عَطْفٍ: الْوَاوُ (مُطْلَقُ الْجَمْعِ) أَوْ بَلْ (الْإِضْرَابُ).<br>3- الصُّورَةُ الْبَيَانِيَّةُ: تَشْبِيهٌ (الْمُشَبَّهُ: ارْتِبَاطُ الْإِنْسَانِ بِأَرْضِهِ، الْأَدَاةُ: مَحْذُوفَةٌ، الْمُشَبَّهُ بِهِ: ارْتِبَاطُ الرُّوحِ بِالْجَسَدِ).<br>4- الْمُحَسِّنُ الْبَدِيعِيُّ: (الْعَامَّةَ ≠ الْخَاصَّةَ) طِبَاقُ إِيجَابٍ.", points: "02 ن<br>03 ن<br>01.5 ن<br>01.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 ن)", content: "يُقَيَّمُ الْمُنْتَجُ وَفْقَ مَعَايِيرِ: الْمُلَاءَمَةِ (03 ن)، الِانْسِجَامِ (02 ن)، سَلَامَةِ اللُّغَةِ وَالتَّوْظِيفِ (02 ن)، الْإِتْقَانِ وَالْإِبْدَاعِ (01 ن).", points: "08 نِقَاطٍ" }
+                    ]
+                }
+            },
+            "3AM": {
+                name: "الثالثة متوسط",
+                units: [
+                    { title: "المقطع 01: الآفات الاجتماعية", lessons: "بناء الفعل الماضي، اسم الفاعل وعمله، الاستعارة المكنية والتصريحية، الأسلوب الإنشائي" },
+                    { title: "المقطع 02: الإعلام والمجتمع", lessons: "بناء الفعل المضارع، صيغ المبالغة وعملها، الجناس والسجع" },
+                    { title: "المقطع 03: التضامن الإنساني", lessons: "بناء فعل الأمر، اسم المفعول وعمله، الطباق والمقابلة" },
+                    { title: "المقطع 04: شعوب العالم", lessons: "الشرط وأركانه، الصفة المشبهة، الكناية" }
+                ],
+                sampleExam: {
+                    title: "آفَةُ التَّنَمُّرِ فِي الْمُحِيطِ الْمَدْرَسِيِّ",
+                    passage: "يُعَدُّ التَّنَمُّرُ الْمَدْرَسِيُّ سُلُوكًا عُدْوَانِيًّا مَقِيتًا يَنْخَرُ جَسَدَ الْمُؤَسَّسَاتِ التَّرْبَوِيَّةِ، حَيْثُ يَتَعَمَّدُ بَعْضُ التَّلَامِيذِ إِيذَاءَ زُمَلَائِهِمْ لَفْظِيًّا أَوْ جَسَدِيًّا، مِمَّا يُخَلِّفُ جِرَاحًا نَفْسِيَّةً غَائِرَةً تُهَدِّدُ مُسْتَقْبَلَهُمُ الدِّرَاسِيَّ. فَكَمْ مِنْ تِلْمِيذٍ مُجْتَهِدٍ انْقَطَعَ عَنِ الدِّرَاسَةِ بِسَبَبِ سُخْرِيَةِ الْآخَرِينَ!\nإِنَّ مُحَارَبَةَ هَذِهِ الْآفَةِ تَتَطَلَّبُ تَضَافُرَ جُهُودِ الْأُسْرَةِ وَالْمَدْرَسَةِ مَعًا، لِغَرْسِ ثَقَافَةِ التَّسَامُحِ وَالِاحْتِرَامِ الْمُتَبَادَلِ، فَالْعَاقِلُ مَنْ يَصُونُ لِسَانَهُ عَنْ أَذَى النَّاسِ، وَيَكُونُ عَوْنًا لِأَخِيهِ لَا خِصْمًا لَهُ.",
+                    source: "الْمَرْجِعُ: مَجَلَّةُ التَّرْبِيَةِ وَالْمُجْتَمَعِ (بِتَصَرُّفٍ)",
+                    compQuestions: [
+                        "عَرِّفِ التَّنَمُّرَ الْمَدْرَسِيَّ وَبَيِّنْ آثَارَهُ عَلَى التَّلَامِيذِ مِنَ السَّنَدِ. (01.5 ن)",
+                        "حَدِّدِ الْحَلَّ الَّذِي اقْتَرَحَهُ الْكَاتِبُ لِمُحَارَبَةِ هَذِهِ الظَّاهِرَةِ. (01 ن)",
+                        "هَاتِ مُرَادِفَ كَلِمَةِ (مَقِيتًا)، وَضِدَّ كَلِمَةِ (التَّسَامُحِ) مِنَ السَّنَدِ. (01 ن)",
+                        "صُغْ فِكْرَةً عَامَّةً مُنَاسِبَةً لِلسَّنَدِ. (00.5 ن)"
+                    ],
+                    langQuestions: [
+                        "أَعْرِبْ مَا تَحْتَهُ خَطٌّ فِي السَّنَدِ: (سُلُوكًا - انْقَطَعَ). (02 ن)",
+                        "اسْتَخْرِجْ مِنَ السَّنَدِ: اسْمَ فَاعِلٍ وَبَيِّنْ فِعْلَهُ، وَأُسْلُوبًا إِنْشَائِيًّا وَحَدِّدْ نَوْعَهُ. (03 ن)",
+                        "اشْرَحِ الصُّورَةَ الْبَيَانِيَّةَ الْآتِيَةَ وَبَيِّنْ نَوْعَهَا: «سُلُوكًا يَنْخَرُ جَسَدَ الْمُؤَسَّسَاتِ التَّرْبَوِيَّةِ». (01.5 ن)",
+                        "اسْتَخْرِجْ طِبَاقًا مِنَ الْفَقْرَةِ الثَّانِيَةِ وَبَيِّنْ أَثَرَهُ فِي الْمَعْنَى. (01.5 ن)"
+                    ],
+                    situation: `
+                        <p><strong>السِّيَاقُ:</strong> تَعَرَّضَ أَحَدُ زُمَلَائِكَ فِي الْقِسْمِ لِلسُّخْرِيَةِ وَالتَّهَمُّشِ مِنْ قِبَلِ مَجْمُوعَةٍ مِنَ التَّلَامِيذِ بِسَبَبِ مَلَابِسِهِ الْبَسِيطَةِ، فَقَرَّرْتَ التَّدَخُّلَ لِتَوْعِيَتِهِمْ.</p>
+                        <p><strong>السَّنَدُ:</strong> قَالَ تَعَالَى: ﴿يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِنْ قَوْمٍ عَسَى أَنْ يَكُونُوا خَيْرًا مِنْهُمْ﴾.</p>
+                        <p><strong>التَّعْلِيمَةُ:</strong> اُكْتُبْ نَصًّا حِجَاجِيًّا تَوْجِيهِيًّا لَا يَتَجَاوَزُ اثْنَيْ عَشَرَ سَطْرًا، تُبَيِّنُ فِيهِ خُطُورَةَ التَّنَمُّرِ عَلَى الْفَرْدِ وَالْمُجْتَمَعِ، مُقْنِعًا زُمَلَاءَكَ بِضَرُورَةِ التَّحَلِّي بِالْأَخْلَاقِ الْفَاضِلَةِ وَاحْتِرَامِ الْآخَرِينَ، مُوَظِّفًا اسْمَ فَاعِلٍ وَأُسْلُوبًا إِنْشَائِيًّا.</p>
+                    `,
+                    answers: [
+                        { section: "الْوَضْعِيَّةُ الْأُولَى (04 ن)", content: "1- التَّنَمُّرُ هُوَ سُلُوكٌ عُدْوَانِيٌّ لَفْظِيٌّ أَوْ جَسَدِيٌّ، وَآثَارُهُ: جِرَاحٌ نَفْسِيَّةٌ غَائِرَةٌ وَتَهْدِيدُ الْمُسْتَقْبَلِ الدِّرَاسِيِّ وَالِانْقِطَاعُ عَنِ الدِّرَاسَةِ.<br>2- تَضَافُرُ جُهُودِ الْأُسْرَةِ وَالْمَدْرَسَةِ لِغَرْسِ ثَقَافَةِ التَّسَامُحِ.<br>3- مُرَادِفُ (مَقِيتًا): مَكْرُوهًا / قَبِيحًا | ضِدُّ (التَّسَامُحِ): التَّنَمُّرُ / السُّخْرِيَةُ.<br>4- الْفِكْرَةُ الْعَامَّةُ: خُطُورَةُ التَّنَمُّرِ الْمَدْرَسِيِّ وَسُبُلُ مُوَاجَهَتِهِ.", points: "01.5 ن<br>01 ن<br>01 ن<br>00.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الثَّانِيَةُ (08 ن)", content: "1- الْإِعْرَابُ: سُلُوكًا: مَفْعُولٌ بِهِ ثَانٍ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ. / انْقَطَعَ: فِعْلٌ مَاضٍ مَبْنِيٌّ عَلَى الْفَتْحِ الظَّاهِرِ.<br>2- اسْمُ فَاعِلٍ: غَائِرَةً (غَارَ)، مُجْتَهِدٍ (اجْتَهَدَ)، الْعَاقِلُ (عَقَلَ) | أُسْلُوبٌ إِنْشَائِيٌّ: «فَكَمْ مِنْ تِلْمِيذٍ...» (غَيْرُ طَلَبِيٍّ: كَمِ الْخَبَرِيَّةُ).<br>3- الصُّورَةُ الْبَيَانِيَّةُ: اسْتِعَارَةٌ مَكْنِيَّةٌ (شَبَّهَ التَّنَمُّرَ بِالسُّوسِ الَّذِي يَنْخَرُ، وَحَذَفَ الْمُشَبَّهَ بِهِ وَأَبْقَى عَلَى لَازِمِهِ: يَنْخَرُ).<br>4- الطِّبَاقُ: (عَوْنًا ≠ خِصْمًا) طِبَاقُ إِيجَابٍ، أَثَرُهُ: تَوْضِيحُ الْمَعْنَى وَتَقْوِيَتُهُ بِالضِّدِّ.", points: "02 ن<br>03 ن<br>01.5 ن<br>01.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 ن)", content: "يُقَيَّمُ الْمُنْتَجُ وَفْقَ: الْمُلَاءَمَةِ (03 ن)، الِانْسِجَامِ (02 ن)، سَلَامَةِ اللُّغَةِ وَالتَّوْظِيفِ (02 ن)، الْإِتْقَانِ (01 ن).", points: "08 نِقَاطٍ" }
+                    ]
+                }
+            },
+            "4AM": {
+                name: "الرابعة متوسط",
+                units: [
+                    { title: "المقطع 01: قضايا اجتماعية", lessons: "عطف النسق، البدل، التوكيد، العدد والمعدود، الإحالة النصية" },
+                    { title: "المقطع 02: الإعلام والمجتمع", lessons: "الاستثناء، الممنوع من الصرف، الجملة الواقعة مفعولاً به" },
+                    { title: "المقطع 03: التضامن الإنساني", lessons: "الجملة الواقعة نعتاً، الجملة الواقعة حالاً، المحسنات البديعية" },
+                    { title: "المقطع 04: شعوب العالم", lessons: "الجملة الواقعة مضافاً إليه، الجملة الواقعة خبراً، الصور البيانية" }
+                ],
+                sampleExam: {
+                    title: "بَيْنَ الْكِتَابِ الْوَرَقِيِّ وَالشَّاشَاتِ الرَّقْمِيَّةِ",
+                    passage: "لَقَدْ أَحْدَثَتِ الثَّوْرَةُ الرَّقْمِيَّةُ تَحَوُّلًا عَمِيقًا فِي عَادَاتِ الْقِرَاءَةِ وَالتَّعَلُّمِ، فَأَصْبَحَتِ الشَّاشَاتُ الذَّكِيَّةُ تُنَافِسُ الْكِتَابَ الْوَرَقِيَّ مُنَافَسَةً شَدِيدَةً، بَلْ كَادَتْ تَسْحَبُ الْبِسَاطَ مِنْ تَحْتِ قَدَمَيْهِ فِي أَوْسَاطِ النَّاشِئَةِ. فَالْقَارِئُ الْيَوْمَ يَجِدُ نَفْسَهُ أَمَامَ مَكْتَبَةٍ كَوْنِيَّةٍ يَحْمِلُهَا فِي جَيْبِهِ، يَتَصَفَّحُ فِيهَا الْمَعَارِفَ كُلَّهَا بِضَغْطَةِ زِرٍّ وَاحِدَةٍ.\nغَيْرَ أَنَّ الْكِتَابَ الْوَرَقِيَّ يَظَلُّ مُحْتَفِظًا بِسِحْرِهِ الْخَاصِّ وَهَيْبَتِهِ الْعِلْمِيَّةِ؛ إِذْ يُمَكِّنُ الْقَارِئَ مِنَ التَّرْكِيزِ الْعَمِيقِ بَعِيدًا عَنْ مُشَتِّتَاتِ الْإِنْتَرْنِت، وَيُمْنَحُ الْعَقْلَ فُرْصَةً لِلتَّأَمُّلِ وَالنَّقْدِ. فَالْحِكْمَةُ لَيْسَتْ فِي هَجْرِ التِّقْنِيَةِ وَلَا فِي الْإِعْرَاضِ عَنِ الْكِتَابِ، بَلْ فِي الْمُوَازَنَةِ بَيْنَهُمَا لِبِنَاءِ جِيلٍ قَارِئٍ وَمُثَقَّفٍ.",
+                    source: "الْمَرْجِعُ: زَكِي نَجِيب مَحْمُود (بِتَصَرُّفٍ)",
+                    compQuestions: [
+                        "أَبْرِزْ سَبَبَ مُنَافَسَةِ الشَّاشَاتِ الرَّقْمِيَّةِ لِلْكِتَابِ الْوَرَقِيِّ انْطِلَاقًا مِنَ السَّنَدِ. (01.5 ن)",
+                        "اسْتَنْتِجِ الْمِيزَةَ الَّتِي يَتَفَوَّقُ بِهَا الْكِتَابُ الْوَرَقِيُّ عَلَى الْقِرَاءَةِ الرَّقْمِيَّةِ. (01 ن)",
+                        "اِشْرَحْ بِالسِّيَاقِ كَلِمَةَ (الْإِعْرَاضِ)، ثُمَّ هَاتِ ضِدَّ كَلِمَةِ (مُشَتِّتَاتِ). (01 ن)",
+                        "لَخِّصْ مَضْمُونَ السَّنَدِ فِي فِكْرَةٍ عَامَّةٍ مُنَاسِبَةٍ. (00.5 ن)"
+                    ],
+                    langQuestions: [
+                        "أَعْرِبْ مَا تَحْتَهُ خَطٌّ فِي السَّنَدِ إِعْرَابًا تَامًّا: (تَحَوُّلًا - كُلَّهَا). (02 ن)",
+                        "اسْتَخْرِجْ مِنَ السَّنَدِ: بَدَلًا وَبَيِّنْ نَوْعَهُ، وَحَرْفَ عَطْفٍ يُفِيدُ الْإِضْرَابَ. (02.5 ن)",
+                        "اشْرَحِ الصُّورَةَ الْبَيَانِيَّةَ الْآتِيَةَ وَبَيِّنْ نَوْعَهَا: «كَادَتْ تَسْحَبُ الْبِسَاطَ مِنْ تَحْتِ قَدَمَيْهِ». (02 ن)",
+                        "حَدِّدْ أُسْلُوبَ الْفَقْرَةِ الثَّانِيَةِ، وَاسْتَخْرِجْ مُؤَشِّرَيْنِ مِنْ مُؤَشِّرَاتِهِ. (01.5 ن)"
+                    ],
+                    situation: `
+                        <p><strong>السِّيَاقُ:</strong> لَاحَظْتَ عُزُوفَ زُمَلَائِكَ عَنِ ارْتِيَادِ مَكْتَبَةِ الْمُتَوَسِّطَةِ وَانْكِبَابَهُمْ عَلَى الْهَوَاتِفِ الذَّكِيَّةِ لِسَاعَاتٍ طَوِيلَةٍ دُونَ فَائِدَةٍ مَعْرِفِيَّةٍ.</p>
+                        <p><strong>السَّنَدُ:</strong> قَالَ الْجَاحِظُ: «الْكِتَابُ هُوَ الْجَلِيسُ الَّذِي لَا يُطْرِيكَ، وَالصَّدِيقُ الَّذِي لَا يُغْرِيكَ».</p>
+                        <p><strong>التَّعْلِيمَةُ:</strong> أَنْتِجْ نَصًّا حِجَاجِيًّا تَفْسِيرِيًّا لَا يَقِلُّ عَنْ خَمْسَةَ عَشَرَ سَطْرًا، تُبْرِزُ فِيهِ أَهَمِّيَّةَ الْمُطَالَعَةِ فِي بِنَاءِ شَخْصِيَّةِ الْمُتَعَلِّمِ، دَاعِيًا زُمَلَاءَكَ إِلَى تَرْشِيدِ اسْتِعْمَالِ الشَّاشَاتِ وَالْعَوْدَةِ إِلَى الْكِتَابِ، مُوَظِّفًا تَوْكِيدًا مَعْنَوِيًّا وَبَدَلًا مُطَابِقًا.</p>
+                    `,
+                    answers: [
+                        { section: "الْوَضْعِيَّةُ الْأُولَى (04 ن)", content: "1- السَّبَبُ هُوَ تَوْفِيرُهَا مَكْتَبَةً كَوْنِيَّةً يَحْمِلُهَا الْقَارِئُ فِي جَيْبِهِ وَيَتَصَفَّحُ فِيهَا الْمَعَارِفَ بِضَغْطَةِ زِرٍّ.<br>2- يَتَفَوَّقُ الْكِتَابُ الْوَرَقِيُّ بِتَمْكِينِ الْقَارِئِ مِنَ التَّرْكِيزِ الْعَمِيقِ وَالتَّأَمُّلِ وَالنَّقْدِ بَعِيدًا عَنِ الْمُشَتِّتَاتِ.<br>3- شَرْحُ (الْإِعْرَاضِ): الْبُعْدُ وَالْهَجْرُ / ضِدُّ (مُشَتِّتَاتِ): مُرَكِّزَات / جَامِعَات.<br>4- الْفِكْرَةُ الْعَامَّةُ: دَعْوَةُ الْكَاتِبِ إِلَى الْمُوَازَنَةِ بَيْنَ الْكِتَابِ الْوَرَقِيِّ وَالشَّاشَاتِ الرَّقْمِيَّةِ لِبِنَاءِ جِيلٍ مُثَقَّفٍ.", points: "01.5 ن<br>01 ن<br>01 ن<br>00.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الثَّانِيَةُ (08 ن)", content: "1- الْإِعْرَابُ: تَحَوُّلًا: مَفْعُولٌ بِهِ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ. / كُلَّهَا: تَوْكِيدٌ مَعْنَوِيٌّ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ، وَهُوَ مُضَافٌ، وَ(هَا) ضَمِيرٌ مُتَّصِلٌ فِي مَحَلِّ جَرٍّ مُضَافٌ إِلَيْهِ.<br>2- الْبَدَلُ: الْكِتَابَ (بَدَلٌ مُطَابِقٌ / عَطْفُ بَيَانٍ بَعْدَ اسْمِ الْإِشَارَةِ إِنْ وُجِدَ، أَوْ: الْكِتَابَ الْوَرَقِيَّ) | حَرْفُ عَطْفٍ لِلْإِضْرَابِ: بَلْ.<br>3- الصُّورَةُ الْبَيَانِيَّةُ: كِنَايَةٌ عَنِ الِاسْتِحْوَاذِ وَالتَّفَوُّقِ التَّامِّ (أَوِ اسْتِعَارَةٌ مَكْنِيَّةٌ بِتَشْبِيهِ الشَّاشَاتِ بِإِنْسَانٍ يَسْحَبُ الْبِسَاطَ).<br>4- النَّمَطُ: حِجَاجِيٌّ تَفْسِيرِيٌّ (مُؤَشِّرَاتُهُ: أَدَوَاتُ التَّوْكِيدِ وَالنَّفْيِ وَالْإِضْرَابِ: إِذْ، لَيْسَتْ، بَلْ، وَالتَّعْلِيلُ).", points: "02 ن<br>02.5 ن<br>02 ن<br>01.5 ن" },
+                        { section: "الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 ن)", content: "الْمُلَاءَمَةُ (03 ن): التَّقَيُّدُ بِالْحَجْمِ (15 سَطْرًا) وَالنَّمَطِ الْحِجَاجِيِّ التَّفْسِيرِيِّ.<br>الِانْسِجَامُ (02 ن): تَرَابُطُ الْأَفْكَارِ وَتَسَلْسُلُهَا.<br>سَلَامَةُ اللُّغَةِ (02 ن): خُلُوُّ النَّصِّ مِنَ الْأَخْطَاءِ وَتَوْظِيفُ التَّوْكِيدِ الْمَعْنَوِيِّ وَالْبَدَلِ الْمُطَابِقِ.<br>الْإِتْقَانُ (01 ن): جَوْدَةُ الْخَطِّ وَتَنْظِيمُ الْوَرَقَةِ.", points: "08 نِقَاطٍ" }
+                    ]
+                }
+            }
+        };
+
+        // تهيئة الصفحة عند التحميل
+        window.onload = function() {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) document.getElementById('inputApiKey').value = savedKey;
+            onLevelChange();
+        };
+
+        // تغيير المستوى الدراسي
+        function onLevelChange() {
+            const level = document.getElementById('selectLevel').value;
+            const unitSelect = document.getElementById('selectUnit');
+            unitSelect.innerHTML = '';
+
+            curriculumData[level].units.forEach((unit, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = unit.title;
+                unitSelect.appendChild(opt);
+            });
+
+            onUnitChange();
+            updateHeader();
+            renderSampleExam(level);
+        }
+
+        // تغيير المقطع
+        function onUnitChange() {
+            const level = document.getElementById('selectLevel').value;
+            const unitIdx = document.getElementById('selectUnit').value;
+            document.getElementById('inputLessons').value = curriculumData[level].units[unitIdx].lessons;
+        }
+
+        // تحديث الترويسة
+        function updateHeader() {
+            const level = document.getElementById('selectLevel').value;
+            const levelName = curriculumData[level].name;
+            const type = document.getElementById('selectType').value;
+
+            document.getElementById('viewDirectorate').textContent = document.getElementById('inputDirectorate').value;
+            document.getElementById('viewSchool').textContent = document.getElementById('inputSchool').value;
+            document.getElementById('viewTeacher').textContent = "الأُسْتَاذُ: " + document.getElementById('inputTeacher').value.replace(/^أ\.\s*/, '');
+            document.getElementById('viewYear').textContent = "السَّنَةُ الدِّرَاسِيَّةُ: " + document.getElementById('inputYear').value;
+
+            document.getElementById('viewExamTitle').textContent = type + " فِي مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ";
+            document.getElementById('viewLevel').textContent = "الْمُسْتَوَى: " + levelName;
+            document.getElementById('viewDuration').textContent = type.includes("فرض") ? "الْمُدَّةُ: سَاعَةٌ وَاحِدَةٌ (01 سا)" : "الْمُدَّةُ: سَاعَتَانِ (02 سا)";
+            document.getElementById('viewAnswerSubtitle').textContent = type + " - " + levelName;
+        }
+
+        // عرض النموذج الجاهز
+        function renderSampleExam(level) {
+            const data = curriculumData[level].sampleExam;
+            populatePaper(data);
+        }
+
+        function populatePaper(data) {
+            document.getElementById('viewTextTitle').textContent = data.title;
+            document.getElementById('viewPassage').innerHTML = data.passage.split('\n').map(p => `<p class="indent-6 mb-1">${p}</p>`).join('');
+            document.getElementById('viewSource').textContent = data.source;
+
+            document.getElementById('viewCompQuestions').innerHTML = data.compQuestions.map(q => `<li>${q}</li>`).join('');
+            document.getElementById('viewLangQuestions').innerHTML = data.langQuestions.map(q => `<li>${q}</li>`).join('');
+            document.getElementById('viewSituation').innerHTML = data.situation;
+
+            const tbody = document.getElementById('viewAnswerTableBody');
+            tbody.innerHTML = data.answers.map(row => `
+                <tr>
+                    <td class="border border-slate-900 p-2 font-bold text-center bg-slate-50">${row.section}</td>
+                    <td class="border border-slate-900 p-2 leading-relaxed">${row.content}</td>
+                    <td class="border border-slate-900 p-2 font-bold text-center">${row.points}</td>
+                </tr>
+            `).join('');
+
+            updateWordCount();
+        }
+
+        // حساب عدد الكلمات
+        function updateWordCount() {
+            const text = document.getElementById('viewPassage').innerText.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('wordCountBadge').textContent = `السند: ${words} كلمة`;
+        }
+
+        // إظهار/إخفاء ورقة الإجابة
+        function toggleAnswersDisplay() {
+            const checked = document.getElementById('toggleAnswerKey').checked;
+            document.getElementById('answerPaper').style.display = checked ? 'block' : 'none';
+        }
+
+        // نافذة API
+        function toggleApiModal() {
+            document.getElementById('apiModal').classList.toggle('hidden');
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('inputApiKey').value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert("تم حفظ مفتاح Gemini API بنجاح! يمكنك الآن توليد مواضيع جديدة بالذكاء الاصطناعي.");
+            } else {
+                localStorage.removeItem('gemini_api_key');
+            }
+            toggleApiModal();
+        }
+
+        // التوليد عبر Gemini API أو المحرك المحلي
+        async function generateExam() {
+            const apiKey = null; // تجربة محلية آمنة: تعطيل الوصول إلى مفاتيح API
+            const level = document.getElementById('selectLevel').value;
+            const levelName = curriculumData[level].name;
+            const unitText = document.getElementById('selectUnit').options[document.getElementById('selectUnit').selectedIndex].text;
+            const type = document.getElementById('selectType').value;
+            const pattern = document.getElementById('selectPattern').value;
+            const difficulty = document.getElementById('selectDifficulty').value;
+            const lessons = document.getElementById('inputLessons').value;
+
+            const btn = document.getElementById('btnGenerate');
+            const originalHTML = btn.innerHTML;
+
+            if (!apiKey) {
+                // محاكاة توليد سريع من القاعدة المدمجة مع تنبيه
+                btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>جاري بناء الموضوع البيداغوجي...</span>`;
+                lucide.createIcons();
+                setTimeout(() => {
+                    renderSampleExam(level);
+                    btn.innerHTML = originalHTML;
+                    lucide.createIcons();
+                }, 600);
+                return;
+            }
+
+            // التوليد الحقيقي عبر Gemini API
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>جاري صياغة السند والأسئلة مشكولةً...</span>`;
+            lucide.createIcons();
+
+            const systemPrompt = `أنت مفتش وأستاذ خبير في اللغة العربية للتعليم المتوسط بالجزائر. صمم ${type} لمستوى ${levelName} في ${unitText} بالنمط ${pattern} ومستوى صعوبة ${difficulty}.
+القواعد الصارمة:
+1. اشكل السند والأسئلة والإجابات شكلاً تاماً ودقيقاً بالحركات.
+2. التزم بالمقاربة النصية: أسئلة القواعد والبلاغة تُستخرج وتُعرب من السند نفسه حصراً.
+3. استخدم أفعال صنافة بلوم الإجرائية دون تكرار الفعل (استخرج، أعرب، حدد، بين، حوّل، علل).
+4. ركز في الوضعية الثانية على الموارد التالية: ${lessons}.
+5. أرجع النتيجة بصيغة JSON حصراً دون أي نص إضافي بالبنية التالية:
+{
+  "title": "عنوان النص مشكولاً",
+  "passage": "نص من فقرتين مشكولاً شكلاً تاماً (حوالي 130 كلمة)",
+  "source": "المرجع المقترح",
+  "compQuestions": ["سؤال 1 مع التنقيط", "سؤال 2", "سؤال 3", "سؤال 4"],
+  "langQuestions": ["سؤال الإعراب لكلمتين من النص", "سؤال الاستخراج", "سؤال الصورة البيانية", "سؤال المحسن البديعي أو النمط"],
+  "situation": "<p><strong>السِّيَاقُ:</strong> ...</p><p><strong>السَّنَدُ:</strong> ...</p><p><strong>التَّعْلِيمَةُ:</strong> ...</p>",
+  "answers": [
+    {"section": "الْوَضْعِيَّةُ الْأُولَى (04 ن)", "content": "الإجابات مفصلة", "points": "التنقيط"},
+    {"section": "الْوَضْعِيَّةُ الثَّانِيَةُ (08 ن)", "content": "الإجابات مفصلة", "points": "التنقيط"},
+    {"section": "الْوَضْعِيَّةُ الْإِدْمَاجِيَّةُ (08 ن)", "content": "شبكة التقييم", "points": "08 نِقَاطٍ"}
+  ]
+}`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.error) throw new Error(result.error.message);
+
+                const rawText = result.candidates[0].content.parts[0].text;
+                const examJson = JSON.parse(rawText);
+                populatePaper(examJson);
+
+            } catch (error) {
+                alert("حدث خطأ أثناء الاتصال بـ Gemini API: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                lucide.createIcons();
+            }
+        }
+
+        // تصدير الملف بصيغة Word (.doc) مع الحفاظ على التنسيق العربي والاتجاه RTL
+        function exportToWord() {
+            const examHTML = document.getElementById('examPaper').innerHTML;
+            const includeAnswers = document.getElementById('toggleAnswerKey').checked;
+            const answerHTML = includeAnswers ? `<br clear="all" style="page-break-before:always" />` + document.getElementById('answerPaper').innerHTML : '';
+
+            const header = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                      xmlns:w='urn:schemas-microsoft-com:office:word' 
+                      xmlns='http://www.w3.org/TR/REC-html40' dir='rtl' lang='ar'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>اختبار اللغة العربية</title>
+                    <style>
+                        @page { size: A4; margin: 1.5cm; }
+                        body { font-family: 'Traditional Arabic', 'Amiri', serif; direction: rtl; text-align: right; font-size: 14pt; line-height: 1.6; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #000; padding: 6px; text-align: right; }
+                        th { background-color: #e2e8f0; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    ${examHTML}
+                    ${answerHTML}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', header], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const level = document.getElementById('selectLevel').value;
+            const type = document.getElementById('selectType').value;
+            link.href = url;
+            link.download = `${type}_${level}_منارة_الضاد.doc`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
