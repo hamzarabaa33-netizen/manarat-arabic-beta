@@ -15,6 +15,7 @@ try{
  await page.locator("#quickQuestions").click();
  assert.equal(await page.locator("#questionPreview li").count(),3,"Local draft must appear without source");
  const passage=("ثم نصب الصياد شبكته ووقعت الحمامة المطوقة وصاحباتها فيه، فدعتهن إلى التعاون وعدم التخاذل، وقررن رفع الشبكة جميعًا حتى وصلن إلى بر الأمان. ").repeat(3);
+ await page.locator("#advanced").evaluate(el=>{el.open=true});
  await page.locator("#sourceTitle").fill("باب الحمامة المطوقة");
  await page.locator("#author").fill("عبد الله بن المقفع");
  await page.locator("#reference").fill("https://ar.wikisource.org/wiki/كليلة_ودمنة");
