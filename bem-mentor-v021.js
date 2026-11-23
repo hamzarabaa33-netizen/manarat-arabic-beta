@@ -131,7 +131,7 @@ function audit(data){
  add("grade",level==="الرابعة متوسط",
   "مخطط الأسئلة الحالي مخصص للرابعة متوسط، وليس لبقية المستويات.");
  const passed=checks.filter(x=>x.ok).length,critical=checks.filter(x=>x.critical&&!x.ok);
- return {checks,passed,total:checks.length,requiresReview:true,mayCallCompleteExam:critical.length===0,
+ return {checks,passed,total:checks.length,requiresReview:true,passesMinimumStructureOnly:critical.length===0,
   rubricHint:"في تصحيحي شهادة التعليم المتوسط 2024 و2025 للوضعية الإدماجية: الملاءمة 3، الانسجام 2، سلامة اللغة 2، الإبداع والإتقان 1 من مجموع 8. لا تُفرض هذه الأوزان رسميًا على فروض المؤسسة."};
 }
 root.ManaraBemMentor={references,methodologyUrl,FEEDBACK_KEY,adaptReading,recordFeedback,safeLoad,audit,families,version:"V0.21"};
