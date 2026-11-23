@@ -59,9 +59,9 @@ footer{text-align:center;color:#7c919d;padding:20px 0 30px;font-size:12px}
 <div class="field"><label for="segment">المقطع / الموضوع</label>
 <select id="segment"><option>التضامن الإنساني</option><option>قضايا اجتماعية</option><option>الإعلام والمجتمع</option><option>شعوب العالم</option><option>العلم والتقدم التكنولوجي</option><option>التلوث البيئي</option><option>الصناعات التقليدية</option><option>الهجرة الداخلية والخارجية</option><option>القيم الإنسانية</option><option>الحياة الاجتماعية</option><option>الهوية الوطنية</option><option>الطبيعة والبيئة</option><option>الصحة والرياضة</option><option>الحياة الثقافية</option><option>الإبداع والابتكار</option><option>الرحلات والأسفار</option><option value="custom">موضوع آخر...</option></select></div>
 <div class="field"><label for="genre">نوع النص</label>
-<select id="genre"><option value="قصة">قصة / حكاية</option><option value="مقال">مقال</option><option value="مسرحية">مسرحية</option><option value="any">جميع الأنواع</option></select></div>
+<select id="genre"><option value="قصة">قصة / حكاية</option><option value="مقال">مقال</option><option value="مسرحية">مسرحية</option><option value="خطبة">خطبة</option><option value="رسالة">رسالة</option><option value="قصيدة">قصيدة شعرية</option><option value="any">جميع الأنواع</option></select></div>
 <div class="field"><label for="pattern">النمط الغالب</label>
-<select id="pattern"><option value="سردي">سردي</option><option value="وصفي">وصفي</option><option value="any">دون تحديد</option></select></div>
+<select id="pattern"><option value="سردي">سردي</option><option value="وصفي">وصفي</option><option value="تفسيري">تفسيري</option><option value="حجاجي">حجاجي</option><option value="توجيهي">توجيهي</option><option value="حواري">حواري</option><option value="any">دون تحديد</option></select></div>
 </div>
 <div id="customWrap" class="field" hidden style="margin-top:12px"><label for="customTopic">اكتب المقطع أو الموضوع كما في توزيعك</label><input id="customTopic" placeholder="اكتب المقطع هنا"></div>
 <div class="actions"><button class="primary" type="button" id="searchBtn">⌕ ابحث عن سند مناسب</button></div>
@@ -69,7 +69,7 @@ footer{text-align:center;color:#7c919d;padding:20px 0 30px;font-size:12px}
 </section>
 <section>
 <h2>نصوص موثّقة في فهارس الكتب</h2>
-<p class="lead">المطابقة هنا حسب محور النص ونوعه ونمطه كما ورد في دراسة جامعية جزائرية. **لم نستخرج النصوص الكاملة بعد**؛ لذلك لا تُعد هذه بطاقات سندات جاهزة للتوليد، ولا نعتمدها على أنها مطابقة لمنهاج السنة المطلوبة دون مراجعة.</p>
+<p class="lead">المطابقة هنا حسب محور النص ونوعه ونمطه كما ورد في دراسة جامعية جزائرية. <strong>لم نستخرج النصوص الكاملة بعد</strong>؛ لذلك لا تُعد هذه بطاقات سندات جاهزة للتوليد، ولا نعتمدها على أنها مطابقة لمنهاج السنة المطلوبة دون مراجعة.</p>
 <div class="stat" id="counter">جارٍ تجهيز الفهرس...</div>
 <div class="cards" id="results" aria-live="polite"></div>
 </section>
@@ -91,8 +91,8 @@ if(!index){status("تعذر تحميل فهرس السندات. أعد فتح ا
 const params=new URLSearchParams(location.search);
 const selectOptions=(id,value)=>{const el=$(id);if(value&&[...el.options].some(opt=>opt.value===value)){el.value=value;return true}return false};
 if(params.get("level"))selectOptions("level",params.get("level"));
-if(params.get("genre")){const v={story:"قصة",article:"مقال",speech:"مقال",letter:"any",poem:"any",any:"any"}[params.get("genre")]||params.get("genre");selectOptions("genre",v)}
-if(params.get("pattern")){const p={narrative:"سردي",descriptive:"وصفي",any:"any"}[params.get("pattern")]||params.get("pattern");selectOptions("pattern",p)}
+if(params.get("genre")){const v={story:"قصة",article:"مقال",speech:"خطبة",letter:"رسالة",poem:"قصيدة",any:"any"}[params.get("genre")]||params.get("genre");selectOptions("genre",v)}
+if(params.get("pattern")){const p={narrative:"سردي",descriptive:"وصفي",expository:"تفسيري",argumentative:"حجاجي",directive:"توجيهي",dialogue:"حواري",any:"any"}[params.get("pattern")]||params.get("pattern");selectOptions("pattern",p)}
 if(params.get("segment")&&!selectOptions("segment",params.get("segment"))){$("segment").value="custom";$("customTopic").value=params.get("segment");$("customWrap").hidden=false}
 $("segment").addEventListener("change",()=>{$("customWrap").hidden=$("segment").value!=="custom"});
 const getSegment=()=>$("segment").value==="custom"?$("customTopic").value.trim():$("segment").value;
