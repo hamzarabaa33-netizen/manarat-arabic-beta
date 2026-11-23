@@ -140,6 +140,7 @@ main{max-width:1250px}
 
 /* Hide optional custom segment even though .field sets display:flex */
 #customSegmentField[hidden],.field[hidden],[hidden].skill-auto-summary{display:none!important}
+.question>p{white-space:pre-line}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v020.html">▤ هندسة الاختبارات</a><a href="smart-library-v016.html">▣ الباحث التربوي</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a></aside><main>
 <header><div><h1>مختبر هندسة التقويم</h1><p class="lead">نموذج مساعد للرابعة متوسط — لغة عربية، قابل للتطوير لبقية المستويات</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.20 — 23 نوفمبر 2026</span></header>
@@ -454,8 +455,8 @@ function defaultWritingTask(segment,genre){
  return {
    auto:true,
    prompt:story?
-     "السياق: "+context+" التعليمة: اكتب قصة قصيرة من 10 إلى 12 سطرًا، تسرد فيها بداية المشكلة وتسلسل الأحداث وما انتهت إليه، مع توظيف الحوار والوصف توظيفًا مناسبًا، واحترام علامات الترقيم وسلامة اللغة.":
-     "السياق: "+context+" التعليمة: اكتب فقرة من 10 إلى 12 سطرًا تناقش فيها الموقف وتشرح أسبابه وآثاره وتقترح حلًا عمليًا، ملتزمًا بنمط كتابي مناسب وبلغة سليمة."
+     "السياق: "+context+"\nالتعليمة: اكتب قصة قصيرة من 10 إلى 12 سطرًا، تسرد فيها بداية المشكلة وتسلسل الأحداث وما انتهت إليه، مع توظيف الحوار والوصف توظيفًا مناسبًا، واحترام علامات الترقيم وسلامة اللغة.":
+     "السياق: "+context+"\nالتعليمة: اكتب فقرة من 10 إلى 12 سطرًا تناقش فيها الموقف وتشرح أسبابه وآثاره وتقترح حلًا عمليًا، ملتزمًا بنمط كتابي مناسب وبلغة سليمة."
  };
 }
 function planReading(passage,previous,mode){
@@ -522,7 +523,7 @@ function build(){
  paper.append(edit("h3",arr.length?"الجزء الثاني: وضعية إدماجية مقترحة":"الجزء الثاني: مهمة إنتاج كتابي تدريبية"));
  const suppliedSituation=t(d.situation),generatedTask=defaultWritingTask(d.segment,desiredGenre);
  const writingText=suppliedSituation?
-  "السياق: "+suppliedSituation+" التعليمة: "+(narrative?"اكتب قصة قصيرة من 10 إلى 12 سطرًا تسرد الأحداث بترتيب واضح وتوظّف الحوار والوصف مع مراعاة سلامة اللغة.":"اكتب نصًا من 10 إلى 12 سطرًا يشرح الموقف ويقدّم حلًا مناسبًا، مع مراعاة الاتساق وسلامة اللغة."):
+  "السياق: "+suppliedSituation+"\nالتعليمة: "+(narrative?"اكتب قصة قصيرة من 10 إلى 12 سطرًا تسرد الأحداث بترتيب واضح وتوظّف الحوار والوصف مع مراعاة سلامة اللغة.":"اكتب نصًا من 10 إلى 12 سطرًا يشرح الموقف ويقدّم حلًا مناسبًا، مع مراعاة الاتساق وسلامة اللغة."):
   generatedTask.prompt;
  answers.push(addQ(paper,writingText,"مؤشرات تقييم مقترحة، وليست سلّم تنقيط رسميًا: ارتباط الإنتاج بالسياق؛ تسلسل الأحداث أو الأفكار؛ اتساق النص؛ سلامة اللغة؛ حسن توظيف الحوار والوصف حين يكون المطلوب قصة."));
  cor.append(edit("h2","مفتاح إجابات إرشادي — يحتاج إلى تدقيق الأستاذ"));
