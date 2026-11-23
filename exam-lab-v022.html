@@ -28,7 +28,7 @@ button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
 #status{white-space:pre-line;border-radius:8px;background:#f2f8f8;padding:11px;margin:10px 0;border:1px solid #c9dcdb}
 #status.error{background:#fff4f2;color:#a83b32;border-color:#ebc0b9}
 #report[hidden],#output[hidden]{display:none!important}
-#report li{padding:3px 0}#report .bad{color:#a74734}#report .good{color:#22715e}
+#report li{padding:3px 0}#report .bad{color:#a74734}#report .good{color:#22715e}#report .pending{color:#637786}
 .doc-scroll{background:#e8eef3;padding:14px;border-radius:12px;overflow-x:auto}
 .paper{font-family:"Simplified Arabic",Arial,serif;font-size:17px;color:#111;background:white;width:min(100%,850px);min-width:605px;margin:auto;padding:30px 36px;min-height:730px;border:1px solid #9fa8ae;box-shadow:0 8px 25px #0002;line-height:1.6}
 .paper.times{font-family:"Times New Roman",serif}
@@ -518,6 +518,51 @@ function planReading(passage,previous,mode){
  for(const c of candidates){if(selected.length>=wanted)break;if(selected.some(x=>x.id===c.id))continue;selected.push(c)}
  return selected;
 }
+
+/* Structural QA has THREE possible results. Absence of evidence is never a PASS.
+   Positive assertions mean that a limited structural criterion succeeded, not that
+   the syntax, curriculum, source attribution or answer key was verified. */
+function structuralReport({arr,passage,jobs,reading,writingText,suppliedSituation}){
+ const items=[];
+ const row=(status,text)=>items.push({status,text});
+ if(!arr.length){
+  row("pending","لم يُفحص تطابق الشواهد اللغوية؛ لا توجد شواهد معتمدة لإجراء المقارنة.");
+  row("bad","البناء اللغوي غير مكتمل؛ الوثيقة مسودة فهم وإنتاج كتابي للتدريب فقط. لا يلزم إدخال الموارد يدويًا الآن؛ مطابقتها بالمخطط الدراسي والشواهد ما زالت وظيفة قيد التطوير.");
+ }else{
+  const text=norm(passage);
+  const present=arr.every(x=>x.quote&&norm(x.quote).length>=5&&text.includes(norm(x.quote)));
+  row(present?"good":"bad",present?
+   "تأكد ورود عبارات الشواهد اللغوية المعتمدة في السند بعد تسوية التشكيل والمسافات؛ لم يُتحقق من صحة التحليل النحوي.":
+   "بعض الشواهد غير موجودة في السند أو ناقصة؛ تحتاج إلى إعادة مراجعة.");
+  row(jobs.length?"good":"bad",jobs.length?
+   "وُلدت "+jobs.length+" مهام لغوية انطلاقًا من شواهد أُدخلت بعد مراجعة الأستاذ؛ لم تُفحص صحة أحكامها.":
+   "لم يُنشأ بناء لغوي قابل للتقييم.");
+ }
+ const readingVerbs=reading.map(q=>q.verb).filter(Boolean);
+ const readingDiverse=readingVerbs.length>=2&&new Set(readingVerbs).size===readingVerbs.length;
+ row(readingDiverse?"good":"bad",readingDiverse?
+  "تنوعت أفعال الأمر في أسئلة البناء الفكري فقط؛ لا يثبت ذلك وحده تنوع المهارات المعرفية وفق بلوم.":
+  "يحتاج البناء الفكري إلى تنويع الأفعال الإجرائية وفحص المهارات المقاسة.");
+ const languageVerbs=jobs.map(j=>j.verb).filter(Boolean);
+ if(!jobs.length){
+  row("pending","لم يُفحص تنوّع أسئلة البناء اللغوي؛ لا توجد أسئلة لغوية معتمدة.");
+ }else if(jobs.length===1){
+  row("pending","يوجد سؤال لغوي واحد؛ لا يمكن الحكم على تنوع الأسئلة اللغوية من مثال واحد.");
+ }else{
+  const varied=languageVerbs.length===jobs.length&&new Set(languageVerbs).size===languageVerbs.length;
+  row(varied?"good":"bad",varied?
+   "تنوعت أفعال الأمر بين الأسئلة اللغوية؛ يلزم مراجعة صحة الموارد والمهارات.":
+   "تكررت أفعال الأمر في البناء اللغوي أو تعذر تحديد بعضها؛ راجع تنويع المهارات.");
+ }
+ const writingReady=typeof writingText==="string"&&writingText.includes("السياق:")&&writingText.includes("التعليمة:");
+ row(writingReady?"good":"bad",writingReady?
+  (suppliedSituation?"صيغت وضعية إنتاج كتابي من موقف الأستاذ بسياق وتعليمة، وتحتاج تدقيق الملاءمة والتنقيط.":
+   "صيغت وضعية إنتاج كتابي أولية بسياق وتعليمة؛ صلاحيتها للمستوى والمنهاج والتنقيط غير مُتحقق منها."):
+  "وضعية الإنتاج الكتابي بحاجة إلى سياق وتعليمة واضحين.");
+ row("bad","ما زالت مراجعة ملاءمة الموارد للمخطط والتوزيع الفعلي، وموثوقية المصدر، وصحة الأجوبة، وشبكة التنقيط مطلوبة قبل اعتماد الاختبار.");
+ return items;
+}
+
 function build(){
  synchronizeSelectedSegment();
  if(lastResourceScan!==t($("passage").value))reviewResourceHints();
@@ -569,14 +614,9 @@ function build(){
  answers.forEach((a,i)=>cor.append(edit("p",(i+1)+". "+a)));
  cor.append(edit("p","ملاحظة: هذا مفتاح مراجعة وليس تصحيحًا نموذجيًا مكتملًا؛ لا توجد علامات موزعة أو تبريرات إعرابية مصادق عليها."));
  cor.append(edit("p","التحقق المطلوب: اكتمال السند وملاءمة السنة والمقطع، ومطابقة الشواهد، وصحة الإجابات، وشبكة التنقيط قبل الطباعة للتلاميذ."));
- const reports=[
-  [true,"تطابقت الشواهد اللغوية المدخلة مع عبارات في السند، بعد تسوية التشكيل والمسافات."],
-  [arr.length>0,arr.length?"عُرضت مهام فهم ومهام لغوية ووضعية إدماجية.":"المسودة لا تتضمن مهارات لغوية محددة؛ أضفها بعد التحقق من شواهدها."],
-  [new Set(jobs.map(x=>x.verb)).size===jobs.length&&new Set(reading.map(x=>x.verb)).size===reading.length,"اختيرت طرائق متنوعة للفهم واللغة دون تكرار مباشر للأفعال داخل كل مجال."],
-  [!!writingText,suppliedSituation?"استُخدم سياق حدده الأستاذ للوضعية الكتابية.":"اقتُرح سياق واقعي مكتمل للتدريب، ويحتاج إلى مراجعة ملاءمته."],
-  [false,"ما زال التحقق من ملاءمة المهارات للشواهد، وبيانات المصدر وحقوق النشر، والإجابات الصحيحة، والتطابق مع المنهاج، والتنقيط مطلوبًا."]
- ];
- $("reportItems").replaceChildren(...reports.map(r=>el("li",(r[0]?"✓ ":"! ")+r[1],r[0]?"good":"bad")));
+ const reports=structuralReport({arr,passage:d.passage,jobs,reading,writingText,suppliedSituation});
+ const marks={good:"✓ ",bad:"! ",pending:"— "};
+ $("reportItems").replaceChildren(...reports.map(r=>el("li",(marks[r.status]||"— ")+r.text,r.status)));
  renderBemReview({reading,passage:d.passage,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
  $("report").hidden=false;$("output").hidden=false;save();msg(arr.length?"أُنشئت مسودة تقويم قابلة للتحرير، ولكنها غير معتمدة حتى استكمال التدقيق والتصحيح.":"أُنشئت مسودة فهم وإنتاج كتابي للتدريب فقط؛ لا تحتوي بناءً لغويًا أو شبكة تنقيط رسمية.");$("output").scrollIntoView({behavior:"smooth"});
 }
