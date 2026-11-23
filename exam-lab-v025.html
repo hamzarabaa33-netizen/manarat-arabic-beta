@@ -369,8 +369,8 @@ body.exam-generated #examSuite{display:block!important}
 <div id="schoolbookPreview" class="schoolbook-preview" hidden>
  <h3 id="schoolbookPreviewTitle">المصدر المدرسي الأصلي</h3>
  <p id="schoolbookPreviewStatus" class="hint" aria-live="polite"></p>
- <pre id="schoolbookOcr" class="schoolbook-ocr"></pre><label style="display:flex;gap:9px;align-items:center;margin:10px 0"><input type="checkbox" id="schoolbookVerified">راجعت النص المستخرج مع صورة الأصل، وسأصحح أخطاءه قبل اعتماد الأسئلة</label>
- <div class="actions"><a id="schoolbookPreviewOriginal" target="_blank" rel="noopener noreferrer">قراءة الكتاب المصوّر</a><button type="button" id="schoolbookCopyToEditor" disabled>نقل OCR إلى المحرر بعد تدقيقه</button><button type="button" id="schoolbookClosePreview">إغلاق</button></div>
+ <pre id="schoolbookOcr" class="schoolbook-ocr"></pre><label style="display:flex;gap:9px;align-items:center;margin:10px 0"><input type="checkbox" id="schoolbookVerified" disabled>راجعت النص المستخرج مع صورة الأصل، وسأصحح أخطاءه قبل اعتماد الأسئلة</label>
+ <div class="actions"><a id="schoolbookPreviewOriginal" target="_blank" rel="noopener noreferrer">قراءة الكتاب المصوّر</a><button type="button" id="schoolbookCopyToEditor" disabled>نقل OCR إلى المحرر بعد تدقيقه</button><button type="button" id="schoolbookClosePreview">إغلاق</button></div><div id="schoolbookFallbackActions" hidden><p class="hint">تعذر استرجاع نص هذا الكتاب آليًا. اختر طريقة آمنة للمتابعة؛ السند البديل ليس النص نفسه.</p><div class="actions"><button type="button" id="schoolbookFallbackManual">أدرج النص بعد مراجعته بنفسي</button><button type="button" id="schoolbookFallbackSample">تجربة بسند موثق مختلف</button></div></div>
  <p class="hint">النص مأخوذ آليًا من أرشيف الكتاب، وقد يحوي أخطاء تقلب معنى الكلمات والشواهد. لا ترسل للتلاميذ نسخة غير مصححة.</p>
 </div>
 <p class="hint">هذه بداية الفهرس المشترك؛ فيه بيانات مصادر موثقة، وليس بعد نصوصًا كاملة أو فهرسة شاملة للكتب القديمة. إضافة الكتب مهمة المنارة، لا واجب الأستاذ.</p>
@@ -1666,7 +1666,7 @@ async function showSchoolbookOcr(item){
  panel.hidden=false;target.textContent="";
  $("schoolbookPreviewTitle").textContent=item.title+" — "+item.bookInfo.name;
  $("schoolbookPreviewOriginal").href=item.bookInfo.viewer;
- $("schoolbookCopyToEditor").disabled=true;$("schoolbookVerified").checked=false;
+ $("schoolbookCopyToEditor").disabled=true;$("schoolbookVerified").checked=false;$("schoolbookVerified").disabled=true;$("schoolbookFallbackActions").hidden=true;
  $("schoolbookPreviewStatus").textContent="أحاول قراءة نص OCR من الأرشيف مباشرة، دون رفع كتاب أو تحميله منك...";
  panel.scrollIntoView({behavior:"smooth",block:"start"});
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
@@ -1677,14 +1677,34 @@ async function showSchoolbookOcr(item){
   const excerpt=extractOcrLesson(raw,item);
   pendingSchoolOcr={item,excerpt};
   target.textContent=excerpt;
+  $("schoolbookVerified").disabled=false;
   $("schoolbookCopyToEditor").disabled=!$("schoolbookVerified").checked;
   $("schoolbookPreviewStatus").textContent="نجح جلب نص OCR من الكتاب نفسه، لكنه غير مصحح. اقرأ الصورة وقارن الفقرات قبل اعتمادها.";
  }catch(error){
-  target.textContent="تعذر استخراج النص في هذه الجلسة، ولم نستبدله بنص مصنوع.";
-  $("schoolbookPreviewStatus").textContent="تعذّر جلب OCR من خادم الأرشيف: "+error.message+". مصدر الكتاب الأصلي قابل للفتح من الرابط.";
+  target.textContent="تعذر استرجاع متن الكتاب في هذه المحاولة؛ لم نستبدله بنص آخر أو نص مصطنع.";
+  const timeoutFailure=ctrl.signal.aborted||error.name==="AbortError";
+  $("schoolbookPreviewStatus").textContent=timeoutFailure?
+    "انتهت مهلة الاتصال بخادم الأرشيف بعد 12 ثانية. لا يعني ذلك عدم وجود النص. افتح صورة الكتاب الأصلية أو اختر أحد البدائل أدناه.":
+    "تعذر جلب النص آليًا من خادم الأرشيف؛ قد يكون السبب الاتصال أو قيود الوصول. يمكنك مراجعة صورة الأصل، أو استخدام أحد البدائل أدناه.";
+  $("schoolbookFallbackActions").hidden=false;
  }finally{clearTimeout(timeout)}
 }
 $("schoolbookVerified").onchange=()=>{$("schoolbookCopyToEditor").disabled=!pendingSchoolOcr||!$("schoolbookVerified").checked};
+$("schoolbookFallbackManual").onclick=()=>{
+ const title=$("schoolbookPreviewTitle").textContent.split(" — ")[0];
+ const source=$("schoolbookPreviewOriginal").href;
+ $("simpleTitle").value=title;
+ $("simpleReference").value=source;
+ $("simpleAuthor").value="";
+ $("simplePassage").value="";
+ $("simpleSourceDetails").open=true;
+ $("simpleExamHome").scrollIntoView({behavior:"smooth",block:"start"});
+ $("simplePassage").focus();
+};
+$("schoolbookFallbackSample").onclick=()=>{
+ $("simpleExamHome").scrollIntoView({behavior:"smooth",block:"start"});
+ $("simpleSample").click();
+};
 $("schoolbookCopyToEditor").onclick=()=>{
  if(!pendingSchoolOcr||!$("schoolbookVerified").checked)return;
  const {item,excerpt}=pendingSchoolOcr;
