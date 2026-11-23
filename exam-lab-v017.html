@@ -381,7 +381,7 @@ function plan(items,mode,previous){
  return chosen;
 }
 function save(){
- try{localStorage.setItem(KEY,JSON.stringify({data:data(),skills:skills(),request:$("quickRequest").value,topic:$("topicQuery").value,paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
+ try{localStorage.setItem(KEY,JSON.stringify({data:data(),teacherChoice:teacherChoice(),skills:skills(),request:$("quickRequest").value,topic:$("topicQuery").value,paper:$("paper").innerHTML,correction:$("correction").innerHTML,output:!$("output").hidden,font:$("font").value}))}
  catch(e){msg("تعذر الحفظ على هذا الجهاز: "+e.message,true)}
 }
 
@@ -463,6 +463,8 @@ $("generate").onclick=build;$("save").onclick=()=>{save();msg("حُفظت الم
 $("restore").onclick=()=>{
  try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(!s){msg("لا توجد مسودة محفوظة.",true);return}
  ids.forEach(id=>{if(s.data&&Object.prototype.hasOwnProperty.call(s.data,id))$(id).value=s.data[id]});
+ if(s.teacherChoice)applyTeacherChoice(s.teacherChoice);
+ else if(s.data?.segment)setChosenSegmentFromText(s.data.segment);
  if(typeof s.request==="string")$("quickRequest").value=s.request;if(typeof s.topic==="string")$("topicQuery").value=s.topic;
  $("evidence").replaceChildren();(s.skills||[]).forEach(x=>addSkill(x.name,x.quote));if(!s.skills?.length)addSkill();
  $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";reviewResourceHints();$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
@@ -529,7 +531,7 @@ function understand(){
  const found=topicOptions.find(x=>prompt.includes(x));
  if(found)topic.value=found;
  const seg=prompt.match(/(?:المقطع|المجال)\s*(?:التعلمي)?\s*[:：\-]?\s*([^\n،.]{3,45})/);
- if(seg)$("segment").value=seg[1].trim();
+ if(seg)setChosenSegmentFromText(seg[1].trim());
  const known=["البدل","الممنوع من الصرف","الاستعارة","التشبيه","التمييز","عطف النسق","العدد","الاستثناء","المفعول لأجله"];
  const mentioned=known.filter(x=>prompt.includes(x));
  const rows=[...$("evidence").children];
@@ -771,7 +773,7 @@ $("loadLocalSource").addEventListener("click",()=>{
  $("reference").value=record.book+(record.page?" — "+record.page:"")+(record.year?" ("+record.year+")":"");
  $("passage").value=record.text;
  reviewResourceHints();
- if(!t($("segment").value)&&record.topics)$("segment").value=record.topics.slice(0,90);
+ if(!getSegment()&&record.topics)setChosenSegmentFromText(record.topics.slice(0,90));
  $("advanced").open=true;
  $("localSourceNotice").hidden=true;
  try{localStorage.removeItem(EXCERPT_HANDOFF_KEY)}catch(e){}
@@ -849,6 +851,45 @@ const segmentSearchState={generation:0};
 function getSegment(){
  return t($("customSegment").value)||($("chosenSegment").value==="custom"?"":t($("chosenSegment").value));
 }
+const TEACHER_CHOICE_KEY="almanara-teacher-choice-v017";
+function teacherChoice(){
+ return {level:$("chosenLevel").value,segment:getSegment(),genre:$("requestedGenre").value,pattern:$("requestedPattern").value};
+}
+function synchronizeSelectedSegment(persist=true){
+ const seg=getSegment();
+ $("segment").value=seg;
+ $("segmentMirror").textContent=seg?"المقطع الذي حددته: «"+seg+"» — لا داعي لكتابته مرة أخرى.":"اختر المقطع مرة واحدة من أعلى الصفحة.";
+ if(persist)try{localStorage.setItem(TEACHER_CHOICE_KEY,JSON.stringify(teacherChoice()))}catch(e){}
+}
+function setChosenSegmentFromText(value){
+ const valueText=t(value);if(!valueText)return;
+ const choices=[...$("chosenSegment").options].map(o=>o.value||o.textContent);
+ if($("chosenLevel").value==="الرابعة متوسط"&&choices.includes(valueText)){
+  $("chosenSegment").value=valueText;$("customSegment").value="";
+ }else{$("chosenSegment").value="custom";$("customSegment").value=valueText;}
+ synchronizeSelectedSegment();
+}
+function applyTeacherChoice(choice){
+ if(!choice||typeof choice!=="object")return;
+ const levels=[...$("chosenLevel").options].map(o=>o.value||o.textContent);
+ if(levels.includes(choice.level))$("chosenLevel").value=choice.level;
+ syncSegment();
+ if(typeof choice.segment==="string")setChosenSegmentFromText(choice.segment);
+ const genres=[...$("requestedGenre").options].map(o=>o.value);
+ const patterns=[...$("requestedPattern").options].map(o=>o.value);
+ if(genres.includes(choice.genre))$("requestedGenre").value=choice.genre;
+ if(patterns.includes(choice.pattern))$("requestedPattern").value=choice.pattern;
+ synchronizeSelectedSegment();
+}
+function loadTeacherChoice(){
+ try{
+  const params=new URLSearchParams(window.location.search),fromLocal=JSON.parse(localStorage.getItem(TEACHER_CHOICE_KEY)||"null")||{};
+  const c={...fromLocal};
+  ["level","segment","genre","pattern"].forEach(key=>{if(params.has(key))c[key]=params.get(key)});
+  applyTeacherChoice(c);
+ }catch(e){syncSegment()}
+ synchronizeSelectedSegment();
+}
 function segmentStatus(message,error=false){
  $("segmentMessage").textContent=message;
  $("segmentMessage").classList.toggle("error",error);
@@ -858,9 +899,10 @@ function syncGenre(){
  const suggested={story:"narrative",article:"expository",speech:"directive",letter:"any",poem:"any",any:"any"};
  $("requestedPattern").value=suggested[genre];
  $("genreGuide").textContent="النوع: "+genreLabels[genre]+"؛ النمط المقترح: "+patternLabels[$("requestedPattern").value]+". البحث يرشّح وفق قرائن العنوان، لا يثبت النمط أو الملاءمة تلقائيًا.";
+ synchronizeSelectedSegment();
 }
 $("requestedGenre").addEventListener("change",syncGenre);
-$("requestedPattern").addEventListener("change",()=>{$("genreGuide").textContent="النوع المطلوب: "+genreLabels[$("requestedGenre").value]+"؛ النمط المطلوب: "+patternLabels[$("requestedPattern").value]+". سيتم التحقق منهما بمراجعة النص، وليس من كلمات البحث وحدها.";});
+$("requestedPattern").addEventListener("change",()=>{$("genreGuide").textContent="النوع المطلوب: "+genreLabels[$("requestedGenre").value]+"؛ النمط المطلوب: "+patternLabels[$("requestedPattern").value]+". سيتم التحقق منهما بمراجعة النص، وليس من كلمات البحث وحدها.";synchronizeSelectedSegment();});
 function syncSegment(){
  const level=$("chosenLevel").value;
  $("chosenSegment").disabled=level!=="الرابعة متوسط";
@@ -869,9 +911,11 @@ function syncSegment(){
  "لهذا المستوى اكتب اسم المقطع كما في توزيعك الفعلي؛ لم تُحمّل قائمته المرجعية بعد.";
  $("customSegmentField").hidden=false;
  if(level!=="الرابعة متوسط")$("chosenSegment").value="custom";
+ synchronizeSelectedSegment();
 }
 $("chosenLevel").addEventListener("change",syncSegment);
-$("chosenSegment").addEventListener("change",()=>{$("customSegment").value="";});
+$("customSegment").addEventListener("input",()=>synchronizeSelectedSegment());
+$("chosenSegment").addEventListener("change",()=>{$("customSegment").value="";synchronizeSelectedSegment();});
 function segmentKeywords(seg){
  return (segmentMap[seg]||[seg]).filter(x=>x.length>1).slice(0,3);
 }
@@ -1021,7 +1065,8 @@ function searchVerifiedTexts(){
 }
 $("searchSegment").addEventListener("click",searchVerifiedTexts);
 $("searchPublicSources").addEventListener("click",searchSegmentSources);
-syncSegment();
+loadTeacherChoice();
+reviewResourceHints();
 
 applyFont();
 })();
