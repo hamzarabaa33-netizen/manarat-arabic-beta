@@ -278,7 +278,78 @@ function addSkill(name="",quote=""){
  const del=el("button","حذف");del.type="button";del.onclick=()=>row.remove();
  row.append(a,b,del);$("evidence").append(row);
 }
-addSkill();addSkill();$("add").onclick=()=>addSkill();
+$("add").onclick=()=>addSkill();
+
+/* V0.17: analyze the *actual* source text for preliminary, explicitly unverified signals.
+   Do not infer the official programme, syntactic functions, بدل, ممنوع من الصرف or rhetoric. */
+const DETECTION_RULES=[
+ {name:"الاستثناء",pattern:/(?:^|[\s،؛:«])إلا(?=[\s،؛:»]|$)/gu,tip:"قد تدل «إلا» على استثناء أو حصر؛ يلزم تحديد تركيب الجملة وحكمه."},
+ {name:"أسلوب النداء",pattern:/(?:^|[\s،؛:«])يا\s+[\u0621-\u064A]+/gu,tip:"قرينة نداء؛ تأكد من نوع المنادى ووظيفته."},
+ {name:"أسلوب الشرط",pattern:/(?:^|[\s،؛:«])إذا\s+[\u0621-\u064A]+/gu,tip:"قرينة على تركيب شرطي؛ تحقق من الجواب والدلالة."},
+ {name:"أسلوب النفي",pattern:/(?:^|[\s،؛:«])(?:لم|لن|ليس|ليست)\s+[\u0621-\u064A]+/gu,tip:"قرينة على النفي؛ تحقق من الأداة وعملها في سياقها."},
+ {name:"أسلوب التوكيد",pattern:/(?:^|[\s،؛:«])لقد\s+[\u0621-\u064A]+/gu,tip:"قرينة توكيد؛ تحقق من وظيفته قبل التقويم."},
+ {name:"أسلوب التعليل",pattern:/(?:^|[\s،؛:«])لأن(?:ه|ها|هم|ّ)?(?=[\s،؛:»]|$)/gu,tip:"مؤشر على التعليل؛ تحقق من علاقة السبب بالنتيجة."}
+];
+function excerptNearMatch(full,index){
+ const left=Math.max(0,index-85),right=Math.min(full.length,index+110);
+ const excerpt=full.slice(left,right).trim();
+ return excerpt.length>=12?excerpt:"";
+}
+function detectResourceHints(sourceText){
+ const full=String(sourceText||"");
+ if(full.length<80)return [];
+ const hints=[];
+ for(const rule of DETECTION_RULES){
+  const re=new RegExp(rule.pattern.source,rule.pattern.flags);
+  const match=re.exec(full);
+  if(!match)continue;
+  const quote=excerptNearMatch(full,match.index);
+  if(!quote)continue;
+  hints.push({name:rule.name,quote,tip:rule.tip});
+ }
+ return hints;
+}
+let lastResourceScan="";
+function reviewResourceHints(){
+ const passage=t($("passage").value),list=$("resourceSuggestions");
+ list.replaceChildren();
+ if(!passage||passage.length<80){
+  $("autoResourcesStatus").textContent="تحتاج المنارة إلى نص سند حقيقي قبل اقتراح أي شاهد.";
+  $("autoSkillHeader").textContent="الموارد تُقترح من نص السند، لا تدخلها أنت.";
+  lastResourceScan="";return [];
+ }
+ const suggestions=detectResourceHints(passage);
+ lastResourceScan=passage;
+ $("autoResourcesStatus").textContent=suggestions.length?
+  "رُصدت "+suggestions.length+" قرائن لغوية أولية؛ لا تُعتمد كأسئلة إعراب أو موارد مقررة دون مراجعة الأستاذ.":
+  "لم تُرصد قرائن لغوية واضحة بهذه القواعد المحدودة. لا يلزمك إدخال شيء الآن؛ يمكن بناء مسودة فهم فقط.";
+ $("autoSkillHeader").textContent=suggestions.length?
+  "وجدت "+suggestions.length+" موارد محتملة من النص. اعتمد ما يصح فقط من قسم مراجعة الشواهد.":
+  "لم أعثر على مورد نحوي مؤكد؛ لا كتابة مطلوبة. تُنشأ مسودة فهم إلى حين توثيق الموارد.";
+ for(const hint of suggestions){
+  const card=el("div",undefined,"auto-resource-card");
+  card.append(el("strong","مورد محتمل: "+hint.name),
+    el("small",hint.tip),el("p","«"+hint.quote+"»"));
+  const btn=el("button","اعتماد بعد المراجعة");btn.type="button";
+  btn.onclick=()=>{
+   if(!norm($("passage").value).includes(norm(hint.quote))){
+    $("autoResourcesStatus").textContent="تغير نص السند؛ أعد فحص الاقتراحات قبل اعتماد الشاهد.";return
+   }
+   const exists=skills().some(x=>x.name===hint.name&&norm(x.quote)===norm(hint.quote));
+   if(!exists)addSkill(hint.name,hint.quote);
+   btn.disabled=true;btn.textContent="أُضيف للمراجعة";
+   $("autoResourcesStatus").textContent="أُضيف شاهد مقتبس حرفيًا إلى قائمة الموارد، لكن صحّة التحليل ووجود المورد في التوزيع الفعلي من مسؤولية المراجعة.";
+  };
+  card.append(btn);list.append(card);
+ }
+ return suggestions;
+}
+let resourceScanTimer=0;
+$("passage").addEventListener("input",()=>{
+ clearTimeout(resourceScanTimer);
+ resourceScanTimer=setTimeout(reviewResourceHints,300);
+});
+
 const ids=["kind","mode","segment","previous","sourceTitle","author","reference","passage","situation"];
 const data=()=>Object.fromEntries(ids.map(id=>[id,$(id).value]));
 const skills=()=>[...$("evidence").children].map(r=>{const i=r.querySelectorAll("input");return{name:t(i[0].value),quote:t(i[1].value)}}).filter(x=>x.name||x.quote);
@@ -338,6 +409,8 @@ function planReading(passage,previous,mode){
  return selected;
 }
 function build(){
+ synchronizeSelectedSegment();
+ if(lastResourceScan!==t($("passage").value))reviewResourceHints();
  const d=data(),arr=skills(),errors=[];
  if($("chosenLevel").value!=="الرابعة متوسط")errors.push("البحث عن السند يعمل لكل المستويات، لكن مخطط الأسئلة التجريبي لم يُكيَّف بعد لهذا المستوى؛ يتوفر بناء المسودة حاليًا للرابعة متوسط فقط.");
  if(t(d.sourceTitle).length<2||t(d.author).length<3||t(d.reference).length<5)errors.push("أدخل عنوان السند، والكاتب الأصلي، والمرجع.");
@@ -392,7 +465,7 @@ $("restore").onclick=()=>{
  ids.forEach(id=>{if(s.data&&Object.prototype.hasOwnProperty.call(s.data,id))$(id).value=s.data[id]});
  if(typeof s.request==="string")$("quickRequest").value=s.request;if(typeof s.topic==="string")$("topicQuery").value=s.topic;
  $("evidence").replaceChildren();(s.skills||[]).forEach(x=>addSkill(x.name,x.quote));if(!s.skills?.length)addSkill();
- $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
+ $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";reviewResourceHints();$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
  }catch(e){msg("تعذرت الاستعادة: "+e.message,true)}
 };
 function applyFont(){$("paper").classList.toggle("times",$("font").value==="times");$("correction").classList.toggle("times",$("font").value==="times")}
@@ -465,6 +538,7 @@ function understand(){
 }
 $("interpretBtn").addEventListener("click",understand);
 $("quickBuildBtn").addEventListener("click",()=>{
+ if(lastResourceScan!==t($("passage").value))reviewResourceHints();
  understand();
  // لا تترك حقول الموارد ناقصة في مسودة الفهم الأولية
  const rows=[...$("evidence").children];
@@ -652,6 +726,7 @@ $("useSource").addEventListener("click",()=>{
  $("author").value=pendingSource.record?.author||"مؤلف أصلي غير مؤكد — يجب تحديده من المصدر";
  $("reference").value=pendingSource.url;
  $("passage").value=pendingSource.text;
+ reviewResourceHints();
  $("advanced").open=true;
  quickMessage("أُدرج مقتطف مختصر. "+(pendingSource.record?"أُدرج الكاتب من بطاقة توثيق أولية، لكن الحقوق والملاءمة تحتاج مراجعة.":"الكاتب الأصلي غير مؤكد ويجب تصحيحه يدويًا.")+" أثبت الشواهد اللغوية قبل اعتماد الاختبار.");
  $("passage").scrollIntoView({behavior:"smooth",block:"center"});
@@ -695,6 +770,7 @@ $("loadLocalSource").addEventListener("click",()=>{
  $("author").value=record.author;
  $("reference").value=record.book+(record.page?" — "+record.page:"")+(record.year?" ("+record.year+")":"");
  $("passage").value=record.text;
+ reviewResourceHints();
  if(!t($("segment").value)&&record.topics)$("segment").value=record.topics.slice(0,90);
  $("advanced").open=true;
  $("localSourceNotice").hidden=true;
