@@ -29,7 +29,7 @@ function narrativeEvidence(text){
  const action=["قال","قالت","سأل","سألت","دخل","خرج","ذهب","ذهبت","عاد","عادت","وصل","رأى","راى","التقى","سمع","فزع","انقذ","اكتشف"];
  const presentTime=time.filter(x=>s.includes(normalizeArabic(x)));
  const presentAction=action.filter(x=>s.includes(normalizeArabic(x)));
- const explicit=/^\s*(?:قصة|حكاية|قصص|رواية)\b/.test(String(text||"").trim())||/(?:قصتنا|حكايتنا)/.test(s.slice(0,250));
+ const explicit=/^\s*(?:قصة|حكاية|قصص|رواية)(?=\s|[:：—-]|$)/.test(String(text||"").trim())||/(?:قصتنا|حكايتنا)/.test(s.slice(0,250));
  const essay=/^\s*(?:مقال|بحث|دراسة|تقرير)\b/.test(String(text||"").trim());
  return {time:presentTime,action:presentAction,explicit,essay,storyPossible:!essay&&(explicit||(presentTime.length>=1&&presentAction.length>=2))};
 }
