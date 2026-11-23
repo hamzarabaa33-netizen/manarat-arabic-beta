@@ -1147,6 +1147,29 @@ function searchVerifiedTexts(){
 $("searchSegment").addEventListener("click",searchVerifiedTexts);
 $("searchPublicSources").addEventListener("click",searchSegmentSources);
 loadTeacherChoice();
+// A previous experimental version already saved the teacher's actual source passage.
+// Carry forward that source, NOT the old generic questions or unverified correction.
+function recoverPriorSource(){
+ try{
+  if(localStorage.getItem(KEY))return;
+  let restored=null;
+  for(const key of ["almanara_exam_lab_v019_qa","almanara_exam_lab_v018_qa","almanara_exam_lab_v017_qa"]){
+   const previous=JSON.parse(localStorage.getItem(key)||"null");
+   if(previous?.data?.passage?.length>=80 && previous?.data?.sourceTitle && previous?.data?.author && previous?.data?.reference){
+    restored=previous;break;
+   }
+  }
+  if(!restored)return;
+  for(const field of ["sourceTitle","author","reference","passage","situation","previous","kind","mode"]){
+   if(typeof restored.data[field]==="string")$(field).value=restored.data[field];
+  }
+  if(!getSegment()&&restored.data.segment)setChosenSegmentFromText(restored.data.segment);
+  $("evidence").replaceChildren();
+  (restored.skills||[]).filter(x=>x?.name&&x?.quote&&norm(restored.data.passage).includes(norm(x.quote))).forEach(x=>addSkill(x.name,x.quote));
+  msg("أعدتُ السند المحفوظ من النسخة السابقة، دون أسئلتها القديمة. يمكن إنشاء مسودة محسّنة مباشرة.");
+ }catch(e){/* No prior draft, or storage blocked; keep a clean form. */}
+}
+recoverPriorSource();
 reviewResourceHints();
 
 applyFont();
