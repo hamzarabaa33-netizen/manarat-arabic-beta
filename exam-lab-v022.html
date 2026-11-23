@@ -1383,6 +1383,49 @@ function searchVerifiedTexts(){
  const old=el("a","فتح الفهرس الوصفي");old.href="smart-library-v016.html";fallback.append(old);root.append(fallback);
  segmentStatus(found.length?"عُرض "+found.length+" نصوص موجودة في كتب مدرسية أصلية. معاينة النص المستخرج تحتاج اتصالًا بالإنترنت وتصحيح أخطاء OCR.":"لم نجد مطابقة في الكتابين المفهرسين بعد؛ لا نصوص مختلقة.",!found.length);
 }
+/* A book's first title occurrence is often its table of contents. Prefer
+   an actual lesson header with sustained prose, and cap the unverified OCR. */
+function extractOcrLesson(raw,item){
+ const phrases=[item.sourceAnchor,item.title].filter(Boolean);
+ const candidates=[],seen=new Set();
+ for(const phrase of phrases){
+  let pos=0;
+  for(let n=0;n<120;n++){
+   const at=raw.indexOf(phrase,pos);
+   if(at<0)break;
+   pos=at+phrase.length;
+   if(seen.has(at))continue;seen.add(at);
+   const line=raw.slice(Math.max(0,raw.lastIndexOf("\n",at)+1),Math.min(raw.length,raw.indexOf("\n",at)+1||at+120));
+   const after=raw.slice(at+phrase.length,Math.min(raw.length,at+phrase.length+1100));
+   const arabicCount=(after.match(/[\u0621-\u064A]/g)||[]).length;
+   const prior=raw.slice(Math.max(0,at-100),at);
+   const tableOfContents=/\.{4,}\s*[٠-٩0-9]{1,4}|[٠-٩0-9]{1,4}\s*$/.test(line);
+   const score=(raw.length>5000&&at/raw.length>.08?60:0)
+    +Math.min(35,arabicCount/16)
+    +(prior.includes("\n")?3:0)
+    -(tableOfContents?100:0)
+    -(raw.length>15000&&at/raw.length<.05?65:0)
+    -(arabicCount<90?50:0);
+   candidates.push({at,score,phrase,arabicCount,tableOfContents});
+  }
+ }
+ candidates.sort((a,b)=>b.score-a.score||a.at-b.at);
+ const best=candidates[0];
+ if(!best||best.arabicCount<90||best.score<15)
+  throw Error("تعذر تحديد متن الدرس بدقة؛ قد يظهر العنوان في فهرس الكتاب فقط");
+ const afterStart=best.at+best.phrase.length;
+ let end=Math.min(raw.length,best.at+3200);
+ for(const marker of ["شرح الكلمات","أفهم النص","أناقش","للمناقشة","دراسة النص","من خلال النص","أثري رصيدي","أجيب عن الأسئلة"]){
+  const k=raw.indexOf(marker,afterStart+350);
+  if(k>best.at+400&&k<end)end=k;
+ }
+ const fragment=raw.slice(best.at,end);
+ const normalized=fragment.split("\n").filter(x=>!/^\s*[٠-٩0-9]{1,4}\s*$/.test(x)).join("\n")
+   .replace(/\n{3,}/g,"\n\n").trim();
+ if(normalized.length<200)throw Error("متن النص في OCR قصير أو غير قابل للاستخراج");
+ return normalized;
+}
+
 async function showSchoolbookOcr(item){
  pendingSchoolOcr=null;
  const panel=$("schoolbookPreview"),target=$("schoolbookOcr");
@@ -1397,15 +1440,7 @@ async function showSchoolbookOcr(item){
   const response=await fetch(item.bookInfo.ocr.replace("/stream/","/download/"),{signal:ctrl.signal,mode:"cors"});
   if(!response.ok)throw Error("استجابة المصدر "+response.status);
   const raw=await response.text();
-  let index=-1;
-  for(const phrase of [item.sourceAnchor,item.title]){index=raw.indexOf(phrase);if(index>=0)break}
-  if(index<0)throw Error("العنوان لم يُستخرج بشكل مطابق من OCR");
-  let end=Math.min(raw.length,index+9000);
-  for(const word of ["شرح الكلمات","للمناقشة","من خلال النص"]){
-   const pos=raw.indexOf(word,index+140);if(pos>index+140&&pos<end)end=pos;
-  }
-  const excerpt=raw.slice(index,end).trim();
-  if(excerpt.length<180)throw Error("مقطع OCR قصير أو ناقص");
+  const excerpt=extractOcrLesson(raw,item);
   pendingSchoolOcr={item,excerpt};
   target.textContent=excerpt;
   $("schoolbookCopyToEditor").disabled=!$("schoolbookVerified").checked;
