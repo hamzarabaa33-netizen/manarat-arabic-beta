@@ -40,7 +40,7 @@ function validateInput(d){
 async function ask(env,instructions,input,schema,signal){
  const res=await fetch("https://api.openai.com/v1/responses",{method:"POST",signal,headers:{
   "authorization":"Bearer "+env.OPENAI_API_KEY,"content-type":"application/json"
- },body:JSON.stringify({model:env.OPENAI_MODEL||"gpt-4o-mini",instructions,input:JSON.stringify(input),store:false,max_output_tokens:3000,text:{format:{type:"json_schema",name:"manara_exam",strict:true,schema}}})});
+ },body:JSON.stringify({model:env.OPENAI_MODEL||"gpt-4o-mini",instructions,input:JSON.stringify(input),store:false,max_output_tokens:3000,text:{format:{type:"json_schema",name:schema===REVIEW_SCHEMA?"manara_exam_review":"manara_exam_draft",strict:true,schema}}})});
  if(!res.ok)throw Error("تعذر اتصال نموذج الذكاء الاصطناعي ("+res.status+").");
  const data=await res.json();
  if(data.status==="incomplete")throw Error("رد غير مكتمل من النموذج. اختر نصًا أقصر.");
