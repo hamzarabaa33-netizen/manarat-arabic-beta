@@ -102,7 +102,9 @@ function rank(topic,genre="story",pattern="narrative",level="الرابعة مت
   const fuzzy=x.topics.some(a=>words.some(w=>arabic(a).includes(w)))||words.some(w=>arabic(x.title+" "+x.evidence).includes(w));
   const isLevelMatch=level==="الرابعة متوسط"&&x.matchesGrade;
   if(exactMatches?!related:(!related&&!fuzzy))continue;
-  const score=(related?100:60)+(isLevelMatch?28:0)+(x.readiness==="original-scanned-ocr"?10:0);
+  // Heuristic subject fit, not an official pedagogical rating.
+  const subjectWeight=(t==="التضامن الانساني"?({"old4-leaf":24,"old8-hatem":20,"old4-friends":8}[x.id]||0):0);
+  const score=(related?100:60)+(isLevelMatch?28:0)+(x.readiness==="original-scanned-ocr"?10:0)+subjectWeight;
   results.push({...x,bookInfo:books.find(b=>b.id===x.book),score,levelMatch:isLevelMatch,relation:related?"موضوع مستدل عليه من أحداث النص":"تقارب موضوعي يحتاج تحقق"});
  }
  return results.sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title,"ar"));
