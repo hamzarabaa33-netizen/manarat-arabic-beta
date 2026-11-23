@@ -719,7 +719,7 @@ async function searchSegmentSources(){
  const uniques=new Map();
  for(const c of candidates){
   if(classifySource(c.title,c.library).indexPage)continue;
-  const key=c.library+"|"+c.title;
+  const key=norm(c.title); // same displayed article across public libraries is one candidate, not two
   c.score=scoreCandidate(c,terms,segment);
   if(c.score>0&&(!uniques.has(key)||c.score>uniques.get(key).score))uniques.set(key,c);
  }
