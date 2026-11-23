@@ -11,7 +11,7 @@ const uid=()=>String(Date.now())+"-"+Math.random().toString(36).slice(2,9);
 const read=k=>{try{const x=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(x)?x:[]}catch{return []}};
 const write=(k,x)=>{try{localStorage.setItem(k,JSON.stringify(x));return true}catch{alert("تعذر الحفظ؛ قد تكون ذاكرة المتصفح ممتلئة.");return false}};
 const clean=html=>{const x=E("div");x.innerHTML=String(html||"").slice(0,300000);
- x.querySelectorAll("script,style,iframe,object,embed,svg,form,base,link").forEach(n=>n.remove());
+ x.querySelectorAll("script,style,iframe,object,embed,svg,form,base,link,.question-tools").forEach(n=>n.remove());
  x.querySelectorAll("*").forEach(n=>[...n.attributes].forEach(a=>{if(/^on/i.test(a.name)||["href","src","srcset","style","formaction"].includes(a.name))n.removeAttribute(a.name)}));return x.innerHTML};
 const style=E("style");style.textContent=[
 '#examSuite{background:#fff;border:1px solid #cad9df;border-right:4px solid #1d666c;border-radius:12px;margin:16px 0;padding:14px 17px;box-shadow:0 4px 16px #102b460a}',
@@ -81,6 +81,18 @@ function correction(){
 const bankSearch=F(R(panes.bank),"بحث في الأسئلة"),bankList=E("div",undefined,"suite-results");panes.bank.append(bankList);
 panes.bank.append(E("p","يمكنك حفظ أي سؤال من ورقة الاختبار الحالية. تُحفظ المواد محليًا على هذا الجهاز.","suite-mini"));
 bankSearch.oninput=renderBank;
+const bankNew=E("details");bankNew.append(E("summary","إنشاء سؤال في بنك الأسئلة"));
+const bankNewQ=F(bankNew,"السؤال","textarea"),bankNewA=F(bankNew,"الإجابة المتوقعة","textarea");
+const bankNewR=R(bankNew),bankNewDomain=F(bankNewR,"المجال","select",[["فهم","فهم"],["لغة","لغة"],["إدماج","إدماج"],["أخرى","أخرى"]]);
+const bankNewSkill=F(bankNewR,"المهارة/المورد"),bankNewEvidence=F(bankNew,"شاهد حرفي إن وجد");
+B(bankNew,"حفظ السؤال يدويًا",()=>{
+ const q=t(bankNewQ.value);if(q.length<8){flash("اكتب سؤالًا صالحًا قبل حفظه.",true);return}
+ const list=read(BANK);if(list.length>=200){flash("البنك ممتلئ؛ أنشئ نسخة احتياطية.",true);return}
+ if(list.some(x=>norm(x.q)===norm(q))){flash("السؤال موجود في البنك بالفعل.");return}
+ const record={id:uid(),q,answer:t(bankNewA.value),evidence:t(bankNewEvidence.value),skill:t(bankNewSkill.value),domain:bankNewDomain.value,level:v("chosenLevel"),sourceTitle:v("sourceTitle"),reference:v("reference"),date:new Date().toISOString()};
+ if(write(BANK,[record,...list])){bankNewQ.value="";bankNewA.value="";bankNewEvidence.value="";renderBank();flash("أُضيف سؤال إلى البنك. لا تعتمد الإجابة دون مراجعة.")}
+});
+panes.bank.append(bankNew);
 function saveQuestion(sec){
  const q=qText(sec);if(q.length<8){flash("السؤال غير مكتمل.",true);return}
  const all=read(BANK);if(all.some(x=>norm(x.q)===norm(q))){flash("السؤال محفوظ مسبقًا.");return}
@@ -172,7 +184,31 @@ B(dR,"حفظ الاختبار الحالي",()=>{if(!paper.children.length){flas
 B(dR,"نسخة احتياطية JSON",()=>{
  const data=JSON.stringify({schema:"manara-exams-v024",bank:read(BANK),docs:read(DOCS)}),url=URL.createObjectURL(new Blob([data],{type:"application/json;charset=utf-8"}));
  const a=E("a");a.href=url;a.download="المنارة-اختباراتي-نسخة-احتياطية.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1800);flash("طُلب تنزيل النسخة الاحتياطية؛ تحقق من ظهورها على الجهاز.")});
-dPane.append(dList,E("p","الاختبارات محفوظة على المتصفح الحالي فقط، وليست مزامنة سحابية. صدّر نسخة احتياطية دوريًا.","suite-mini"));
+const restoreFile=E("input");restoreFile.type="file";restoreFile.accept=".json,application/json";
+const restoreLabel=E("label","استيراد نسخة احتياطية سابقة (يستبدل البيانات المحلية)");restoreLabel.append(restoreFile);
+dPane.append(restoreLabel,dList,E("p","الاختبارات محفوظة على المتصفح الحالي فقط، وليست مزامنة سحابية. صدّر نسخة احتياطية دوريًا.","suite-mini"));
+restoreFile.onchange=async()=>{
+ const file=restoreFile.files?.[0];if(!file)return;
+ try{
+  if(file.size>2500000)throw Error("حجم الملف أكبر من الحد المسموح.");
+  const x=JSON.parse(await file.text());
+  if(x.schema!=="manara-exams-v024"||!Array.isArray(x.bank)||!Array.isArray(x.docs))throw Error("هذه ليست نسخة احتياطية مدعومة.");
+  if(x.bank.length>200||x.docs.length>30)throw Error("عدد السجلات أكبر من الحد المسموح.");
+  if(x.bank.some(b=>!b||typeof b.id!=="string"||typeof b.q!=="string"||b.q.length>3000))throw Error("بيانات بنك الأسئلة تالفة.");
+  if(x.docs.some(d=>!d||typeof d.title!=="string"||typeof d.paper!=="string"||d.paper.length>300000||typeof d.cor!=="string"))throw Error("بيانات الاختبارات غير صالحة.");
+  if(!confirm("سيستبدل الاستيراد بنك الأسئلة والاختبارات المخزّنة على هذا المتصفح. هل تؤكد؟"))return;
+  const bankData=x.bank.map(b=>({id:b.id.slice(0,100),q:t(b.q),answer:t(b.answer).slice(0,6000),evidence:t(b.evidence).slice(0,1000),skill:t(b.skill).slice(0,200),domain:t(b.domain).slice(0,50),level:t(b.level).slice(0,80),sourceTitle:t(b.sourceTitle).slice(0,300),reference:t(b.reference).slice(0,900),date:t(b.date).slice(0,80)}));
+  const docData=x.docs.map(d=>({id:t(d.id).slice(0,100),title:t(d.title).slice(0,150),date:t(d.date).slice(0,80),paper:clean(d.paper),cor:clean(d.cor),template:templates.some(t=>t[0]===d.template)?d.template:"classic"}));
+  const beforeBank=localStorage.getItem(BANK),beforeDocs=localStorage.getItem(DOCS);
+  if(!write(BANK,bankData)||!write(DOCS,docData)){
+   if(beforeBank===null)localStorage.removeItem(BANK);else localStorage.setItem(BANK,beforeBank);
+   if(beforeDocs===null)localStorage.removeItem(DOCS);else localStorage.setItem(DOCS,beforeDocs);
+   throw Error("تعذر حفظ البيانات المستوردة.");
+  }
+  renderBank();renderDocs();flash("استُعيدت الاختبارات وبنك الأسئلة من النسخة الاحتياطية.");
+ }catch(e){flash("تعذر الاستيراد: "+e.message,true)}
+ finally{restoreFile.value=""}
+};
 function renderDocs(){
  dList.replaceChildren();const list=read(DOCS);
  if(!list.length){dList.append(E("p","لا توجد اختبارات محفوظة بعد.","suite-mini"));return}
