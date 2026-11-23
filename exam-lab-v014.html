@@ -702,13 +702,19 @@ function candidateGenreHint(item,genre){
   // An essay about stories is not itself a story. Prefer clear story-series and genre labels.
   const inStorySeries=/(?:^|\/)(?:القصص|قصص قصيرة|حكايات|قصص من الواقع)$/.test(norm(item.title||""));
   const namedStory=/(?:^|\s)(?:قصة|حكاية|رواية|القصص|قصص|قصيرة)(?:\s|$|:)/.test(title);
-  if(inStorySeries||namedStory)return {ok:true,note:"عنوان الصفحة يشير إلى قصة؛ يتعين فحص وجود أحداث وشخصيات ونمط سردي"};
+  if(inStorySeries||namedStory)return {ok:true,note:inStorySeries?
+   "قسم للقصص قد يضم أكثر من حكاية؛ راجع النص وحدد قصة واحدة كاملة قبل استخدامها.":
+   "عنوان الصفحة يوحي بقصة؛ تحقق من تسلسل الأحداث والشخصيات والملاءمة والنمط."};
   if(/^مجلة الرسالة\/العدد\s*\d+\//.test(item.title||""))return {ok:false,note:"مقال في مجلة؛ لا دليل على أنه قصة"};
   // Search snippets alone are not reliable enough to certify genre: unknowns are withheld.
   return {ok:false,note:"نوع النص القصصي غير مؤكد من العنوان"};
  }
  if(genre==="article"){
-  const yes=/مقال|مقالات|دراسة|بحث|رأي|نقد|تحليل/.test(title)||/^مجلة الرسالة\/العدد\s*\d+\//.test(item.title||"");
+  // Magazine sections explicitly labeled as storytelling are not treated as essays.
+  const storyLabel=/^(?:القصص|قصص قصيرة|قصة|حكاية|حكايات|رواية)$/.test(title)||
+   /(?:^|\s)(?:قصة|حكاية|القصص)(?:\s|$)/.test(title);
+  const yes=!storyLabel&&(/مقال|مقالات|دراسة|بحث|رأي|نقد|تحليل/.test(title)||
+    /^مجلة الرسالة\/العدد\s*\d+\//.test(item.title||""));
   return {ok:yes,note:yes?"مرشح مقالي يحتاج قراءة للتحقق":"لم يتضح أنه مقال"};
  }
  if(genre==="speech"){
@@ -858,7 +864,7 @@ async function searchSegmentSources(){
   const note=el("p","لم أجد «"+genreLabels[desiredGenre]+"» له قرينة نوع واضحة في الفهارس المتاحة. استُبعدت "+rejectedGenre+" نتائج لم يثبت نوعها المطلوب و"+rejectedIndex+" صفحات فهارس؛ لن أقدم لك مقالًا بديلًا عن القصة. يمكنك تغيير النوع صراحة أو إضافة سند مصنف في خزانتك.");
   root.append(note);segmentStatus("لم نجد مرشحات واضحة للنوع المطلوب، وقد لا يغطي الفهرس الكتب المدرسية القديمة. "+(failures.length?"تعذر الاتصال ببعض المصادر.":""),true);
  }else{
-  segmentStatus("عُرضت "+(saved.length+shown.length)+" نصوص مرشحة بنوع «"+genreLabels[desiredGenre]+"»، واستُبعدت "+rejectedGenre+" نتائج غير مؤكدة النوع. النمط «"+patternLabels[desiredPattern]+"» لم يُحكم عليه آليًا؛ راجع القصة أو النص كاملًا قبل اعتماده."+(failures.length?" بعض المصادر تعذر الوصول إليها.":""));
+  segmentStatus("عُرض عدد "+(saved.length+shown.length)+" من المرشحات المرتبطة بالنوع «"+genreLabels[desiredGenre]+"»، واستُبعدت "+rejectedGenre+" نتائج غير مؤكدة النوع. النمط «"+patternLabels[desiredPattern]+"» لم يُحكم عليه آليًا؛ راجع القصة أو النص كاملًا قبل اعتماده."+(failures.length?" بعض المصادر تعذر الوصول إليها.":""));
  }
  root.scrollIntoView({behavior:"smooth",block:"start"});
 }
