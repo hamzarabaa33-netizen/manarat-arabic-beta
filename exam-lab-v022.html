@@ -682,6 +682,7 @@ function preparePrintExcerpt(original,maxLength=1500){
 
 function build(){
  synchronizeSelectedSegment();
+ syncAuthorBiography();
  if(lastResourceScan!==t($("passage").value))reviewResourceHints();
  const d=data(),allResources=skills();
  const assessed=preparePrintExcerpt(d.passage);
@@ -848,6 +849,7 @@ $("restore").onclick=()=>{
  ids.forEach(id=>{if(s.data&&Object.prototype.hasOwnProperty.call(s.data,id))$(id).value=s.data[id]});
  if(s.teacherChoice)applyTeacherChoice(s.teacherChoice);
  else if(s.data?.segment)setChosenSegmentFromText(s.data.segment);
+ syncAuthorBiography();
  if(typeof s.request==="string")$("quickRequest").value=s.request;if(typeof s.topic==="string")$("topicQuery").value=s.topic;
  $("evidence").replaceChildren();(s.skills||[]).forEach(x=>addSkill(x.name,x.quote));if(!s.skills?.length)addSkill();
  $("paper").innerHTML=s.paper||"";$("correction").innerHTML=s.correction||"";reviewResourceHints();$("output").hidden=!s.output;$("font").value=s.font||"simplified";applyFont();$("report").hidden=true;msg("استعيدت المسودة المحلية.");
