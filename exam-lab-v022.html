@@ -801,13 +801,18 @@ $("print").onclick=()=>{
  window.print();
 };
 const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-function pxml(text,bold){return '<w:p><w:pPr><w:bidi w:val="1"/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Simplified Arabic"/><w:rtl w:val="1"/>'+(bold?'<w:b/>':'')+'</w:rPr><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r></w:p>'}
+function pxml(text,bold){
+ const size=bold?28:24;
+ const body=String(text||"").split(/\r?\n/g).map((line,i)=>(i?'<w:br/>':'')+'<w:t xml:space="preserve">'+esc(line)+'</w:t>').join("");
+ return '<w:p><w:pPr><w:bidi w:val="1"/><w:jc w:val="right"/><w:spacing w:after="75" w:line="320" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Simplified Arabic"/><w:sz w:val="'+size+'"/><w:szCs w:val="'+size+'"/><w:rtl w:val="1"/>'+(bold?'<w:b/>':'')+'</w:rPr>'+body+'</w:r></w:p>'
+}
 function xmlChildren(node){
  let out="";
  for(const e of node.children){
   if(e.tagName==="TABLE"){out+='<w:tbl><w:tblPr><w:bidiVisual/><w:tblBorders><w:top w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/></w:tblBorders></w:tblPr>';
     for(const row of e.rows){out+="<w:tr>";for(const cell of row.cells)out+='<w:tc>'+pxml(cell.innerText||cell.textContent,cell.tagName==="TH")+"</w:tc>";out+="</w:tr>"}out+="</w:tbl>";
-  }else if(["P","H2","H3"].includes(e.tagName)||e.classList.contains("source"))out+=pxml(e.innerText||e.textContent,e.tagName!=="P"&&!e.classList.contains("source"));
+   }else if(e.classList.contains("answer-space"))out+=pxml("........................................................................",false);
+  else if(["P","H2","H3","SPAN"].includes(e.tagName)||e.classList.contains("source"))out+=pxml(e.innerText||e.textContent,["H2","H3"].includes(e.tagName));
   else out+=xmlChildren(e);
  }return out;
 }
