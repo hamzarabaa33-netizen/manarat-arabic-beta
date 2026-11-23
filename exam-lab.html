@@ -92,7 +92,7 @@ button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
 <div class="field"><label for="library">مكتبة البحث</label><select id="library"><option value="wikisource">ويكي مصدر — نصوص أصلية</option><option value="wikipedia">ويكيبيديا — مقالات معرفية</option></select></div>
 </div>
 <div class="actions"><button class="primary" type="button" id="findSources">⌕ البحث عن سند</button><button type="button" id="clearSources">مسح النتائج</button></div>
-<div class="search-results" id="searchResults" aria-live="polite"></div>
+<div class="search-results" id="searchResults" aria-live="polite"><p class="hint" style="padding:10px 0">لم يُنفّذ البحث بعد. اضغط «البحث عن سند» لعرض النتائج هنا.</p></div>
 <div class="source-preview" id="sourcePreview" hidden>
 <strong id="foundTitle"></strong>
 <p id="foundLink"></p>
@@ -353,13 +353,18 @@ $("clearSources").addEventListener("click",()=>{searchGeneration++;$("searchResu
 $("findSources").addEventListener("click",async()=>{
  const query=t(topic.value),base=baseByLibrary[$("library").value],generation=++searchGeneration;
  if(query.length<2){quickMessage("اكتب كلمة موضوعية واحدة على الأقل.",true);return}
- const results=$("searchResults");results.replaceChildren(el("p","أبحث الآن في فهرس المصدر العام..."));
+ const results=$("searchResults");results.replaceChildren(el("p","جارٍ الاتصال بفهرس النصوص والبحث عن «"+query+"»..."));
+ quickMessage("بدأ البحث عن «"+query+"» في "+($("library").value==="wikisource"?"ويكي مصدر":"ويكيبيديا")+". ستظهر النتائج مباشرة أسفل الزر.");
  $("sourcePreview").hidden=true;pendingSource=null;
  try{
  const data=await apiFetch(base,{action:"query",list:"search",srsearch:query,srnamespace:0,srlimit:6});
  if(generation!==searchGeneration)return;
  const hits=data.query?.search||[];results.replaceChildren();
- if(!hits.length){results.append(el("p","لم أجد نصًا لهذا الموضوع هنا. جرّب كلمة أخرى أو غيّر المكتبة."));return}
+ if(!hits.length){
+  results.append(el("p","انتهى البحث دون نتائج عن «"+query+"» في هذه المكتبة. جرّب موضوعًا آخر أو غيّر المكتبة."));
+  quickMessage("لم أجد نتائج في الفهرس المختار. هذا لا يعني عدم وجود سند مناسب في مصادر أخرى.",true);
+  return;
+ }
  for(const hit of hits){
  const card=el("article",undefined,"search-hit");
  const title=String(hit.title),href=base+"/wiki/"+encodeURIComponent(title.replace(/ /g,"_"));
@@ -370,7 +375,18 @@ $("findSources").addEventListener("click",async()=>{
  actions.append(b,a);card.append(actions);results.append(card);
  }
  quickMessage("ظهرت "+hits.length+" نتائج حقيقية من فهرس "+(base.includes("wikisource")?"ويكي مصدر":"ويكيبيديا")+". راجع عنوان الصفحة قبل إدراج السند.");
- }catch(e){if(generation!==searchGeneration)return;results.replaceChildren(el("p","لم يكتمل الاتصال بالمكتبة. يمكنك فتح المصدر مباشرة أو إدخال نص موثق لديك."));quickMessage("تعذر الاتصال بالبحث: "+e.message,true)}
+ }catch(e){
+  if(generation!==searchGeneration)return;
+  results.replaceChildren();
+  const card=el("article",undefined,"search-hit");
+  card.append(el("strong","تعذّر الوصول إلى فهرس المكتبة"));
+  card.append(el("p","يمكن أن يكون السبب اتصال الإنترنت أو حظر الطلب الخارجي أو انتهاء مهلة الاستجابة. لم تُنشأ نتائج وهمية."));
+  const link=el("a","فتح البحث مباشرة في موقع المصدر");
+  link.href=base+"/w/index.php?search="+encodeURIComponent(query)+"&title="+encodeURIComponent("خاص:بحث");
+  link.target="_blank";link.rel="noopener noreferrer";
+  card.append(link);results.append(card);
+  quickMessage("تعذر الاتصال بالبحث. جرّب رابط البحث المباشر الموجود أدناه، أو غيّر المكتبة. التفصيل التقني: "+e.message,true);
+ }
 });
 async function previewSource(base,title,url){
  const state=$("sourcePreview");state.hidden=false;pendingSource=null;$("foundTitle").textContent=title;$("foundLink").replaceChildren();
