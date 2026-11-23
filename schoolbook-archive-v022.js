@@ -93,6 +93,7 @@ function matchPattern(record,pattern){
 }
 function rank(topic,genre="story",pattern="narrative",level="الرابعة متوسط"){
  const wantedGenre=requestedGenre(genre),t=arabic(topic),words=t.split(/\s+/).filter(x=>x.length>3);
+ const exactMatches=records.some(x=>(wantedGenre==="any"||x.genre===wantedGenre)&&matchPattern(x,pattern)&&x.topics.some(a=>arabic(a)===t));
  const results=[];
  for(const x of records){
   if(wantedGenre!=="any"&&x.genre!==wantedGenre)continue;
@@ -100,7 +101,7 @@ function rank(topic,genre="story",pattern="narrative",level="الرابعة مت
   const related=x.topics.some(a=>arabic(a)===t);
   const fuzzy=x.topics.some(a=>words.some(w=>arabic(a).includes(w)))||words.some(w=>arabic(x.title+" "+x.evidence).includes(w));
   const isLevelMatch=level==="الرابعة متوسط"&&x.matchesGrade;
-  if(!related&&!fuzzy)continue;
+  if(exactMatches?!related:(!related&&!fuzzy))continue;
   const score=(related?100:60)+(isLevelMatch?28:0)+(x.readiness==="original-scanned-ocr"?10:0);
   results.push({...x,bookInfo:books.find(b=>b.id===x.book),score,levelMatch:isLevelMatch,relation:related?"موضوع مستدل عليه من أحداث النص":"تقارب موضوعي يحتاج تحقق"});
  }
