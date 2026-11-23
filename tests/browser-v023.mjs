@@ -1,0 +1,42 @@
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { setTimeout as delay } from "node:timers/promises";
+import { chromium } from "playwright";
+const proc=spawn("python3",["-m","http.server","4173","--bind","127.0.0.1"],{cwd:process.cwd(),stdio:"ignore"});
+let browser;
+try{
+ await delay(900);
+ browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
+ const context=await browser.newContext({acceptDownloads:true});
+ const page=await context.newPage();
+ const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("http://127.0.0.1:4173/exam-lab-v023.html",{waitUntil:"domcontentloaded"});
+ await page.locator("#aiStudio").waitFor();
+ await page.locator("#quickQuestions").click();
+ assert.equal(await page.locator("#questionPreview li").count(),3,"Local draft must appear without source");
+ const passage=("ثم نصب الصياد شبكته ووقعت الحمامة المطوقة وصاحباتها فيه، فدعتهن إلى التعاون وعدم التخاذل، وقررن رفع الشبكة جميعًا حتى وصلن إلى بر الأمان. ").repeat(3);
+ await page.locator("#sourceTitle").fill("باب الحمامة المطوقة");
+ await page.locator("#author").fill("عبد الله بن المقفع");
+ await page.locator("#reference").fill("https://ar.wikisource.org/wiki/كليلة_ودمنة");
+ await page.locator("#passage").fill(passage);
+ await page.locator("#generate").click();
+ assert.equal(await page.locator("#questionPreview li").count(),3,"Three reading prompts expected");
+ assert.ok((await page.locator("#paper").innerText()).includes("نقله إلى العربية"),"Source attribution must be accurate");
+ assert.ok((await page.locator("#paper .author-biography").innerText()).includes("كليلة ودمنة"),"Author bio should precede source");
+ const waitPrint=context.waitForEvent("page",{timeout:15000});
+ await page.locator("#aiPrint").click();
+ const printPage=await waitPrint;
+ await printPage.waitForLoadState("domcontentloaded");
+ await printPage.locator("#printContent .source").waitFor({timeout:15000});
+ assert.ok((await printPage.locator("#printContent").innerText()).includes("الحمامة المطوقة"));
+ assert.ok((await printPage.locator("#printContent .question").count())>=3);
+ assert.equal(await printPage.locator("#printContent .key-section").count(),0,"Answers are hidden by default");
+ const bytes=await printPage.pdf({format:"A4",printBackground:true});
+ assert.ok(bytes.length>3000,"A4 PDF should have printable content");
+ assert.equal(errors.length,0,"Browser JavaScript must not throw: "+errors.join("; "));
+ console.log("Browser QA passed: source, questions, biography, separate A4 print, PDF bytes:",bytes.length);
+ await context.close();
+}finally{
+ if(browser)await browser.close();
+ proc.kill();
+}
