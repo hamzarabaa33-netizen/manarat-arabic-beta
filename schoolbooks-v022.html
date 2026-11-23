@@ -18,14 +18,14 @@ footer{text-align:center;color:#617989;padding:15px}
 </style></head><body><main>
 <header><h1>المكتبة المدرسية الجزائرية القديمة — V0.22</h1>
 <p>هذه المكتبة تعدها المنارة مسبقًا من كتب القراءة والنصوص. لا تحميل ولا إدخال يدوي من الأستاذ. ابدأ بترشيح نص ثم افتح مصدره الأصلي.</p>
-<nav class="actions"><a href="exam-lab-v022.html">مختبر الاختبارات</a><a href="index.html">الصفحة الرئيسية</a><a href="sources-library-v02.html">الأرشيف الأوسع</a></nav></header>
+<nav class="actions"><a href="exam-lab-v023.html">مختبر الاختبارات</a><a href="index.html">الصفحة الرئيسية</a><a href="sources-library-v02.html">الأرشيف الأوسع</a></nav></header>
 <section class="panel"><h2>ابحث في النصوص المدرسية المحققة</h2>
 <div class="fields">
 <div class="field"><label for="topic">المقطع</label><select id="topic"><option>التضامن الإنساني</option><option>قضايا اجتماعية</option><option>القيم الإنسانية</option><option>العلم والتقدم التكنولوجي</option><option>الطبيعة والبيئة</option><option>شعوب العالم</option></select></div>
 <div class="field"><label for="genre">نوع النص</label><select id="genre"><option value="story">قصة / حكاية</option><option value="article">مقال</option><option value="poem">قصيدة</option><option value="play">مسرحية</option><option value="any">جميع الأنواع</option></select></div>
 <div class="field"><label for="pattern">النمط</label><select id="pattern"><option value="narrative">سردي</option><option value="expository">تفسيري</option><option value="directive">توجيهي</option><option value="argumentative">حجاجي</option><option value="any">جميع الأنماط</option></select></div>
 </div>
-<div class="actions"><button type="button" id="search">ابحث في الكتب</button><a id="toExam" href="exam-lab-v022.html">الانتقال إلى بناء الاختبار بنفس الاختيار</a></div>
+<div class="actions"><button type="button" id="search">ابحث في الكتب</button><a id="toExam" href="exam-lab-v023.html">الانتقال إلى بناء الاختبار بنفس الاختيار</a></div>
 <p id="status" aria-live="polite" class="note"></p><div class="cards" id="results"></div></section>
 <section class="panel"><h2>الكتب التي بدأنا فهرستها من أصل النسخ المصورة</h2><div class="cards" id="books"></div></section>
 <p class="note">هذه بداية فهرسة فعلية من أصل الكتب، وليست مكتبة مكتملة بعد. بيانات العنوان والطبعة ونوع النص مستندة إلى معاينة الكتاب وOCR، وبعض التصنيفات والصفحات تقديرية؛ تُراجع صورة الصفحة قبل اعتماد أي شاهد أو إعداد سؤال نحوي.</p>
@@ -38,14 +38,14 @@ function render(){
  const topic=$("topic").value,genre=$("genre").value,pattern=$("pattern").value,results=db.rank(topic,genre,pattern,"الرابعة متوسط"),root=$("results");
  root.replaceChildren();
  $("status").textContent="في المكتبة حاليًا "+db.books.length+" من الكتب المحققة الأصل و"+db.records.length+" نصوص محددة. المرشحات المطابقة: "+results.length+".";
- const params=new URLSearchParams({segment:topic,genre,pattern,level:"الرابعة متوسط"});$("toExam").href="exam-lab-v022.html?"+params;
+ const params=new URLSearchParams({segment:topic,genre,pattern,level:"الرابعة متوسط"});$("toExam").href="exam-lab-v023.html?"+params;
  if(!results.length)root.append(el("p","لم نعثر بعد على مرشح يحقق كل الشروط من الكتابين. لا نعرض نصًا من نوع خاطئ.","card"));
  for(const item of results){
   const card=el("article",undefined,"card");
   card.append(el("span",item.genre+" — "+item.pattern,"chip"),el("h3",item.title),el("p",item.bookInfo.name+"، "+item.bookInfo.year),el("p",item.pageNote),el("p",item.evidence));
   if(!item.levelMatch)card.append(el("p","مستوى الكتاب مختلف عن المستوى المختار."));
   const actions=el("div",undefined,"actions"),a=el("a","النسخة المصورة");a.href=item.bookInfo.viewer;a.target="_blank";a.rel="noopener noreferrer";
-  const b=el("a","بحث النص في المختبر");b.href="exam-lab-v022.html?"+params;
+  const b=el("a","بحث النص في المختبر");b.href="exam-lab-v023.html?"+params;
   actions.append(a,b);card.append(actions);root.append(card);
  }
 }
