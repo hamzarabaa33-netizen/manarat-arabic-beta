@@ -1,0 +1,138 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102b46"><title>المنارة — الباحث التربوي في المصادر V0.16</title>
+<style>
+:root{--n:#112f49;--gold:#b99250;--ink:#213f50;--line:#dce6e9}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.9 Tahoma,Arial,sans-serif}
+a{color:#1c6074}button,select,input{font:inherit}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #b99250;outline-offset:2px}
+.shell{display:grid;grid-template-columns:205px minmax(0,1fr);min-height:100vh}
+aside{background:linear-gradient(145deg,#183f5c,#102b46);padding:22px 13px;color:#fff}
+aside h1{font-size:28px;color:#efdab0;margin:0}aside small{color:#b9c9d4;font-size:12px}
+aside a{display:block;color:#f4fafb;text-decoration:none;margin:10px 0;padding:10px 12px;border:1px solid #ffffff2a;border-radius:9px}
+aside a.active{border-color:#c7a56b;background:#ffffff25}
+main{width:100%;max-width:1260px;margin:auto;padding:30px clamp(14px,3vw,38px)}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:26px;color:var(--n);margin:0}
+header p{font-size:13px;color:#617984;margin:5px 0}
+.tag{font-size:12px;padding:4px 10px;background:#f5eedf;color:#735b36;border:1px solid #e6d3aa;border-radius:16px}
+section{border:1px solid var(--line);background:#fff;border-radius:14px;margin:18px 0;padding:22px;box-shadow:0 5px 15px #1c354606}
+h2{font-size:21px;color:var(--n);margin:0 0 8px}h3{font-size:17px;color:#183f58;margin:0}
+.lead{color:#4c6978;font-size:14px}
+.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-weight:bold;font-size:13px;color:#355769}
+select,input{width:100%;padding:9px 12px;border:1px solid #cbdbe2;border-radius:8px;color:#294656;background:#fcfefe}
+button,.btn{border:1px solid #bdccd5;background:#fff;color:#17495d;border-radius:8px;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:13px}
+.primary{background:var(--n);color:white;border-color:var(--n)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0 3px}
+.note{background:#f3f8f7;color:#205a58;border:1px solid #c7dedb;padding:13px 16px;border-radius:9px;font-size:13px;margin:13px 0;line-height:1.8}
+.warning{background:#fffbef;color:#785d34;border:1px solid #eadbb3;padding:11px 15px;border-radius:9px;font-size:13px}
+.stat{font-size:12px;color:#71868c}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin:15px 0}
+.card{background:#fff;border:1px solid #cfdee3;border-radius:11px;padding:17px;display:flex;flex-direction:column;gap:8px}
+.card .chip{color:#785d35;background:#fbf4e7;border-radius:24px;border:1px solid #ebdcc0;font-size:11px;padding:2px 9px;display:inline-block;align-self:flex-start}
+.card .source{font-size:12px;color:#617985}
+.card p{margin:0;font-size:13px;line-height:1.85}
+.card .actions{margin-top:auto}
+.empty{border:1px dashed #c9d9dc;background:#f8fafb;color:#5d737f;border-radius:10px;padding:19px;font-size:14px}
+.pinned{background:#f8fbfa;border-right:3px solid #366b72;padding:7px 12px}
+small{font-size:12px}
+footer{text-align:center;color:#7c919d;padding:20px 0 30px;font-size:12px}
+@media(max-width:920px){.fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:670px){.shell{display:block}aside{padding:10px 13px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}aside h1{font-size:20px}aside small{display:none}aside a{margin:0;padding:6px;font-size:11px}main{padding:16px}section{padding:16px}.fields{grid-template-columns:1fr}}
+</style></head><body>
+<div class="shell"><aside>
+<div><h1>المنارة</h1><small>رفيق الأستاذ اليومي</small></div>
+<a class="active" href="smart-library-v016.html">▣ الباحث التربوي</a>
+<a href="exam-lab-v016.html">▤ هندسة الاختبارات</a>
+<a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a>
+<a href="index.html">✎ إعداد المذكرات</a>
+</aside><main>
+<header><div><h1>الباحث التربوي في السندات</h1>
+<p>حدد المستوى والمقطع، وستبحث المنارة في فهرسها المرجعي الجاهز، دون أن ترفع كتابًا أو تُدخل نصًا.</p></div><span class="tag">النسخة V0.16 — نواة الفهرسة</span></header>
+<section>
+<h2>ما السند الذي تحتاجه؟</h2>
+<div class="fields">
+<div class="field"><label for="level">المستوى المطلوب</label>
+<select id="level"><option>الرابعة متوسط</option><option>الثالثة متوسط</option><option>الثانية متوسط</option><option>الأولى متوسط</option><option>الرابعة ابتدائي</option></select></div>
+<div class="field"><label for="segment">المقطع / الموضوع</label>
+<select id="segment"><option>التضامن الإنساني</option><option>قضايا اجتماعية</option><option>الإعلام والمجتمع</option><option>شعوب العالم</option><option>العلم والتقدم التكنولوجي</option><option>التلوث البيئي</option><option>الصناعات التقليدية</option><option>الهجرة الداخلية والخارجية</option><option>القيم الإنسانية</option><option>الحياة الاجتماعية</option><option>الهوية الوطنية</option><option>الطبيعة والبيئة</option><option>الصحة والرياضة</option><option>الحياة الثقافية</option><option>الإبداع والابتكار</option><option>الرحلات والأسفار</option><option value="custom">موضوع آخر...</option></select></div>
+<div class="field"><label for="genre">نوع النص</label>
+<select id="genre"><option value="قصة">قصة / حكاية</option><option value="مقال">مقال</option><option value="مسرحية">مسرحية</option><option value="any">جميع الأنواع</option></select></div>
+<div class="field"><label for="pattern">النمط الغالب</label>
+<select id="pattern"><option value="سردي">سردي</option><option value="وصفي">وصفي</option><option value="any">دون تحديد</option></select></div>
+</div>
+<div id="customWrap" class="field" hidden style="margin-top:12px"><label for="customTopic">اكتب المقطع أو الموضوع كما في توزيعك</label><input id="customTopic" placeholder="اكتب المقطع هنا"></div>
+<div class="actions"><button class="primary" type="button" id="searchBtn">⌕ ابحث عن سند مناسب</button></div>
+<div class="note" id="status" role="status" aria-live="polite">المنارة تبحث في بيانات نصوص مدرسية موثقة المرجع، وتعرض ما ثبت تصنيفه وما يزال ناقصًا.</div>
+</section>
+<section>
+<h2>نصوص موثّقة في فهارس الكتب</h2>
+<p class="lead">المطابقة هنا حسب محور النص ونوعه ونمطه كما ورد في دراسة جامعية جزائرية. **لم نستخرج النصوص الكاملة بعد**؛ لذلك لا تُعد هذه بطاقات سندات جاهزة للتوليد، ولا نعتمدها على أنها مطابقة لمنهاج السنة المطلوبة دون مراجعة.</p>
+<div class="stat" id="counter">جارٍ تجهيز الفهرس...</div>
+<div class="cards" id="results" aria-live="polite"></div>
+</section>
+<section>
+<h2>من أين نُثري المنارة؟</h2>
+<p class="lead">مصادر كتب حقيقية رُصدت في أرشيفات جزائرية. هذه **فهرسة لكتب منشورة** وليست ادعاءً بأن نصوصها أصبحت قابلة للبحث الكامل.</p>
+<div class="cards" id="books"></div>
+</section>
+<div class="warning">لماذا لا تظهر صفحات النصوص الآن؟ لأننا تحققنا من بيانات الكتب وبعض عناوين النصوص، لكننا لم ننته من استخلاص النصوص المدرسية القديمة وتدقيقها. سيتم إعداد ذلك مركزيًا في المنارة، لا على حساب وقت الأستاذ.</div>
+<footer>منارة اللغة العربية — من إعداد الأستاذ بن مزوز حمزة</footer>
+</main></div>
+<script src="verified-source-index-v016.js"></script>
+<script>
+(function(){"use strict";
+const index=window.ManaraVerifiedIndex,$=id=>document.getElementById(id);
+const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
+const status=text=>$("status").textContent=text;
+if(!index){status("تعذر تحميل فهرس السندات. أعد فتح الصفحة.");return;}
+const params=new URLSearchParams(location.search);
+const selectOptions=(id,value)=>{const el=$(id);if(value&&[...el.options].some(opt=>opt.value===value)){el.value=value;return true}return false};
+if(params.get("level"))selectOptions("level",params.get("level"));
+if(params.get("genre")){const v={story:"قصة",article:"مقال",speech:"مقال",letter:"any",poem:"any",any:"any"}[params.get("genre")]||params.get("genre");selectOptions("genre",v)}
+if(params.get("pattern")){const p={narrative:"سردي",descriptive:"وصفي",any:"any"}[params.get("pattern")]||params.get("pattern");selectOptions("pattern",p)}
+if(params.get("segment")&&!selectOptions("segment",params.get("segment"))){$("segment").value="custom";$("customTopic").value=params.get("segment");$("customWrap").hidden=false}
+$("segment").addEventListener("change",()=>{$("customWrap").hidden=$("segment").value!=="custom"});
+const getSegment=()=>$("segment").value==="custom"?$("customTopic").value.trim():$("segment").value;
+function renderResults(){
+ const seg=getSegment(),genre=$("genre").value,pattern=$("pattern").value,level=$("level").value;
+ const root=$("results");root.replaceChildren();
+ if(seg.length<3){status("حدد المقطع أو اكتب موضوعًا واضحًا.");return}
+ const rows=index.rank(seg,genre,pattern,level).slice(0,12);
+ $("counter").textContent="الفهرس الحالي: "+index.texts.length+" بطاقة نص مدرسي موثقة التصنيف. نتائج البحث: "+rows.length+".";
+ if(!rows.length){
+  root.append(node("p","لم نجد في النواة الحالية عنوانًا موثّقًا يجمع شروط الموضوع والنوع والنمط. لن نخترع نصًا أو نعرض مقالًا مكان القصة.","empty"));
+  status("لا توجد نتيجة مطابقة في الفهرس الحالي. هذا نقص في تغطية المكتبة، وليس فشلًا منك في البحث.");return;
+ }
+ const cross=rows.some(x=>x.level!==level);
+ status("ظهرت "+rows.length+" بطاقات ذات تصنيف مرجعي. "+(cross?"تنبيه: بعضها من مستوى آخر؛ لا يعني ذلك أنها مناسبة تلقائيًا للسنة المطلوبة. ":"")+
+  "النصوص الكاملة والصفحات الأصلية لم تُفهرس بعد؛ يُعرض ما ثبت فقط.");
+ for(const x of rows){
+  const card=node("article",undefined,"card");
+  card.append(node("span",x.genre+" · "+x.pattern,"chip"),node("h3",x.title));
+  card.append(node("p","المحور المدرسي: "+x.axis+" — المستوى الأصلي: "+x.level,"source"));
+  card.append(node("p",x.attribution));
+  if(x.level!==level)card.append(node("p","مرشح من مستوى مختلف؛ الملاءمة لمستواك تحتاج مراجعة.","pinned"));
+  if(x.relevance===2)card.append(node("p","التقارب هنا بين المحاور، وليس إثباتًا أن أحداث النص تتناول المقطع المحدد.","small"));
+  card.append(node("p","التوثيق: جدول دراسة جامعية عن نصوص كتاب الرابعة ابتدائي؛ لا يوجد نص كامل محفوظ في هذه البطاقة.","small"));
+  const actions=node("div",undefined,"actions"),open=node("a","فتح مرجع التصنيف","btn");
+  open.href=x.sourceUrl;open.target="_blank";open.rel="noopener noreferrer";
+  actions.append(open);card.append(actions);root.append(card);
+ }
+}
+function renderBooks(){
+ const root=$("books");root.replaceChildren();
+ for(const book of index.books){
+  const card=node("article",undefined,"card");
+  card.append(node("h3",book.title),node("span",book.level+" — "+book.country,"chip"),node("p",book.provider,"source"),node("p",book.note));
+  const actions=node("div",undefined,"actions"),a=node("a","فتح فهرس الكتاب أو مرجعه","btn");
+  a.href=book.sourceUrl;a.target="_blank";a.rel="noopener noreferrer";actions.append(a);card.append(actions);root.append(card);
+ }
+}
+$("searchBtn").addEventListener("click",renderResults);
+["genre","pattern","level"].forEach(id=>$(id).addEventListener("change",renderResults));
+renderBooks();renderResults();
+})();
+</script></body></html>
