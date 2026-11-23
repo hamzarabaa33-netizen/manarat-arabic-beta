@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102b46">
+<title>المنارة — مكتبتي المدرسية الشخصية V0.15</title>
+<style>
+:root{--navy:#102b46;--gold:#c49a53;--ink:#213f54;--line:#d7e2e9}
+*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:var(--ink);font:15px/1.9 Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.shell{display:grid;grid-template-columns:212px minmax(0,1fr);min-height:100vh}
+aside{background:linear-gradient(155deg,#173c59,#0c253a);color:white;padding:24px 14px}
+aside h1{font:700 30px Georgia,"Simplified Arabic",serif;color:#e9d3a6;margin:0}
+aside small{font-size:12px;color:#c4d4dc}
+aside a{display:block;border-radius:9px;padding:10px 12px;margin:11px 0;text-decoration:none;color:#edf5f9;border:1px solid #ffffff25;background:#ffffff12}
+aside a.active{background:#ffffff29;border-color:var(--gold)}
+main{max-width:1350px;margin:auto;width:100%;min-width:0;padding:28px clamp(15px,3vw,40px)}
+h1,h2,h3{color:var(--navy)}h1{font-size:26px;margin:0}
+h2{font-size:21px;margin:0 0 10px}
+p{margin:7px 0 13px}
+.subtitle{color:#647d89;font-size:13px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.version{font-size:12px;background:#faf2df;border:1px solid #e5d5ac;border-radius:9px;padding:5px 12px;color:#715a2d}
+.panel{background:white;padding:23px;border:1px solid var(--line);border-radius:14px;margin:16px 0;box-shadow:0 8px 30px #102b4608}
+.intro{background:#f2f8f7;border-right:4px solid #27716e;padding:12px 16px;border-radius:8px;font-size:13px;color:#275951}
+.alert{background:#fff8e9;border:1px solid #e6d3a9;border-radius:8px;padding:11px 14px;color:#745827;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:13px;color:#34566b;font-weight:700}
+.field.wide{grid-column:1/-1}
+input,select,textarea{width:100%;border-radius:8px;border:1px solid #cbdbe3;background:#fcfefe;padding:10px 12px;color:#243f50}
+input[type=file]{border-style:dashed;background:#f8fbfb}
+textarea{min-height:120px;resize:vertical;line-height:1.85}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:13px 0}
+.btn{display:inline-block;background:#fff;border:1px solid #c3d0d7;border-radius:8px;color:#244f66;padding:9px 15px;text-decoration:none;font-size:13px}
+.btn.primary{background:var(--navy);color:white;border-color:var(--navy)}
+.btn.gold{background:#f9f0dd;border-color:#d5bc87;color:#785b2b}
+.btn:disabled{opacity:.5;cursor:default}
+.status{padding:10px 14px;background:#edf7f4;border:1px solid #c3dfd2;color:#235f4a;border-radius:8px;font-size:13px;white-space:pre-line;margin:12px 0}
+.status.error{background:#fff4f2;border-color:#e8b8b4;color:#9b382b}
+.stats{font-size:12px;color:#697d8b}
+.books{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.book{border:1px solid #d6e2e7;border-radius:10px;padding:16px;background:#fcfefe}
+.book h3{margin:0;font-size:17px}
+.book p{font-size:12px;color:#587080;margin:4px 0}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px;margin-top:15px}
+.hit{border:1px solid #ccdce0;background:#fff;border-radius:11px;padding:17px}
+.hit h3{margin:5px 0;font-size:18px;line-height:1.7}
+.hit .meta{font-size:12px;color:#5b7280}
+.hit p{font-size:13px;line-height:1.85}
+.hit .excerpt{background:#f7faf9;border:1px solid #e4eceb;border-radius:6px;padding:12px;max-height:190px;overflow:auto;font:16px/1.95 "Simplified Arabic",Tahoma,serif;white-space:pre-wrap}
+mark{background:#ffdf9d}
+.small{color:#718390;font-size:12px}
+#review{background:#fffdf7;border:2px solid #cfba85}
+#reviewText{min-height:220px;font:17px/2 "Simplified Arabic",Tahoma,serif}
+#review[hidden]{display:none}
+.empty{background:#f8fafb;border:1px dashed #cedde2;border-radius:8px;padding:15px;font-size:13px;color:#617786}
+.footer{text-align:center;color:#8394a1;font-size:12px;margin:25px}
+@media(max-width:800px){.shell{display:block}aside{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;align-items:center}aside h1{font-size:22px}aside small{display:none}aside a{margin:0;padding:6px 8px;font-size:12px}main{padding:15px}.panel{padding:16px}.grid{grid-template-columns:1fr}.field.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside><div><h1>المنارة</h1><small>خزانة الأستاذ المعرفية</small></div>
+<a class="active" href="my-books.html">▣ مكتبتي الشخصية</a>
+<a href="exam-lab-v014.html">▤ مهندس الاختبارات</a>
+<a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a>
+<a href="index.html">✎ محرر المذكرات</a>
+</aside>
+<main>
+<div class="top"><div><h1>مكتبتي المدرسية الشخصية</h1><p class="subtitle">استيراد كتاب مرة واحدة، ثم البحث داخل صفحاته كلما أعددت اختبارًا.</p></div><span class="version">V0.15 — تجربة محلية</span></div>
+<div class="intro">ملفاتك لا تُرفع إلى GitHub أو إلى خادم المنارة. يستخرج المتصفح النص القابل للتحديد ويحفظ <b>النص المفهرس</b> وبيانات الكتاب في قاعدة بيانات محلية على هذا الجهاز. لا تُحفظ نسخة PDF الأصلية، ويمكنك حذف الفهرس وقتما شئت. فتح PDF يحتاج إلى تنزيل مكتبة برمجية من CDN عند أول استعمال.</div>
+
+<section class="panel" id="addPanel">
+<h2>01 — أضف كتابًا من حاسوبك</h2>
+<p class="small">اختر ملف PDF يحتوي على نص قابل للتحديد أو ملف TXT. إذا كان الكتاب صور صفحات ممسوحة ضوئيًا، فقد لا نجد نصًا للبحث؛ هذا الإصدار لا يحتوي OCR.</p>
+<div class="grid">
+<div class="field wide"><label for="bookFile">الكتاب (PDF أو TXT)</label><input type="file" id="bookFile" accept=".pdf,.txt,.text,application/pdf,text/plain"></div>
+<div class="field"><label for="bookTitle">عنوان الكتاب</label><input id="bookTitle" placeholder="يُقترح من اسم الملف ويمكن تصحيحه"></div>
+<div class="field"><label for="bookCountry">البلد</label><select id="bookCountry"><option>الجزائر</option><option>مصر</option><option>تونس</option><option>الأردن</option><option>السعودية</option><option>المغرب</option><option>بلد عربي آخر</option></select></div>
+<div class="field"><label for="bookYear">سنة الطبعة (اختياري)</label><input id="bookYear" inputmode="numeric" maxlength="4" placeholder="أدخلها فقط إن كانت معروفة"></div>
+<div class="field"><label for="bookPublisher">الناشر (اختياري)</label><input id="bookPublisher" placeholder="كما ورد على الغلاف"></div>
+</div>
+<div class="buttons"><button class="btn primary" id="importBook" type="button">+ فهرسة الكتاب على هذا الجهاز</button></div>
+<div id="importStatus" class="status" role="status" aria-live="polite">لم يُستورد كتاب بعد. يُعرض تقدم استخراج الصفحات هنا.</div>
+</section>
+
+<section class="panel">
+<h2>02 — ابحث داخل كتبك</h2>
+<div class="grid">
+<div class="field"><label for="querySegment">المقطع أو الموضوع</label>
+<select id="querySegment"><option>التضامن الإنساني</option><option>قضايا اجتماعية</option><option>الإعلام والمجتمع</option><option>شعوب العالم</option><option>العلم والتقدم التكنولوجي</option><option>التلوث البيئي</option><option>الصناعات التقليدية</option><option>الهجرة الداخلية والخارجية</option><option value="custom">سأكتب الموضوع بنفسي</option></select></div>
+<div class="field"><label for="queryGenre">نوع النص المطلوب</label><select id="queryGenre"><option value="story">قصة / حكاية</option><option value="article">مقال</option><option value="speech">خطبة / خطاب</option><option value="letter">رسالة</option><option value="poem">قصيدة</option><option value="any">أي نوع — مع التحقق لاحقًا</option></select></div>
+<div class="field wide" id="customWrap" hidden><label for="customTopic">اكتب الموضوع كما في توزيعك</label><input id="customTopic" placeholder="مثال: التضامن عند الأزمات"></div>
+</div>
+<p class="small">التصنيف آلي تقريبي يعتمد على كلمات الموضوع وقرائن نوع النص؛ لا يثبت أن القصة متكاملة أو أن النمط سردي غالب. تظهر صفحة المصدر وموقعها لتفحص النص بنفسك.</p>
+<div class="buttons"><button class="btn primary" id="searchBooks" type="button">⌕ ابحث في مكتبتي</button><button class="btn" id="clearSearch" type="button">مسح النتائج</button></div>
+<div id="searchStatus" class="status" role="status" aria-live="polite">أضف كتابًا ثم ابحث؛ لا تُعرض نتائج مختلقة.</div>
+<div id="searchResults" class="results"></div>
+</section>
+
+<section class="panel" id="review" hidden>
+<h2>03 — راجع السند قبل نقله إلى الاختبار</h2>
+<p id="reviewCitation" class="alert"></p>
+<div class="grid">
+<div class="field"><label for="reviewTitle">عنوان السند (إن كان ظاهرًا داخل الكتاب)</label><input id="reviewTitle" placeholder="لا تنسب عنوانًا لم يرد في المصدر"></div>
+<div class="field"><label for="reviewAuthor">مؤلف السند الأصلي أو جهة التأليف *</label><input id="reviewAuthor" placeholder="كما ورد في الكتاب؛ قد يختلف عن ناشر الكتاب"></div>
+<div class="field wide"><label for="reviewText">النص المستخرج — قابل لتصحيح أخطاء استخراج PDF</label><textarea id="reviewText" rows="11"></textarea></div>
+</div>
+<p class="small">انقل فقط نصًا راجعت مطابقته للأصل وملاءمته ونطاق استعماله. لن يضع النظام مؤلفًا أو علامات إعراب مفترضة.</p>
+<div class="buttons"><button id="sendToExam" type="button" class="btn primary">إرسال السند إلى مهندس الاختبارات</button><button id="closeReview" class="btn" type="button">العودة إلى النتائج</button></div>
+<div id="reviewStatus" class="status" role="status"></div>
+</section>
+
+<section class="panel">
+<h2>الكتب المفهرسة على هذا الجهاز</h2>
+<div id="bookCount" class="stats"></div>
+<div id="bookList" class="books"></div>
+<div class="buttons"><button class="btn gold" id="backup" type="button">تصدير فهرسي JSON</button><label class="btn" for="restoreFile">استيراد نسخة محفوظة</label><input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></div>
+<div class="alert">الحفظ محلي مرتبط بمتصفحك والجهاز؛ قد يزول بمسح بيانات الموقع. احتفظ بنسخة احتياطية من الفهرس وملفات الكتب الأصلية على جهازك.</div>
+</section>
+<p class="footer">منارة اللغة العربية — من إعداد الأستاذ بن مزوز حمزة · مكتبة خاصة قيد الاختبار</p>
+</main></div>
+<script src="book-search-core.js"></script>
+<script>
+"use strict";
+(function(){
+ const $=id=>document.getElementById(id);
+ const core=window.ManaraBookCore;
+ if(!core){$("importStatus").textContent="تعذر تحميل محرك البحث المحلي. أعد تحميل الصفحة.";return}
+ const DB_NAME="almanara-private-books-v1",STORE="books";
+ const PDF_LIB="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+ const PDF_WORKER="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+ let activeResult=null,dbPromise=null,pdfLibPromise=null;
+ const elem=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
+ const status=(id,text,error=false)=>{const n=$(id);n.textContent=text;n.className=error?"status error":"status"};
+ function openDb(){
+  if(dbPromise)return dbPromise;
+  dbPromise=new Promise((resolve,reject)=>{
+   if(!window.indexedDB){reject(Error("المتصفح لا يدعم قاعدة البيانات المحلية"));return}
+   const req=indexedDB.open(DB_NAME,1);
+   req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE,{keyPath:"id"})};
+   req.onsuccess=()=>resolve(req.result);
+   req.onerror=()=>reject(req.error||Error("تعذر فتح قاعدة البيانات"));
+  }).catch(e=>{dbPromise=null;throw e});
+  return dbPromise;
+ }
+ async function getAll(){
+  const db=await openDb();
+  return new Promise((resolve,reject)=>{const req=db.transaction(STORE,"readonly").objectStore(STORE).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error)});
+ }
+ async function put(item){
+  const db=await openDb();
+  return new Promise((resolve,reject)=>{const req=db.transaction(STORE,"readwrite").objectStore(STORE).put(item);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)});
+ }
+ async function remove(id){
+  const db=await openDb();
+  return new Promise((resolve,reject)=>{const req=db.transaction(STORE,"readwrite").objectStore(STORE).delete(id);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)});
+ }
+ function loadPdfLib(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(pdfLibPromise)return pdfLibPromise;
+  pdfLibPromise=new Promise((resolve,reject)=>{
+    const sc=document.createElement("script");sc.src=PDF_LIB;sc.async=true;
+    sc.onload=()=>window.pdfjsLib?resolve(window.pdfjsLib):reject(Error("لم تُحمّل مكتبة قراءة PDF"));
+    sc.onerror=()=>reject(Error("تعذر تنزيل مكوّن قراءة PDF؛ تأكد من الاتصال ثم أعد المحاولة"));
+    document.head.append(sc);
+  }).catch(err=>{pdfLibPromise=null;throw err});
+  return pdfLibPromise;
+ }
+ function splitTxt(value){
+  // TXT has no physical PDF pages. Form-feed marks are retained; otherwise a single untitled unit.
+  const chunks=value.split(/\f/).map(x=>x.trim()).filter(Boolean);
+  return chunks.map((text,i)=>({number:i+1,text}));
+ }
+ async function extractPdf(file){
+  const lib=await loadPdfLib();lib.GlobalWorkerOptions.workerSrc=PDF_WORKER;
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  const task=lib.getDocument({data:bytes});
+  const pdf=await task.promise;
+  const pages=[];let empties=0;
+  try{
+   if(pdf.numPages>350)throw Error("هذا الكتاب يتجاوز حد التجربة (350 صفحة). قسّم الملف إلى أجزاء لتفادي تجمّد المتصفح.");
+   for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i),ct=await page.getTextContent();
+    const text=ct.items.map(x=>String(x.str||"")+(x.hasEOL?"\n":" ")).join("").replace(/[ \t]+/g," ").trim();
+    if(text.length<25)empties++;
+    pages.push({number:i,text});
+    if(i===1||i%6===0||i===pdf.numPages){
+     status("importStatus","قراءة الصفحات: "+i+" من "+pdf.numPages+"؛ الصفحات ذات النص القليل حتى الآن: "+empties+".");
+     await new Promise(resolve=>setTimeout(resolve,0));
+    }
+   }
+   return {pages,empties,total:pdf.numPages};
+  }finally{await pdf.destroy()}
+ }
+ async function importBook(){
+  const file=$("bookFile").files?.[0],title=$("bookTitle").value.trim();
+  if(!file){status("importStatus","اختر ملف PDF أو TXT أولًا.",true);return}
+  if(file.size>65*1024*1024){status("importStatus","حجم الملف أكبر من 65 ميغابايت؛ قسّمه إلى أجزاء أصغر.",true);return}
+  if(title.length<3){status("importStatus","أدخل عنوان الكتاب كما على غلافه أو في الملف.",true);return}
+  const yr=$("bookYear").value.trim();
+  if(yr&&(!/^\d{4}$/.test(yr)||Number(yr)<1800||Number(yr)>2026)){status("importStatus","سنة الطبعة غير صحيحة؛ اتركها فارغة إذا لم تعرفها.",true);return}
+  const pdf=/\.pdf$/i.test(file.name),txt=/\.(txt|text)$/i.test(file.name);
+  if(!pdf&&!txt){status("importStatus","تُقبل ملفات PDF النصية وTXT فقط في هذه النسخة.",true);return}
+  $("importBook").disabled=true;
+  try{
+   status("importStatus","بدأ استخراج النص من الملف على جهازك...");
+   let result;
+   if(pdf)result=await extractPdf(file);
+   else{const text=await file.text();const pages=splitTxt(text);result={pages,total:pages.length,empties:pages.filter(p=>p.text.length<25).length};}
+   const chars=result.pages.reduce((x,p)=>x+p.text.length,0);
+   if(chars<100){status("importStatus","لم أجد نصًا قابلاً للبحث. يبدو أن PDF مصور، أو الملف خالٍ من النص. لا توجد OCR في هذه النسخة.",true);return}
+   const all=await getAll();
+   if(all.some(b=>b.fileName===file.name&&b.bytes===file.size&&b.title===title)){status("importStatus","هذا الملف مفهرس بالفعل بعنوانه الحالي، ولم أضف نسخة مكررة.",true);return}
+   const newBook={
+    id:(window.crypto?.randomUUID?window.crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)),
+    title,country:$("bookCountry").value,year:yr,publisher:$("bookPublisher").value.trim(),
+    fileName:file.name,bytes:file.size,pages:result.pages,total:result.total,
+    emptyPages:result.empties,createdAt:new Date().toISOString(),format:pdf?"PDF":"TXT",
+    pageNumbersReal:pdf,originalAuthor:""
+   };
+   await put(newBook);
+   await renderBooks();
+   status("importStatus","تمت فهرسة «"+title+"»: "+result.total+" "+(pdf?"صفحة PDF":"قسمًا نصيًا")+"، حروف مستخرجة: "+chars+
+    (result.empties?"؛ الصفحات قليلة النص: "+result.empties+" (قد تكون صورًا).":"")+
+    ". الاستيراد محلي ولم تُرفع نسخة الكتاب.");
+  }catch(e){status("importStatus","تعذر الاستيراد: "+e.message,true)}
+  finally{$("importBook").disabled=false}
+ }
+ async function renderBooks(){
+  const root=$("bookList");root.replaceChildren();
+  try{
+   const books=await getAll();$("bookCount").textContent="عدد الكتب المفهرسة: "+books.length+" — محفوظة في هذا المتصفح فقط.";
+   if(!books.length){root.append(elem("p","لم تُضف كتبًا بعد. اختر كتابًا نصيًا من ملفات حاسوبك.","empty"));return}
+   books.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+   for(const book of books){
+    const card=elem("article",undefined,"book");
+    card.append(elem("h3",book.title),
+      elem("p",[book.country,book.year||"الطبعة غير محددة",book.publisher||"الناشر غير محدد"].join(" — ")),
+      elem("p",(book.pageNumbersReal?"صفحات PDF":"أقسام نصية")+" مفهرسة: "+book.pages.length+
+       "؛ الصفحات قليلة النص: "+(book.emptyPages||0)));
+    const actions=elem("div",undefined,"buttons");
+    const del=elem("button","حذف الفهرس المحلي","btn");del.type="button";
+    del.onclick=async()=>{
+     if(!window.confirm("حذف فهرس «"+book.title+"» من هذا المتصفح؟ لا تتأثر نسخة الملف الأصلية على الحاسوب."))return;
+     try{await remove(book.id);await renderBooks();status("searchStatus","حُذف فهرس الكتاب. لم يُحذف الملف الأصلي.")}catch(e){status("searchStatus","تعذر الحذف: "+e.message,true)}
+    };
+    actions.append(del);card.append(actions);root.append(card);
+   }
+  }catch(e){status("importStatus","تعذر قراءة فهرس الكتب المحلي: "+e.message,true)}
+ }
+ function topic(){return $("querySegment").value==="custom"?$("customTopic").value.trim():$("querySegment").value}
+ function summary(text,max=300){const v=String(text||"").replace(/\s+/g," ").trim();return v.length>max?v.slice(0,max)+"…":v}
+ async function search(){
+  const seg=topic();if(seg.length<3){status("searchStatus","اختر مقطعًا أو اكتب موضوعًا واضحًا.",true);return}
+  const root=$("searchResults");root.replaceChildren();
+  status("searchStatus","أبحث داخل الكتب التي فهرستها أنت على هذا الجهاز...");
+  try{
+   const books=await getAll(),genre=$("queryGenre").value;
+   if(!books.length){status("searchStatus","لم تستورد كتابًا بعد. لن أملأ النتائج بنصوص من الإنترنت.",true);return}
+   const candidates=core.rankBooks(books,seg,genre,9);
+   if(!candidates.length){
+    root.append(elem("p","لم أجد نصوصًا تحمل قرائن كافية لنوع «"+$("queryGenre").selectedOptions[0].text+"» وموضوع «"+seg+"» في صفحات الكتب المفهرسة. قد تكون بعض الصفحات صورًا غير قابلة للبحث، أو يحتاج النص إلى مراجعة أخرى.","empty"));
+    status("searchStatus","لا توجد مرشحات موثوقة بهذه القواعد الأولية. لن أستبدل القصة بمقال تلقائيًا.",true);return;
+   }
+   for(const candidate of candidates){
+    const book=books.find(b=>b.id===candidate.bookId);
+    const card=elem("article",undefined,"hit");
+    card.append(elem("h3",candidate.bookTitle),
+      elem("p","المصدر: "+(book.publisher||"الناشر غير مدخل")+" — "+(book.year||"السنة غير مدخلة"),"meta"),
+      elem("p",(book.pageNumbersReal?"صفحة ":"قسم نصي ")+candidate.pageStart+" إلى "+candidate.pageEnd,"meta"),
+      elem("p",candidate.reason));
+    card.append(elem("p",summary(candidate.text),"excerpt"));
+    const actions=elem("div",undefined,"buttons"),pick=elem("button","مراجعة هذا المقطع","btn primary");
+    pick.onclick=()=>review(candidate,book);actions.append(pick);card.append(actions);root.append(card);
+   }
+   status("searchStatus","عُرض "+candidates.length+" مقطعًا مرشحًا من كتبك. هذه قرائن موضوعية ونمطية أولية وليست أحكامًا تربوية نهائية. راجع النص والكاتب والصفحات قبل نقله.");
+  }catch(e){status("searchStatus","تعذر البحث: "+e.message,true)}
+ }
+ function review(candidate,book){
+  activeResult={candidate,book};
+  $("reviewCitation").textContent="المصدر: «"+book.title+"»"+(book.publisher?"، "+book.publisher:"")+
+   (book.year?" ("+book.year+")":"")+"؛ "+(book.pageNumbersReal?"صفحات PDF ":"أقسام TXT ")+candidate.pageStart+"–"+candidate.pageEnd+
+   ". يجب مراجعة موضع النص في النسخة الأصلية والتأكد من اكتماله.";
+  $("reviewTitle").value="";
+  $("reviewAuthor").value="";
+  $("reviewText").value=candidate.text;
+  $("review").hidden=false;
+  status("reviewStatus","راجع النص وحدّد عنوانه ومؤلفه الأصلي؛ لا تفترض المنارة أنه هو مؤلف الكتاب.");
+  $("review").scrollIntoView({behavior:"smooth",block:"start"});
+ }
+ function send(){
+  if(!activeResult){status("reviewStatus","اختر سندًا أولًا.",true);return}
+  const {candidate,book}=activeResult;
+  const author=$("reviewAuthor").value.trim(),title=$("reviewTitle").value.trim(),text=$("reviewText").value.trim();
+  if(author.length<3||/غير معروف|مجهول|غير مؤكد/.test(author)){status("reviewStatus","أدخل مؤلف النص الأصلي أو جهة التأليف المؤكدة من الكتاب قبل النقل.",true);return}
+  if(text.length<80){status("reviewStatus","النص قصير جدًا؛ راجع اختيار الصفحات.",true);return}
+  const pageLabel=book.pageNumbersReal?"صفحات "+candidate.pageStart+"–"+candidate.pageEnd:"أقسام نصية "+candidate.pageStart+"–"+candidate.pageEnd+" (ليست أرقام صفحات الكتاب)";
+  const payload={title:title||"مقطع مختار من «"+book.title+"»",author,book:book.title,page:pageLabel,
+    country:book.country,year:book.year,text,topics:topic()};
+  try{
+   localStorage.setItem("almanara-exam-source-handoff-v1",JSON.stringify(payload));
+   status("reviewStatus","أُعدّ السند للنقل مع مصدره. ستؤكد استعماله داخل المختبر.");
+   window.location.href="exam-lab-v014.html";
+  }catch(e){status("reviewStatus","تعذر نقل النص إلى المختبر: "+e.message,true)}
+ }
+ function exportBackup(){
+  getAll().then(books=>{
+   const blob=new Blob([JSON.stringify({schema:"manara-book-index-v1",exportedAt:new Date().toISOString(),books})],{type:"application/json"});
+   const url=URL.createObjectURL(blob),a=elem("a");a.href=url;a.download="مكتبتي-المنارة-فهرس.json";
+   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+   status("importStatus","طُلب تصدير نسخة من الفهرس النصي؛ تأكد من وجودها في التنزيلات.")
+  }).catch(e=>status("importStatus","تعذر التصدير: "+e.message,true))
+ }
+ async function restore(event){
+  const file=event.target.files?.[0];if(!file)return;
+  try{
+   if(file.size>90*1024*1024)throw Error("ملف النسخة الاحتياطية كبير جدًا");
+   const object=JSON.parse(await file.text());
+   if(object.schema!=="manara-book-index-v1"||!Array.isArray(object.books))throw Error("هذا ليس ملف فهرس منارة مدعومًا");
+   let count=0;
+   for(const book of object.books){
+    if(!book||typeof book.id!=="string"||typeof book.title!=="string"||!Array.isArray(book.pages))continue;
+    if(book.pages.some(p=>!p||!Number.isInteger(p.number)||typeof p.text!=="string"))continue;
+    await put(book);count++;
+   }
+   await renderBooks();status("importStatus","استُعيدت بيانات "+count+" كتابًا من النسخة الاحتياطية إلى متصفحك.")
+  }catch(e){status("importStatus","تعذرت الاستعادة: "+e.message,true)}
+  finally{event.target.value=""}
+ }
+ $("bookFile").addEventListener("change",()=>{
+  const f=$("bookFile").files?.[0];
+  if(f&&!$("bookTitle").value.trim())$("bookTitle").value=f.name.replace(/\.(pdf|txt|text)$/i,"").replace(/[_-]+/g," ");
+ });
+ $("importBook").addEventListener("click",importBook);
+ $("searchBooks").addEventListener("click",search);
+ $("querySegment").addEventListener("change",()=>{$("customWrap").hidden=$("querySegment").value!=="custom"});
+ $("clearSearch").addEventListener("click",()=>{$("searchResults").replaceChildren();status("searchStatus","مُسحت نتائج البحث الحالية؛ بقيت كتبك المفهرسة محفوظة.")});
+ $("sendToExam").addEventListener("click",send);
+ $("closeReview").addEventListener("click",()=>{$("review").hidden=true;activeResult=null});
+ $("backup").addEventListener("click",exportBackup);
+ $("restoreFile").addEventListener("change",restore);
+ renderBooks();
+})();
+</script>
+</body></html>
