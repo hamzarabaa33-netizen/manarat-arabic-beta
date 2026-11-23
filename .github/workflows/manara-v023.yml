@@ -1,0 +1,41 @@
+name: Manara V0.23 code tests
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'api/**'
+      - 'exam-lab-v023.html'
+      - 'exam-print-v023.html'
+      - 'intelligent-ui-v023.js'
+      - '.github/workflows/manara-v023.yml'
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check api/worker.mjs
+          node --check intelligent-ui-v023.js
+      - name: Verify secure AI flow
+        run: node --test api/worker.test.mjs
+      - name: Check web references
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const html=fs.readFileSync('exam-lab-v023.html','utf8');
+          const print=fs.readFileSync('exam-print-v023.html','utf8');
+          const required=['id="aiGenerate"','id="aiPrint"','id="aiHealth"','intelligent-ui-v023.js'];
+          for (const s of required) if(!html.includes(s)) throw Error('Missing '+s);
+          if(!print.includes('paged.polyfill.js'))throw Error('No paged engine');
+          const ids=[...html.matchAll(/id="([^"]+)"/g)].map(x=>x[1]);
+          if(new Set(ids).size!==ids.length)throw Error('Duplicate IDs');
+          console.log('HTML and printing references valid');
+          NODE
