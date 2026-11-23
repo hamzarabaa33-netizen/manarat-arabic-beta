@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المنارة | اختبار الاستقرار — محرر الفروض والاختبارات</title>
+<style>
+:root{--navy:#153950;--gold:#bd934a;--teal:#1c716c;--line:#d6e2e7;--surface:#f1f5f7}*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:#1b374a;font:15px/1.8 Tahoma,Arial,sans-serif}
+header{background:white;border-bottom:3px solid var(--gold);padding:15px clamp(14px,3vw,35px);display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.brand{font-size:24px;font-weight:800;color:var(--navy)}.brand small{display:block;font-size:12px;color:#687d86;font-weight:400}header a{font-size:12px;color:#246a72}
+.layout{max-width:1450px;display:grid;grid-template-columns:minmax(300px,340px) minmax(0,1fr);gap:18px;margin:20px auto;padding:0 15px;align-items:start}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:19px;box-shadow:0 6px 18px #2343540a}
+h2{margin:0 0 5px;font-size:19px;color:var(--navy)}p{margin:5px 0 12px}.muted{font-size:12px;color:#637985}
+label{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}select,textarea,input{display:block;width:100%;border:1px solid #cbd7dd;border-radius:8px;padding:10px;background:#fff;color:#183c51;font:inherit;min-height:44px}textarea{min-height:110px;resize:vertical}
+button{border:1px solid #c7d8da;border-radius:8px;background:white;padding:10px 14px;color:var(--navy);font:700 13px Tahoma,Arial,sans-serif;cursor:pointer}button:focus-visible{outline:2px solid #ce9b42}button.primary{background:var(--navy);color:white;border-color:var(--navy);font-size:15px;min-height:48px;width:100%;margin-top:16px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0}.actions button{flex:1}.status{font-size:12px;background:#edf6f3;border:1px solid #c5ded7;color:#235b55;padding:10px;border-radius:8px;margin-top:12px}.status.error{background:#fff4ef;border-color:#ebc9bc;color:#8b3a2b}
+.notice{border-right:3px solid #d0a358;background:#fffaf0;font-size:12px;padding:9px 12px;margin-top:15px}
+.preview{min-width:0}.preview-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 13px}.preview-top p{margin:0}.preview-top h2{font-size:20px}
+#paperWrap{background:#dfe6ea;border-radius:10px;padding:16px;overflow:auto}
+.paper{width:210mm;max-width:100%;min-height:265mm;background:white;margin:0 auto;padding:18mm 16mm;border:1px solid #aab9c1;box-shadow:0 7px 20px #163c4d19;color:#141414;font:17px/1.7 "Simplified Arabic",Tahoma,serif}
+.paper .dochead{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #222;font-size:13px;padding-bottom:8px}.paper h1{text-align:center;font-size:22px;margin:10px 0 14px}.paper h3{font-size:18px;margin:16px 0 8px;padding-right:9px;border-right:3px solid #344e60}.paper p{margin:7px 0}.paper .source{border:1px solid #444;padding:13px 16px;text-align:justify;white-space:pre-line;line-height:1.9}.paper .meta{font-size:12px;color:#555}.paper .q{display:flex;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px dotted #c7c7c7}.paper .q p{flex:1;white-space:pre-line;margin:0}.paper .mark{white-space:nowrap;font-size:13px;font-weight:700}.paper [contenteditable="true"]:focus{outline:1px dashed #1c716c;background:#eef6f4}.paper a{color:#222;font-size:11px;word-break:break-all}
+#answerSheet{display:none;border-top:4px solid #234e61;margin-top:20px}.answer-line{padding:6px;border-bottom:1px solid #e0e0e0;white-space:pre-line}.answer-line strong{font-size:13px}.empty{display:grid;place-items:center;min-height:400px;color:#607e8b;background:#fff}
+#showKey[aria-pressed="true"]{background:#e5f2ee;border-color:#96c5b9}.verified{font-size:12px;color:#23544c}.small{font-size:12px;color:#697f8c}
+@media(max-width:890px){.layout{grid-template-columns:1fr}.preview{order:0}.controls{order:1}#paperWrap{padding:7px}.paper{padding:20px;font-size:15px;min-height:initial}.paper h1{font-size:19px}.paper .dochead{display:block}}
+@media print{@page{size:A4;margin:10mm}body{background:white}header,.controls,.preview-top,.status,.notice{display:none!important}.layout{display:block;margin:0;padding:0;max-width:none}.preview{width:100%}#paperWrap{padding:0;border:0;background:white;overflow:visible}.paper{border:0;box-shadow:none;width:100%;max-width:none;min-height:0;padding:0;font-size:15px}.paper h3,.q{break-inside:avoid}#answerSheet{break-before:page}#answerSheet.print-key{display:block!important}}
+</style>
+</head>
+<body>
+<header><div class="brand">المنارة <small>منصة الفروض والاختبارات — تجربة استقرار مستقلة عن المذكرات</small></div><a href="https://ar.wikisource.org/wiki/كليلة_ودمنة/باب_الحمامة_المطوقة" target="_blank" rel="noopener">المصدر الأدبي المعتمد في التجربة</a></header>
+<div class="layout">
+<aside class="panel controls"><h2>إنشاء اختبار</h2><p class="muted">الإنشاء في هذه التجربة من بنك أسئلة موثّق ومعدّ مسبقًا، وليس من نموذج ذكاء اصطناعي متصل.</p>
+<label for="level">المستوى</label><select id="level"><option>الرابعة متوسط</option></select>
+<label for="kind">نوع التقويم</label><select id="kind"><option>اختبار الثلاثي الأول</option><option>فرض</option><option>تقويم</option></select>
+<label for="request">طلب الأستاذ</label><textarea id="request">أريد اختبارًا في اللغة العربية حول التضامن والتعاون، بأسئلة متنوعة وتصحيح مفصل.</textarea>
+<button type="button" class="primary" id="generate">إعداد الاختبار وعرض الورقة</button>
+<div class="actions"><button type="button" id="showKey" aria-pressed="false">عرض التصحيح</button><button type="button" id="printBtn">طباعة / PDF</button></div>
+<p id="status" class="status" role="status" aria-live="polite">ورقة الاختبار تظهر أمامك تلقائيًا. اضغط «إعداد الاختبار» لتجربة إعادة إنشائها.</p>
+<p class="notice">مهم: هذا نموذج اختبار تجريبي قابل للتحرير والطباعة. لا نَدّعي أنه اختبار مولّد آليًا من طلبك أو مطابق لكل موارد توزيعك الفعلي. التوليد الحر يحتاج تشغيل خدمة ذكاء اصطناعي آمنة.</p>
+</aside>
+<main class="preview"><div class="preview-top"><div><h2>ورقة الاختبار</h2><p class="verified" id="verification">نتحقق من ظهور الورقة والأسئلة…</p></div><span class="small">عدّل مباشرة بالنقر على السؤال أو الإجابة</span></div>
+<div id="paperWrap"><article id="paper" class="paper" aria-label="ورقة الاختبار"></article><article id="answerSheet" class="paper" aria-label="مفتاح الإجابات"></article></div>
+</main>
+</div>
+<script>
+(function(){"use strict";
+const $=id=>document.getElementById(id);
+const passage="ثم إن الصياد نصب شبكته، ونثر عليها الحب، وكمن قريبا منها، فلم يلبث إلا قليلا، حتى مرت به حمامة يقال لها المطوقة، وكانت سيدة الحمام ومعها حمام كثير؛ فعميت هي وصواحبها عن الشرك، فوقعن على الحب يلتقطنه فعلقن في الشبكة كلهن؛ وأقبل الصياد فرحا مسرورا. فجعلت كل حمامة تضطرب في حبائلها وتلتمس الخلاص لنفسها.\n\nقالت المطوقة: لا تخاذلنا في المعالجة؛ ولكن نتعاون جميعا فنقلع الشبكة فينجو بعضنا ببعض؛ فأقلعن الشبكة جميعهن بتعاونهن، وعلون في الجو.";
+const questions=[
+ {section:"البناء الفكري (8 نقاط)",score:2,q:"بيّن الحيلة التي لجأ إليها الصياد للإيقاع بالحمام.",a:"نصب شبكة ونثر عليها الحب ثم كمن بالقرب منها حتى علقت الحمامات بالشبكة."},
+ {section:"البناء الفكري (8 نقاط)",score:2,q:"اشرح دلالة قول السارد: «فجعلت كل حمامة تضطرب في حبائلها». ما الذي يكشفه عن موقف الحمام أول الأمر؟",a:"يدل على اضطراب الحمام وخوفه، ومحاولة كل واحدة النجاة بنفسها قبل الدعوة إلى التعاون."},
+ {section:"البناء الفكري (8 نقاط)",score:2,q:"استخرج الحل الذي اقترحته المطوقة، وبيّن سبب نجاحه.",a:"اقترحت رفع الشبكة جماعيًا والطيران بها؛ ونجح لأن الحمام تعاون بدل تشتت جهوده."},
+ {section:"البناء الفكري (8 نقاط)",score:2,q:"استنتج قيمة إنسانية من تصرف المطوقة، واستشهد بعبارة من النص.",a:"التعاون والتضامن. الشاهد: «ولكن نتعاون جميعا فنقلع الشبكة فينجو بعضنا ببعض»."},
+ {section:"البناء اللغوي (4 نقاط)",score:2,q:"أعرب الفعل «يلبث» في العبارة «فلم يلبث إلا قليلا» إعرابًا تامًا.",a:"يلبثْ: فعل مضارع مجزوم بلم وعلامة جزمه السكون الظاهر على آخره. والفاعل ضمير مستتر جوازًا تقديره «هو» يعود على الصياد."},
+ {section:"البناء اللغوي (4 نقاط)",score:2,q:"استخرج فعلًا ماضيًا من أول سطر في النص، وبيّن علامة بنائه.",a:"نصبَ: فعل ماض مبني على الفتح الظاهر على آخره؛ والفاعل ضمير مستتر جوازًا تقديره «هو» يعود على الصياد."},
+ {section:"الوضعية الإدماجية (8 نقاط)",score:8,q:"اكتب فقرة من ثمانية إلى عشرة أسطر تقنع فيها زملاءك بأهمية التعاون لإنجاز مشروع جماعي، مستشهدًا بما استفدته من قصة المطوقة.",a:"التنقيط التجريبي المقترح: الملاءمة والقدرة على الإقناع 3 نقاط؛ انسجام الأفكار 2؛ سلامة اللغة 2؛ جودة العرض والأسلوب 1. تختلف الإجابات المقبولة بحسب إنتاج المتعلم، ولا توجد إجابة نموذجية وحيدة."}
+];
+const N=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
+const ed=(tag,text,cls)=>{const n=N(tag,text,cls);n.setAttribute("contenteditable","true");n.spellcheck=false;return n};
+let created=false;
+function build(){
+ const paper=$("paper"),key=$("answerSheet"),kind=$("kind").value;
+ const request=$("request").value.trim();
+ if(!/تعاون|تضامن|الحمامة|المطوقة/.test(request)){status("موضوع طلبك غير متاح في قاعدة هذا النموذج المحدود. لم أُنشئ اختبارًا غير مناسب؛ اكتب طلبًا عن التعاون أو التضامن، أو انتظر تفعيل المحرك الذكي.",true);return}
+ const total=questions.reduce((a,x)=>a+x.score,0);
+ if(total!==20){status("خطأ في توزيع النقاط؛ توقف الإنشاء.",true);return}
+ paper.replaceChildren();key.replaceChildren();
+ const head=N("div",undefined,"dochead");head.append(ed("span","متوسطة: .................................."),ed("span","السنة الدراسية: ....................."));paper.append(head);
+ paper.append(ed("h1",kind+" — اللغة العربية — الرابعة متوسط"));
+ paper.append(ed("p","الاسم واللقب: ........................................ القسم: ............."));
+ paper.append(ed("h3","السند: من قصة الحمامة المطوقة"));paper.append(ed("div",passage,"source"));
+ paper.append(ed("p","المصدر: كليلة ودمنة، باب الحمامة المطوقة — من النص العربي لابن المقفع. مقتطف منتقى ومحذوف منه بعض الكلمات، وقد جرى ضبط إملائي محدود.","meta"));
+ let last="";questions.forEach((question,i)=>{
+  if(question.section!==last){paper.append(ed("h3",question.section));last=question.section}
+  const row=N("div",undefined,"q");row.append(ed("p",(i+1)+". "+question.q),N("span",String(question.score)+" ن","mark"));paper.append(row);
+ });
+ paper.append(N("p","انتهت الأسئلة — بالتوفيق.","meta"));
+ key.append(ed("h1","التصحيح المقترح — خاص بالأستاذ"));
+ questions.forEach((q,i)=>{
+  const line=N("div",undefined,"answer-line");line.append(N("strong","السؤال "+(i+1)+" — "+q.score+" نقطة"),ed("p",q.a));key.append(line)
+ });
+ key.append(ed("p","المجموع: 20/20. هذا التنقيط تجريبي وليس شبكة رسمية معتمدة. يجب مراجعة ملاءمة الموارد وتوزيع القسم قبل الاعتماد.","meta"));
+ created=true;
+ const visible=paper.isConnected&&getComputedStyle(paper).display!=="none"&&paper.getBoundingClientRect().width>200&&paper.querySelectorAll(".q").length===7;
+ $("verification").textContent=visible?"✓ الورقة ظاهرة، 7 تعليمات، ومجموع النقاط 20/20.":"تعذر إثبات ظهور الورقة في المتصفح.";
+ status(visible?"تم إنشاء الورقة وعرضها داخل الصفحة. يمكنك تحرير أسئلتها أو عرض التصحيح أو الطباعة.":"فشل التحقق من ظهور الورقة؛ لا نعلن نجاح العملية.",!visible);
+}
+function status(message,error){const n=$("status");n.textContent=message;n.classList.toggle("error",!!error)}
+$("generate").onclick=build;
+$("showKey").onclick=()=>{
+ if(!created){status("أنشئ الورقة أولًا.",true);return}
+ const show=$("answerSheet").style.display!=="block";
+ $("answerSheet").style.display=show?"block":"none";
+ $("showKey").setAttribute("aria-pressed",String(show));$("showKey").textContent=show?"إخفاء التصحيح":"عرض التصحيح";
+};
+$("printBtn").onclick=()=>{if(!created){status("لا توجد ورقة للطباعة.",true);return}$("answerSheet").classList.toggle("print-key",$("answerSheet").style.display==="block");window.print()};
+build();
+window.ManaraStable={rebuild:build,questions:()=>$("paper").querySelectorAll(".q").length,version:"stable-v1"};
+})();
+</script>
+</body></html>
