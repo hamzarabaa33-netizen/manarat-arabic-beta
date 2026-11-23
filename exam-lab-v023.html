@@ -1,6 +1,6 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102b46"><title>المنارة | مختبر الاختبارات V0.23</title>
+<meta name="theme-color" content="#102b46"><title>المنارة | مختبر الاختبارات V0.23.1 — إصلاح محرك المسودة</title>
 <style>
 :root{--n:#102b46;--g:#c59b55;--t:#227c7b;--line:#dfe6ec}*{box-sizing:border-box}
 body{margin:0;background:#f4f7fa;color:#223c50;font:14px/1.9 Tahoma,Arial,sans-serif}
@@ -212,12 +212,20 @@ main{max-width:1250px}
 .ai-findings{padding:12px 14px;background:#f5faf9;border-right:3px solid #95c3b4;border-radius:7px;font-size:13px}
 .ai-findings[hidden]{display:none!important}
 .ai-findings p{margin:7px 0}
+
+.paper .doc-head{padding:5px 3px 8px;border-bottom:2px solid #303d46;font-weight:700}
+.paper .candidate-line{font-weight:600;border:1px solid #c6cbd0;padding:5px 10px;margin:10px 0 12px;font-size:.85em}
+.paper h2{font-size:1.18em;margin:12px 0 6px}
+.paper h3{padding:4px 8px;border-right:4px solid #24394b;border-bottom:1px solid #aebbc2}
+.paper .question{padding:6px 8px 10px;border-bottom:1px dotted #8899a2}
+.paper .draft-caveat{border:1px dashed #9b8b72;padding:5px 8px;font-size:.77em}
+@media print{.paper .candidate-line{font-size:12px;padding:3px 7px}.paper h3{color:#000;border-color:#333;background:transparent}.paper .draft-caveat{font-size:10px}}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v023.html">▤ هندسة الاختبارات</a><a href="schoolbooks-v022.html">▣ كتب القراءة القديمة</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a><a href="pedagogical-references-v1.html">▣ الوثائق التربوية وبلوم</a></aside><main>
-<header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.23 — 23 نوفمبر 2026</span></header>
+<header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.23.1 — 23 نوفمبر 2026</span></header>
 <div class="warning">نبدأ الآن بالكتب الجزائرية القديمة نفسها، مثل «المختار للرابعة متوسط» و«القراءة والنصوص للثامنة أساسي». تحققنا من وجود نصوصهما في النسخ المصورة، لكن OCR المستخرج مليء بالأخطاء؛ لن يُعتمد شاهد لغوي قبل مراجعة الأصل.</div>
 
-<div class="status-version" role="note">✓ أنت تشاهد مختبر انتقاء السندات V0.23 — إذا لم يظهر هذا الشريط فالمتصفح يعرض نسخة أخرى.</div>
+<div class="status-version" role="note">✓ V0.23.1: مسودة الأسئلة المحلية تقتبس شواهد من النص بدل إعادة أسئلة عامة. زر الذكاء الاصطناعي يحتاج نشر الخادم الآمن وتفعيله.</div>
 <section class="panel" style="border:1px solid #c6d6d7;background:#f7fbfb;padding:16px 22px;margin:16px 0">
 <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
 <div><h2 style="font-size:18px;margin:0">النصوص الحقيقية من كتب القراءة الجزائرية القديمة</h2>
@@ -385,7 +393,7 @@ main{max-width:1250px}
 <p class="small" style="text-align:center">من إعداد الأستاذ بن مزوز حمزة · المنارة — أداة تربوية قيد الاختبار</p>
 </main></div>
 <script src="verified-source-index-v016.js"></script>
-<script src="bem-mentor-v021.js"></script><script src="schoolbook-archive-v022.js"></script><script src="pedagogy-core-v1.js"></script>
+<script src="bem-mentor-v021.js"></script><script src="schoolbook-archive-v022.js"></script><script src="pedagogy-core-v023.js"></script>
 <script>
 "use strict";
 (function(){
@@ -735,8 +743,9 @@ function build(){
  if(assessed.shortened)sourceWarnings.push("الكتاب الممسوح أو النص المدخل طويل؛ عرضت المنارة مقتطفًا أوليًا من بدايته فقط مع الحفاظ على النص الكامل في المحرر. راجع اكتمال الأحداث وحدود الاقتطاع قبل الاعتماد.");
  const paper=$("paper"),cor=$("correction");paper.replaceChildren();cor.replaceChildren();
  const head=el("div",undefined,"doc-head");head.append(el("span","المؤسسة: ......................."),el("span","السنة الدراسية: ......................."));paper.append(head);
- paper.append(edit("h2",(arr.length===0?"مسودة تدريب في فهم المكتوب":"مسودة "+d.kind)+" — اللغة العربية — "+$("chosenLevel").value));
- if(arr.length===0)paper.append(edit("p","وثيقة تدريب أولية غير معتمدة: لا تتضمن البناء اللغوي أو التنقيط الرسمي أو تصحيحًا نهائيًا."));
+ paper.append(edit("h2",(arr.length===0?"مسودة فهم مكتوب":"مسودة "+d.kind)+" — اللغة العربية — "+$("chosenLevel").value));
+ const candidate=edit("p","الاسم واللقب: .................................................  القسم: .................");candidate.className="candidate-line";paper.append(candidate);
+ if(arr.length===0){const note=el("p","مسودة فهم تحتاج بناءً لغويًا وتنقيطًا وتصحيحًا قبل اعتمادها.");note.className="draft-caveat";paper.append(note)}
  paper.append(edit("p","المقطع التعلمي: "+(t(d.segment)||"يحدده الأستاذ")));
  const knownBio=authorBiographyFor(d.author);
  const authorLabel=sourceConfirmed||t(d.author).length>=3&&!/غير مؤكد|غير معروف|يجب تحديده|مجهول/.test(t(d.author))?
@@ -760,7 +769,7 @@ function build(){
  paper.append(edit("h3",arr.length?"الجزء الأول: البناء الفكري واللغوي":"الجزء الأول: البناء الفكري (دون بناء لغوي معتمد)"));
  const answers=[];
  const narrative=isNarrativeRequest(desiredGenre);
- const initialReading=narrative?narrativeReading(assessedText,d.sourceTitle):planReading(assessedText,d.previous,d.mode);
+ const initialReading=sourceBoundReading(assessedText,d.previous,d.mode,desiredGenre,d.sourceTitle);
  const mentor=window.ManaraBemMentor;
  const adaptedReading=mentor?mentor.adaptReading(initialReading,localStorage):initialReading;
  const pedagogy=window.ManaraPedagogyCore;
@@ -799,10 +808,45 @@ function build(){
  renderBemReview({reading,passage:assessedText,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
  $("report").hidden=false;$("output").hidden=false;
  renderQuestionPreview(reading,sourceWarnings.length?
-   "أُنشئت أسئلة من نص السند. "+sourceWarnings.join(" ")+" لا يُعد هذا اختبارًا نهائيًا.":
-   "أُنشئت الأسئلة من نص السند المتاح؛ لم يُتحقق بعد من صحة كل إجابة أو مطابقته للمنهاج.",true);
+   "أسئلة مسودة مستندة إلى اقتباسات فعلية من السند. "+sourceWarnings.join(" ")+" لا يُعد هذا اختبارًا نهائيًا.":
+   "أسئلة محلية مرتبطة بشواهد حرفية؛ الإجابات التفسيرية والمنهاج يحتاجان إلى مراجعة الأستاذ.",true);
  save();
  msg(arr.length?"عُرضت مسودة قابلة للتحرير؛ يلزم تدقيق الموارد والإجابات قبل اعتمادها.":"عُرضت أسئلة الفهم والإنتاج الكتابي دون اشتراط إدخال المصدر. البناء اللغوي والتنقيط بحاجة إلى تدقيق.");
+}
+
+
+/* V0.23.1: source-grounded fallback; literal citations, not a semantic AI engine. */
+function sourceBoundReading(passage,previous="",mode="balanced",genre="",title=""){
+ const full=String(passage||"").replace(/\r/g,"").trim();
+ const compact=full.replace(/\s+/g," ").trim();
+ const sentences=full.split(/(?<=[.!؟؛])\s+|\n+/u).map(x=>x.replace(/\s+/g," ").trim()).filter(x=>x.length>=32);
+ const words=compact.split(/\s+/).filter(Boolean);
+ const excerpt=(start,n=18)=>words.slice(start,start+n).join(" ").replace(/[،؛.!؟]+$/u,"");
+ const short=x=>x.length>115?x.slice(0,112).replace(/\s+\S*$/u,"")+"…":x;
+ const first=sentences[0]||excerpt(0),last=sentences.length>1?sentences[sentences.length-1]:excerpt(Math.max(0,words.length-20));
+ const mid=sentences[Math.floor(sentences.length/2)]||excerpt(Math.max(0,Math.floor(words.length/2)-7));
+ const story=genre==="story",q=[];
+ q.push({id:"anchored-opening",verb:"بيّن",skill:"فهم شاهد",text:story?
+  "بيّن الحدث الذي يقدّمه السند في بدايته اعتمادًا على قوله: «"+short(first)+"».":
+  "بيّن الفكرة التي يطرحها الكاتب في قوله: «"+short(first)+"»، وصغها بعبارتك.",
+  answer:"شاهد من السند: «"+first+"». تُراجع صياغة الفكرة أو الحدث استنادًا إلى السياق الكامل؛ نقل الشاهد وحده ليس إجابة تحليلية تامة."});
+ const causal=sentences.find(s=>/(?:لأن|بسبب|لذلك|نتيجة لذلك|إذ إن)/u.test(s)) || (/(?:لأن|بسبب|لذلك)/u.test(compact)?mid:"");
+ const m=causal&&causal.match(/^(.*?)(لأن|بسبب|لذلك|نتيجة لذلك|إذ إن)(.*)$/u);
+ if(m&&m[1].trim().length>5&&m[3].trim().length>5){
+  const mark=m[2],before=m[1].trim(),after=m[3].trim(),reverse=/^(لذلك|نتيجة لذلك)$/.test(mark);
+  q.push({id:"anchored-causality",verb:"حدّد",skill:"تحليل السبب والنتيجة",
+    text:"حدّد السبب والنتيجة اللذين يربط بينهما التعبير «"+mark+"» في العبارة الآتية من السند: «"+short(causal)+"».",
+    answer:"السبب في العبارة: «"+(reverse?before:after)+"». والنتيجة: «"+(reverse?after:before)+"». ينبغي مراجعة العلاقة الدلالية في السياق الأصلي."});
+ }else if(mid&&mid!==first){
+  q.push({id:"anchored-evidence",verb:"اشرح",skill:"تفسير شاهد",
+    text:"اشرح دلالة العبارة الآتية في سياق السند: «"+short(mid)+"».",
+    answer:"العبارة من السند: «"+mid+"». لا تتوفر بعد إجابة تفسيرية موثوقة آليًا؛ يراجعها الأستاذ."});
+ }
+ if(last&&last!==first)q.push({id:"anchored-inference",verb:"استنتج",skill:"استنتاج وتعليل",text:story?
+  "استنتج دلالة ما انتهت إليه الأحداث من خلال العبارة: «"+short(last)+"»، وعلّل استنتاجك.":
+  "استنتج الرسالة التي يرمي إليها الكاتب من خلال العبارة الختامية: «"+short(last)+"»، وعلّل إجابتك.",
+  answer:"الشاهد الختامي: «"+last+"». يُراجع الاستنتاج والتعليل انطلاقًا من النص الكامل."});
+ return q;
 }
 
 /* Comparison with checked BEM exam architecture. Feedback stays local and is not AI model training. */
@@ -870,7 +914,10 @@ $("previewSearchSource").onclick=()=>{
  $("segmentStarter").scrollIntoView({behavior:"smooth",block:"start"});
  searchVerifiedTexts();
 };
-$("quickQuestions").onclick=build;
+$("quickQuestions").onclick=()=>{
+ if(norm($("passage").value).length<80){msg("يجب الحصول على سند حقيقي قبل توليد أسئلة نصية. فُتح البحث في المصادر.");searchVerifiedTexts();return}
+ build();
+};
 $("generate").onclick=build;$("save").onclick=()=>{save();msg("حُفظت المسودة على هذا المتصفح.")};
 $("restore").onclick=()=>{
  try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(!s){msg("لا توجد مسودة محفوظة.",true);return}
