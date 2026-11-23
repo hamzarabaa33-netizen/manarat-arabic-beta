@@ -28,7 +28,7 @@ try{
  await page.locator("#aiPrint").click();
  const printPage=await waitPrint;
  await printPage.waitForLoadState("domcontentloaded");
- await printPage.locator("#printContent .source").waitFor({timeout:15000});
+ await printPage.locator("#printContent .source").waitFor({state:"attached",timeout:15000});
  assert.ok((await printPage.locator("#printContent").innerText()).includes("الحمامة المطوقة"));
  assert.ok((await printPage.locator("#printContent .question").count())>=3);
  assert.equal(await printPage.locator("#printContent .key-section").count(),0,"Answers are hidden by default");
