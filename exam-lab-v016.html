@@ -467,6 +467,12 @@ const baseByLibrary={wikisource:"https://ar.wikisource.org",wikipedia:"https://a
 // Bibliographic records reviewed separately; not automatically inferred from Wikimedia.
 // One first specimen: original issue scan catalog and article text checked on 2026-11-23.
 const CURATED_REFERENCES={
+ "كليلة ودمنة/باب الحمامة المطوقة":{
+   kind:"classical",author:"عبد الله بن المقفع (النص العربي من كليلة ودمنة)",
+   work:"كليلة ودمنة — باب الحمامة المطوقة",
+   verification:"https://ar.wikisource.org/wiki/كليلة_ودمنة/باب_الحمامة_المطوقة",
+   assessment:"يصور حيلة الحمام وتعاون أفراده. لغة النص تراثية وقد تكون صعبة على بعض التلاميذ. يُستخرج مقتطف أصيل دون اختلاق، لكن الطبعة الأصلية والتصرفات النصية تحتاج إلى مراجعة."
+ },
  "مجلة الرسالة/العدد 1023/التضامن الاجتماعي بين ابن خلدون ودوجي":{
   author:"جمال مرسي بدر",journal:"مجلة الرسالة",issue:"1023",published:"11 فبراير 1953",page:"213",
   verification:"https://archive.alsharekh.org/contents/30/12012",
@@ -565,10 +571,16 @@ async function previewSource(base,title,url){
  const sourceQuality=$("sourceQuality"),record=CURATED_REFERENCES[title];
  sourceQuality.className="source-quality warn";
  if(record){
-   sourceQuality.replaceChildren(el("b","بطاقة توثيق أولية من مصدر ببليوغرافي مستقل"),
-     el("div","الكاتب: "+record.author+" | "+record.journal+" | العدد "+record.issue+" | "+record.published+" | ص "+record.page),
-     el("div","التقدير التربوي المبدئي: "+record.assessment));
-   const citation=el("a","فتح سجل العدد للتحقق");citation.href=record.verification;citation.target="_blank";citation.rel="noopener noreferrer";
+   if(record.kind==="classical"){
+    sourceQuality.replaceChildren(el("b","مثال تراثي موثق صفحة النشر — ليس من الكتب المدرسية المفهرسة"),
+      el("div","العمل: "+record.work+" | النص العربي: "+record.author),
+      el("div",record.assessment));
+   }else{
+    sourceQuality.replaceChildren(el("b","بطاقة توثيق أولية من مصدر ببليوغرافي مستقل"),
+      el("div","الكاتب: "+record.author+" | "+record.journal+" | العدد "+record.issue+" | "+record.published+" | ص "+record.page),
+      el("div","التقدير التربوي المبدئي: "+record.assessment));
+   }
+   const citation=el("a",record.kind==="classical"?"قراءة النص في مصدره":"فتح سجل العدد للتحقق");citation.href=record.verification;citation.target="_blank";citation.rel="noopener noreferrer";
    sourceQuality.append(citation);
  }else sourceQuality.replaceChildren(el("b","المصدر الأصلي والملاءمة التربوية غير موثّقين بعد"),
    el("div","العنوان ورابط الصفحة دليل على وجود صفحة منشورة فقط، ولا يثبتان الكاتب الأصلي أو ملاءمتها للمستوى أو حق إعادة استخدامها."));
@@ -601,6 +613,10 @@ async function previewSource(base,title,url){
   if(cleanText.length<80)throw new Error("هذه الصفحة لا تحتوي مقتطفًا نصيًا كافيًا. افتح الأصل يدويًا.");
   // Show a short excerpt for assessment; not a license to reproduce the whole article.
   let cut=cleanText.slice(0,900);
+  if(record?.kind==="classical"){
+   const focus=cleanText.indexOf("ثم إن الصياد نصب شبكته");
+   if(focus>=0)cut=cleanText.slice(focus,focus+1250);
+  }
   if(cleanText.length>900){
    const stop=Math.max(cut.lastIndexOf("؟"),cut.lastIndexOf("!"),cut.lastIndexOf("."),cut.lastIndexOf("؛"));
    if(stop>520)cut=cut.slice(0,stop+1);
@@ -904,7 +920,19 @@ function searchVerifiedTexts(){
   const actions=el("div",undefined,"actions"),a=el("a","فتح مرجع التصنيف");
   a.href=x.sourceUrl;a.target="_blank";a.rel="noopener noreferrer";actions.append(a);card.append(actions);root.append(card);
  }
- segmentStatus("ظهر "+matches.length+" عنوانًا مدرسيا موثق التصنيف. هذا تقدم في فهرسة المصادر، وليس بعد استرجاعًا للنصوص الكاملة. ستواصل المنارة إثراء المكتبة دون مطالبتك بتحميل الكتب.");
+ if(segment==="التضامن الإنساني"&&genre==="story"&&(pattern==="narrative"||pattern==="any")){
+  const classic=el("article",undefined,"segment-card");
+  classic.append(el("span","بديل تراثي قابل لاسترجاع النص — ليس كتابًا مدرسيًا","segment-pill"));
+  classic.append(el("h3","باب الحمامة المطوقة — كليلة ودمنة"));
+  classic.append(el("p","حكاية تراثية تدور حول تعاون الحمام للخلاص من شبكة الصياد. النص منشور في ويكي مصدر، وليس مستخرجًا من كتب المناهج القديمة."));
+  classic.append(el("p","الملاءمة العمرية والطبعة واللغة والظواهر النحوية لم تُتحقق بعد."));
+  const actions=el("div",undefined,"actions"),btn=el("button","جلب مقتطف أصيل ومعاينته");btn.type="button";
+  const original="https://ar.wikisource.org/wiki/كليلة_ودمنة/باب_الحمامة_المطوقة";
+  btn.addEventListener("click",()=>previewSource("https://ar.wikisource.org","كليلة ودمنة/باب الحمامة المطوقة",original));
+  const link=el("a","قراءة المصدر الأصلي");link.href=original;link.target="_blank";link.rel="noopener noreferrer";
+  actions.append(btn,link);classic.append(actions);root.append(classic);
+ }
+ segmentStatus("ظهر "+matches.length+" عنوانًا مدرسيا موثق التصنيف (بيانات فقط). يوجد أيضًا مثال تراثي واحد يمكن جلب مقتطفه عند الطلب عندما يناسب اختيارك. ما زالت الكتب القديمة تنتظر فهرسة نصوصها.");
 }
 $("searchSegment").addEventListener("click",searchVerifiedTexts);
 $("searchPublicSources").addEventListener("click",searchSegmentSources);
