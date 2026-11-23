@@ -54,7 +54,7 @@ body{font-size:16px}.panel h2{font-size:20px}.card h3{font-size:18px}.card p{fon
 .bank-hint{font-size:13px;background:#fff9ec;border-right:3px solid #c8a867;padding:10px 14px;color:#765a31}
 @media(max-width:700px){.excerpt-form{grid-template-columns:1fr}.excerpt-form .full{grid-column:auto}}
 </style></head><body>
-<div class="layout"><aside><div><h1>المنارة</h1><small>خزانة الأستاذ المدرسية</small></div><a href="exam-lab-v020.html">▤ مختبر الاختبارات</a><a href="index.html">✎ محرر المذكرات</a><a href="sources-library-v02.html">▣ مكتبة المصادر</a><a href="smart-library-v016.html">▣ الباحث التربوي — دون تحميل</a></aside>
+<div class="layout"><aside><div><h1>المنارة</h1><small>خزانة الأستاذ المدرسية</small></div><a href="exam-lab-v021.html">▤ مختبر الاختبارات</a><a href="index.html">✎ محرر المذكرات</a><a href="sources-library-v02.html">▣ مكتبة المصادر</a><a href="smart-library-v016.html">▣ الباحث التربوي — دون تحميل</a></aside>
 <main>
 <section class="hero"><h1>خزانة الكتب المدرسية العربية <span style="font-size:13px;border:1px solid #bba06b;padding:3px 10px;border-radius:20px;color:#f4dbac">V0.2 — بنك سنداتي</span></h1>
 <p>من كتب الجزائر القديمة منذ الاستقلال، إلى الكتب المدرسية الحديثة في البلدان العربية. مرجع موحّد للعثور على السندات، لا استنساخ للكتب أو محتوياتها.</p><a href="#excerptsPanel" style="display:inline-block;background:#eacfa0;color:#102b46;padding:9px 16px;border-radius:9px;text-decoration:none;font-weight:bold;margin-top:15px">الانتقال مباشرة إلى «سنداتي الموثّقة» ↓</a></section>
@@ -206,7 +206,7 @@ function renderExcerpts(){
    try{
     localStorage.setItem(TRANSFER_KEY,JSON.stringify(payload));
     setExcerptStatus("السند جاهز للانتقال إلى مختبر الاختبارات؛ ستراجعه هناك قبل بناء المسودة.");
-    location.href="exam-lab-v020.html";
+    location.href="exam-lab-v021.html";
    }catch(e){setExcerptStatus("تعذر تسليم السند للمختبر: "+e.message,true)}
   });
   const del=node("button","حذف السند","btn");del.type="button";
