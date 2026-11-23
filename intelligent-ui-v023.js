@@ -94,6 +94,7 @@ function renderAIExam(result,clipped){
  if(!questions.some(x=>x.domain==="language"))notices.append(mk("p","البناء اللغوي غير مكتمل؛ لم تثبت موارد دراسية صالحة للاستعمال."));
  for(const n of (result.findings||[]).slice(0,12))
    notices.append(mk("p",(n.severity==="error"?"تحقق ضروري: ":n.severity==="warning"?"مراجعة: ":"معلومة: ")+n.reason));
+ $("save")?.click();
  $("paper").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function textOf(el){return String(el?.innerText||el?.textContent||"").trim()}
@@ -104,6 +105,7 @@ function toBlocks(article){
   if(cls.includes("doc-head")){blocks.push({kind:"head",text:textOf(node)});continue}
   if(cls.includes("author-line")){blocks.push({kind:"author-line",text:textOf(node)});continue}
   if(cls.includes("author-biography")){blocks.push({kind:"bio",text:textOf(node)});continue}
+  if(cls.includes("source-note")){blocks.push({kind:"note",text:textOf(node)});continue}
   if(cls.includes("source-ref")){blocks.push({kind:"source-ref",text:textOf(node)});continue}
   if(cls.includes("source")){blocks.push({kind:"source",text:textOf(node)});continue}
   if(cls.includes("question")){
