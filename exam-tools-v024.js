@@ -176,6 +176,7 @@ function audit(){
  for(const s of issues)aList.append(E("div","مراجعة ضرورية: "+s,"suite-entry"));
  for(const s of ok)aList.append(E("div","فحص أولي: "+s,"suite-entry"));
  if(!issues.length)aList.prepend(E("p","لا توجد أخطاء بنيوية ظاهرة، لكن صحة الإجابات والمنهاج لا تُثبت بهذه الفحوص.","suite-msg"));
+ return {issues,ok};
 }
 const dPane=panes.docs,dR=R(dPane),docName=F(dR,"عنوان النسخة"),dList=E("div",undefined,"suite-results");
 B(dR,"حفظ الاختبار الحالي",()=>{if(!paper.children.length){flash("لا توجد ورقة لحفظها.",true);return}
@@ -227,5 +228,15 @@ const observer=new MutationObserver(list=>{
 });
 observer.observe(paper,{childList:true});
 install();show("audit");
+document.addEventListener("click",event=>{
+ const target=event.target.closest?.("button");
+ if(!target||!["word","print","aiPrint","aiPrintTop"].includes(target.id)||output.hidden)return;
+ const findings=audit();
+ if(findings.issues.length&&!confirm("توجد "+findings.issues.length+" نقاط تحتاج مراجعة قبل التصدير:\n• "+findings.issues.join("\n• ")+"\n\nهل تريد تصدير المسودة رغم ذلك؟")){
+  event.preventDefault();event.stopImmediatePropagation();
+  flash("أُوقف التصدير إلى حين مراجعة تنبيهات التدقيق.");
+  suite.open=true;show("audit");
+ }
+},true);
 window.ManaraExamV024={audit,renderBank,renderDocs,version:"0.24"};
 })();
