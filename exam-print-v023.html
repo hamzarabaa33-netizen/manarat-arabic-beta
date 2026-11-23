@@ -1,0 +1,96 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المنارة — معاينة الطباعة A4 V0.23</title>
+<style>
+:root{--navy:#15364b;--line:#cbd4db}
+*{box-sizing:border-box}
+body{margin:0;background:#e8edf0;color:#222;font:16px/1.65 "Simplified Arabic",Tahoma,serif}
+.toolbar{position:sticky;z-index:10;top:0;background:#15364b;color:#fff;display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:11px 20px;font:14px Tahoma,Arial}
+.toolbar button{font:inherit;cursor:pointer;border-radius:6px;padding:9px 14px;background:#e0c083;border:0;color:#152b3a}
+.toolbar a{color:#fff}.toolbar .message{font-size:12px}
+#printContent{background:white;max-width:210mm;min-height:297mm;margin:20px auto 40px;padding:17mm 14mm 18mm;box-shadow:0 12px 24px #3452;border:1px solid #a6b1bc}
+#pages{margin:22px auto;max-width:235mm}
+.doc-head{display:flex;justify-content:space-between;gap:20px;font-weight:700;font-size:12px;border-bottom:1px solid #555;margin:0 0 8px;padding:0 0 5px}
+h1{font-size:18px;text-align:center;margin:8px 0 6px;line-height:1.6}
+h2{font-size:16px;text-align:right;margin:14px 0 7px;border-bottom:1px solid #444;padding-bottom:4px;break-after:avoid}
+h3{font-size:15px;margin:10px 0 6px;break-after:avoid}
+p{margin:4px 0}
+.source{padding:11px 13px;border:1px solid #555;line-height:1.8;text-align:justify;white-space:pre-line;font-size:15px}
+.author-line{font-weight:700;font-size:13px}
+.bio{font-size:12px;line-height:1.65;margin:3px 0 8px}
+.source-ref,.note{font-size:11px;color:#4f6677;overflow-wrap:anywhere}
+.question{break-inside:avoid;margin:9px 0 12px;padding:2px 0 7px;border-bottom:1px dotted #c0c7cb}
+.question .prompt{font-weight:600;white-space:pre-line}
+.question .answer-space{border-bottom:1px dotted #a2acb3;height:19px}
+.writing{break-inside:avoid;margin:10px 0}
+.writing .prompt{white-space:pre-line;font-weight:600}
+.info{font-size:11px;color:#526879}
+table{width:100%;border-collapse:collapse;margin:8px 0;direction:rtl}
+td,th{border:1px solid #333;padding:5px;text-align:right}
+.writing .lines{margin:8px 0 0;display:grid;gap:21px}
+.writing .lines div{border-bottom:1px dotted #929da6;height:1px}
+.key-section{break-before:page}
+.pagedjs_page{background:white;box-shadow:0 5px 18px #2343;margin:20px auto!important}
+.pagedjs_pages{display:block}
+@page{size:A4;margin:16mm 14mm 17mm;}
+@media screen{#pages:not(:empty)+#printContent{display:none}}
+@media print{
+ .toolbar{display:none!important}
+ body{background:white}
+ #printContent{box-shadow:none;border:0;margin:0;padding:0;max-width:none;min-height:0}
+ #pages:not(:empty)+#printContent{display:none}
+ .pagedjs_page{margin:0!important;box-shadow:none}
+ h2,h3{break-after:avoid}
+ .source,.question,.writing{orphans:3;widows:3}
+}
+</style>
+<script>window.PagedConfig={auto:false};</script>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js" defer></script>
+</head><body>
+<div class="toolbar"><strong>المنارة — معاينة A4</strong><button id="print">طباعة / حفظ PDF</button><a href="exam-lab-v023.html">العودة إلى المحرر</a><span class="message" id="status">تحضير الورقة...</span></div>
+<div id="pages"></div><main id="printContent"></main>
+<script>
+(function(){"use strict";
+const STORAGE_KEY="manara_print_job_v023",page=document.getElementById("printContent"),status=document.getElementById("status");
+const el=(type,text,cls)=>{const x=document.createElement(type);if(typeof text==="string")x.textContent=text;if(cls)x.className=cls;return x};
+let job;try{job=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch{}
+if(!job||!Array.isArray(job.blocks)){status.textContent="لا توجد مسودة للطباعة؛ عد إلى المحرر وأنشئها أولًا.";return}
+const printBlock=(parent,b)=>{
+ if(!b||typeof b.text!=="string")return;
+ const kinds=["head","title","section","source","source-ref","author-line","bio","note","question","writing","paragraph","table"];
+ if(!kinds.includes(b.kind))return;
+ if(b.kind==="head"){parent.append(el("div",b.text,"doc-head"));return}
+ if(b.kind==="title"){parent.append(el("h1",b.text));return}
+ if(b.kind==="section"){parent.append(el("h2",b.text));return}
+ if(b.kind==="table"&&Array.isArray(b.rows)){
+  const table=el("table");for(const row of b.rows.slice(0,18)){
+   const tr=el("tr");if(Array.isArray(row))for(const cell of row.slice(0,6))tr.append(el("td",String(cell).slice(0,500)));
+   table.append(tr);
+  }parent.append(table);return;
+ }
+ if(b.kind==="question"||b.kind==="writing"){
+  const sec=el("section",undefined,b.kind);sec.append(el("p",b.text,"prompt"));
+  if(b.kind==="question"){sec.append(el("div",undefined,"answer-space"))}
+  else{const lines=el("div",undefined,"lines");for(let i=0;i<6;i++)lines.append(el("div"));sec.append(lines)}
+  parent.append(sec);return;
+ }
+ parent.append(el("p",b.text,b.kind==="paragraph"?"":b.kind));
+};
+for(const b of job.blocks.slice(0,90))printBlock(page,b);
+if(job.includeCorrection&&Array.isArray(job.correctionBlocks)&&job.correctionBlocks.length){
+ const sec=el("section",undefined,"key-section");for(const b of job.correctionBlocks.slice(0,90))printBlock(sec,b);page.append(sec);
+}
+document.getElementById("print").onclick=()=>window.print();
+async function paginate(){
+ if(!window.PagedPolyfill||typeof window.PagedPolyfill.preview!=="function"){
+  status.textContent="معاينة A4 الأساسية جاهزة؛ مكتبة تقسيم الصفحات لم تتوفر، ويمكنك الطباعة بمتصفح Chrome.";return;
+ }
+ try{
+  await window.PagedPolyfill.preview(page,[],document.getElementById("pages"));
+  status.textContent="صفحات A4 جاهزة. اختر طباعة ثم حفظ PDF. إن لم تطابق الصفحة ورقة Word فصدّرها منفصلة.";
+ }catch(e){document.getElementById("pages").replaceChildren();
+  status.textContent="تعذر التقسيم المحسّن. المعاينة الأساسية متاحة للطباعة. "+String(e.message||"").slice(0,80)}
+}
+window.addEventListener("load",paginate);
+})();
+</script></body></html>
