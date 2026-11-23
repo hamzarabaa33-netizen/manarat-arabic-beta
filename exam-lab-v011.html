@@ -457,7 +457,7 @@ $("findSources").addEventListener("click",async()=>{
  actions.append(a);card.append(actions);results.append(card);
  }
  const usable=ordered.filter(x=>!classifySource(x.title,$("library").value).indexPage).length;
- quickMessage("عُثر على "+hits.length+" صفحات: "+usable+" مرشحة للمعاينة، و"+(hits.length-usable)+" صفحات فهرسة غير صالحة للاعتماد كنص. يجب مراجعة الكاتب والملاءمة والحقوق.");
+ quickMessage("نتائج البحث: "+hits.length+" صفحات؛ نصوص مرشحة للمعاينة: "+usable+"؛ صفحات فهرس مستبعدة: "+(hits.length-usable)+". تبقى مراجعة الكاتب والملاءمة والحقوق ضرورية.");
  }catch(e){
   if(generation!==searchGeneration)return;
   results.replaceChildren();
