@@ -1575,7 +1575,7 @@ function recoverPriorSource(){
   let restored=null;
   for(const key of ["almanara_exam_lab_v022_qa","almanara_exam_lab_v021_qa","almanara_exam_lab_v020_qa","almanara_exam_lab_v019_qa","almanara_exam_lab_v018_qa","almanara_exam_lab_v017_qa"]){
    const previous=JSON.parse(localStorage.getItem(key)||"null");
-   if(previous?.data?.passage?.length>=80 && previous?.data?.sourceTitle && previous?.data?.author && previous?.data?.reference){
+   if(previous?.data?.passage?.length>=80){
     restored=previous;break;
    }
   }
