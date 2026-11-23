@@ -139,7 +139,7 @@
             </div>
             <div>
                 <h1 class="font-extrabold text-lg leading-tight tracking-wide">منارة الضاد <span class="text-amber-300 text-xs font-normal bg-emerald-800 px-2 py-0.5 rounded-full mr-1">الإصدار البيداغوجي</span></h1>
-                <p class="text-xs text-emerald-200">محرّر الاختبارات — تحديث مباشر مع Gemini وتشخيص أخطاء الاتصال</p>
+                <p class="text-xs text-emerald-200">محرّر الاختبارات — إصلاح ازدحام Gemini وإعادة المحاولة بالنماذج البديلة</p>
             </div>
         </div>
 
@@ -449,7 +449,7 @@
               <option value="gemini-3.6-flash">Gemini 3.6 Flash</option>
               <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite</option>
             </select>
-            <div id="modelStatus" role="status" aria-live="polite">لم يُختبر الاتصال بعد. يرجى إدخال مفتاحك ثم حفظه واختباره.</div>
+            <div id="modelStatus" role="status" aria-live="polite">لم يُختبر الاتصال بعد. عند خطأ 503 سيعيد التطبيق المحاولة مرة واحدة ويجرب نموذجين بديلين.</div>
             <div class="flex justify-end gap-2 pt-2">
                 <button onclick="toggleApiModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg">إلغاء</button>
                 <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg">حفظ المفتاح</button>
@@ -782,7 +782,7 @@
           const key=geminiSessionKey;if(!key){elem('replaceStatus').textContent='لا يوجد مفتاح Gemini في هذه الجلسة. أدخله فقط إن كنت تتحكم في بيئة التشغيل.';toggleApiModal();return}
           elem('replaceStatus').textContent='جارٍ طلب اقتراح سؤال واحد…';
           const prompt='اقترح سؤالًا بديلًا واحدًا فقط (تعليمة + علامة) للسؤال: '+q.innerText+'\nالمرحلة '+curriculumData[elem('selectLevel').value].name+'؛ المقطع '+elem('selectUnit').selectedOptions[0]?.textContent+'؛ الموارد المدروسة المؤكدة '+chosenSkills().join('، ')+'\nالسند:\n'+elem('viewPassage').innerText+'\nلا تختلق عبارة ولا اطلب استخراج ما لا يوجد بالنص. أعد السؤال الجديد فقط دون شرح.';
-          try{const proposal=await geminiRequest(prompt);
+          try{const proposal=await geminiRequest(prompt,{onProgress:m=>{elem('replaceStatus').textContent=m}});
              elem('replacementQuestion').value=proposal.trim();
              elem('replaceStatus').textContent='وصل الاقتراح؛ راجعه ثم اضغط «تغيير هذا السؤال فقط». لم تتغير الورقة تلقائيًا.';
           }catch(e){elem('replaceStatus').textContent='تعذر جلب الاقتراح: '+e.message}
@@ -916,27 +916,66 @@
           };
           return (basics[status]||'خطأ اتصال HTTP '+status+'.')+(code?' ['+code+']':'')+(msg?' — '+msg:'');
         }
-        async function geminiRequest(prompt,{json=false,signal}={}){
+        // معالجة ازدحام Gemini: إعادة محاولة محدودة ثم نموذج بديل، دون إعادة عرض مسودة قديمة كأنها جديدة.
+        function shortRetryDelay(ms,signal){
+          return new Promise((resolve,reject)=>{
+            if(signal?.aborted){reject(new DOMException('Cancelled','AbortError'));return}
+            let timer=setTimeout(done,ms);
+            function done(){signal?.removeEventListener('abort',cancel);resolve()}
+            function cancel(){clearTimeout(timer);reject(new DOMException('Cancelled','AbortError'))}
+            signal?.addEventListener('abort',cancel,{once:true});
+          });
+        }
+        async function geminiRequest(prompt,{json=false,signal,onProgress}={}){
           if(!geminiSessionKey)throw Error('المفتاح غير موجود في هذه الجلسة. افتح إعداد المفتاح وأدخله.');
-          const model=selectedGeminiModel(),url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
-          let response;
-          try{response=await fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json','x-goog-api-key':geminiSessionKey},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:json?{responseMimeType:'application/json',maxOutputTokens:10000}:{maxOutputTokens:48}})});
-          }catch(e){if(e?.name==='AbortError')throw e;
-            throw Error('تعذر الوصول إلى Google. قد يكون هناك حظر اتصال أو CORS عند فتح ملف HTML محليًا. جرّب الرابط المنشور أو خادمًا آمنًا. '+String(e?.message||''));}
-          let responseBody;
-          try{responseBody=await response.json()}catch{throw Error('رد غير قابل للقراءة من Gemini (HTTP '+response.status+').')}
-          if(!response.ok||responseBody?.error)throw Error(readApiError(response.status,responseBody));
-          const parts=responseBody?.candidates?.[0]?.content?.parts||[];
-          const raw=parts.map(p=>typeof p.text==='string'?p.text:'').join('').trim();
-          if(!raw)throw Error('لم يصل نص من Gemini. سبب الإنهاء: '+(responseBody?.candidates?.[0]?.finishReason||responseBody?.promptFeedback?.blockReason||'غير معروف'));
-          return raw;
+          const requested=selectedGeminiModel();
+          const candidates=[requested,...['gemini-3.8-flash','gemini-3.6-flash','gemini-3.5-flash-lite'].filter(x=>x!==requested)];
+          const unavailable=[];
+          for(let i=0;i<candidates.length;i++){
+            const model=candidates[i],attempts=i===0?2:1;
+            for(let attempt=0;attempt<attempts;attempt++){
+              if(signal?.aborted)throw new DOMException('Cancelled','AbortError');
+              if(i>0||attempt>0)onProgress?.('الخادم مزدحم؛ محاولة '+(attempt+1)+' باستخدام '+model+'…');
+              const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
+              let response;
+              try{
+                response=await fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json','x-goog-api-key':geminiSessionKey},
+                  body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:json?{responseMimeType:'application/json',maxOutputTokens:10000}:{maxOutputTokens:48}})});
+              }catch(e){if(e?.name==='AbortError')throw e;
+                throw Error('تعذر الوصول إلى Google. افحص الاتصال أو فتح التطبيق من رابط https؛ لا ترسل مفتاحك. '+String(e?.message||''))}
+              let responseBody;
+              try{responseBody=await response.json()}catch{throw Error('رد غير قابل للقراءة من Gemini (HTTP '+response.status+').')}
+              if(!response.ok||responseBody?.error){
+                const status=response.status;
+                if(status===503||status===404){
+                  unavailable.push(model+': HTTP '+status);
+                  if(status===503&&attempt+1<attempts){
+                    onProgress?.('خدمة '+model+' مزدحمة (503)؛ إعادة محاولة قصيرة…');
+                    await shortRetryDelay(1100,signal);
+                    continue;
+                  }
+                  break;
+                }
+                throw Error(readApiError(status,responseBody));
+              }
+              const parts=responseBody?.candidates?.[0]?.content?.parts||[];
+              const raw=parts.map(p=>typeof p.text==='string'?p.text:'').join('').trim();
+              if(!raw)throw Error('لم يصل نص من Gemini. سبب الإنهاء: '+(responseBody?.candidates?.[0]?.finishReason||responseBody?.promptFeedback?.blockReason||'غير معروف'));
+              if(model!==requested){
+                elem('geminiModel').value=model;
+                onProgress?.('✓ استجاب النموذج البديل '+model+' بعد تعذّر النموذج الأول.');
+              }
+              return raw;
+            }
+          }
+          throw Error('503/404: تعذّر التوليد بعد إعادة المحاولة وتجربة النماذج البديلة ('+unavailable.join('، ')+'). المشكلة من إتاحة خدمة Google أو النماذج لهذا المفتاح. احتفظنا بالورقة السابقة. لا تكرر الضغط بسرعة؛ جرّب في وقت لاحق.');
         }
         async function checkGeminiConnection(){
           const inserted=elem('inputApiKey').value.trim();if(inserted)saveApiKey();
           if(!geminiSessionKey){displayConnectionStatus('أدخل مفتاح Gemini أولًا ثم احفظه.',true);return false}
           displayConnectionStatus('جارٍ اختبار توليد رسالة قصيرة فعلية بنموذج '+selectedGeminiModel()+'…');
           try{
-            const result=await geminiRequest('اكتب كلمة واحدة فقط: ناجح');
+            const result=await geminiRequest('اكتب كلمة واحدة فقط: ناجح',{onProgress:m=>displayConnectionStatus(m)});
             if(!result)throw Error('الرد فارغ');
             connectionVerified=true;
             displayConnectionStatus('✓ نجح اتصال التوليد الحقيقي بنموذج '+selectedGeminiModel()+'. أصبح بإمكانك إنشاء موضوع جديد.');
@@ -985,7 +1024,7 @@
           btn.disabled=true;btn.textContent='جارٍ توليد اختبار مطابق للمدخلات…';
           generationStatus('جارٍ إنشاء السند والأسئلة باستخدام '+selectedGeminiModel()+'…');
           try{
-            const raw=await geminiRequest(buildExamPrompt(skills),{json:true,signal:activeController.signal});
+            const raw=await geminiRequest(buildExamPrompt(skills),{json:true,signal:activeController.signal,onProgress:m=>generationStatus(m)});
             if(epoch!==requestEpoch||generationStamp()!==snapshot){generationStatus('تغيّرت المدخلات أثناء الطلب؛ لم نستبدل مسودتك بنتيجة قديمة.');return false}
             let exam;
             try{exam=JSON.parse(raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,''))}catch{throw Error('أعاد Gemini نصًا غير صالح كـJSON؛ لم تُستبدل ورقتك. جرّب مرة أخرى أو اختر نموذجًا مختلفًا.')}
