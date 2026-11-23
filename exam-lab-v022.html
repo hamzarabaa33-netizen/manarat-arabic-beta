@@ -217,7 +217,7 @@ main{max-width:1250px}
 <div id="schoolbookPreview" class="schoolbook-preview" hidden>
  <h3 id="schoolbookPreviewTitle">المصدر المدرسي الأصلي</h3>
  <p id="schoolbookPreviewStatus" class="hint" aria-live="polite"></p>
- <pre id="schoolbookOcr" class="schoolbook-ocr"></pre>
+ <pre id="schoolbookOcr" class="schoolbook-ocr"></pre><label style="display:flex;gap:9px;align-items:center;margin:10px 0"><input type="checkbox" id="schoolbookVerified">راجعت النص المستخرج مع صورة الأصل، وسأصحح أخطاءه قبل اعتماد الأسئلة</label>
  <div class="actions"><a id="schoolbookPreviewOriginal" target="_blank" rel="noopener noreferrer">قراءة الكتاب المصوّر</a><button type="button" id="schoolbookCopyToEditor" disabled>نقل OCR إلى المحرر بعد تدقيقه</button><button type="button" id="schoolbookClosePreview">إغلاق</button></div>
  <p class="hint">النص مأخوذ آليًا من أرشيف الكتاب، وقد يحوي أخطاء تقلب معنى الكلمات والشواهد. لا ترسل للتلاميذ نسخة غير مصححة.</p>
 </div>
@@ -1204,7 +1204,7 @@ function searchVerifiedTexts(){
  if(!archive){segmentStatus("لم تُحمّل قاعدة الكتب التاريخية. حاول إعادة فتح الصفحة.",true);return}
  const found=archive.rank(segment,genre,pattern,level).slice(0,9);
  const intro=el("article",undefined,"segment-card");intro.style.gridColumn="1/-1";
- intro.append(el("h3","بحث في أصل الكتب الجزائرية: "+archive.books.length+" كتابان، "+archive.records.length+" نصوص محددة الموضع"));
+ intro.append(el("h3","بحث في أصل الكتب الجزائرية: "+archive.books.length+" كتب مفهرسة، "+archive.records.length+" نصوص محددة الموضع"));
  intro.append(el("p","هذه نصوص عُثر عليها داخل كتابين مدرسيين قديمين، وليست فهرسًا لدروس الرابعة ابتدائي. النسخ المصوّرة متاحة للقراءة، لكن النص الرقمي المستخرج يحتاج تصحيحًا."));
  root.append(intro);
  for(const item of found){
@@ -1236,7 +1236,7 @@ async function showSchoolbookOcr(item){
  panel.hidden=false;target.textContent="";
  $("schoolbookPreviewTitle").textContent=item.title+" — "+item.bookInfo.name;
  $("schoolbookPreviewOriginal").href=item.bookInfo.viewer;
- $("schoolbookCopyToEditor").disabled=true;
+ $("schoolbookCopyToEditor").disabled=true;$("schoolbookVerified").checked=false;
  $("schoolbookPreviewStatus").textContent="أحاول قراءة نص OCR من الأرشيف مباشرة، دون رفع كتاب أو تحميله منك...";
  panel.scrollIntoView({behavior:"smooth",block:"start"});
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
@@ -1255,15 +1255,16 @@ async function showSchoolbookOcr(item){
   if(excerpt.length<180)throw Error("مقطع OCR قصير أو ناقص");
   pendingSchoolOcr={item,excerpt};
   target.textContent=excerpt;
-  $("schoolbookCopyToEditor").disabled=false;
+  $("schoolbookCopyToEditor").disabled=!$("schoolbookVerified").checked;
   $("schoolbookPreviewStatus").textContent="نجح جلب نص OCR من الكتاب نفسه، لكنه غير مصحح. اقرأ الصورة وقارن الفقرات قبل اعتمادها.";
  }catch(error){
   target.textContent="تعذر استخراج النص في هذه الجلسة، ولم نستبدله بنص مصنوع.";
   $("schoolbookPreviewStatus").textContent="تعذّر جلب OCR من خادم الأرشيف: "+error.message+". مصدر الكتاب الأصلي قابل للفتح من الرابط.";
  }finally{clearTimeout(timeout)}
 }
+$("schoolbookVerified").onchange=()=>{$("schoolbookCopyToEditor").disabled=!pendingSchoolOcr||!$("schoolbookVerified").checked};
 $("schoolbookCopyToEditor").onclick=()=>{
- if(!pendingSchoolOcr)return;
+ if(!pendingSchoolOcr||!$("schoolbookVerified").checked)return;
  const {item,excerpt}=pendingSchoolOcr;
  $("sourceTitle").value=item.title;
  $("reference").value=item.bookInfo.name+" — "+item.pageNote+" — "+item.bookInfo.viewer;
