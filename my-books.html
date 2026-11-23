@@ -223,6 +223,7 @@ mark{background:#ffdf9d}
    };
    await put(newBook);
    await renderBooks();
+   if(topic().length>=3)await search();
    status("importStatus","تمت فهرسة «"+title+"»: "+result.total+" "+(pdf?"صفحة PDF":"قسمًا نصيًا")+"، حروف مستخرجة: "+chars+
     (result.empties?"؛ الصفحات قليلة النص: "+result.empties+" (قد تكون صورًا).":"")+
     ". الاستيراد محلي ولم تُرفع نسخة الكتاب.");
@@ -342,7 +343,24 @@ mark{background:#ffdf9d}
  $("closeReview").addEventListener("click",()=>{$("review").hidden=true;activeResult=null});
  $("backup").addEventListener("click",exportBackup);
  $("restoreFile").addEventListener("change",restore);
- renderBooks();
+
+ // Book-first handoff: carry only search preferences in URL, not book text.
+ const params=new URLSearchParams(window.location.search);
+ const requested=params.get("segment")||"";
+ const genre=params.get("genre")||"";
+ if(requested){
+  const options=[...$("querySegment").options].map(x=>x.value||x.textContent);
+  if(options.includes(requested))$("querySegment").value=requested;
+  else{$("querySegment").value="custom";$("customTopic").value=requested;$("customWrap").hidden=false}
+ }
+ if(["story","article","speech","letter","poem","any"].includes(genre))$("queryGenre").value=genre;
+ renderBooks().then(async()=>{
+  if(requested){
+   const all=await getAll();
+   if(all.length)await search();
+   else status("searchStatus","تم استلام المقطع «"+requested+"» من مهندس الاختبارات. أضف كتابًا من حاسوبك أولًا، وسيبحث النظام في نصوصه تلقائيًا بعد الفهرسة.");
+  }
+ }).catch(e=>status("importStatus","تعذر تهيئة المكتبة: "+e.message,true));
 })();
 </script>
 </body></html>
