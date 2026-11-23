@@ -165,7 +165,7 @@ main{max-width:1250px}
 .question-preview li{padding:3px 0;font-size:15px}
 .question-preview .hint{color:#43636e}
 </style></head><body>
-<div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v022.html">▤ هندسة الاختبارات</a><a href="schoolbooks-v022.html">▣ كتب القراءة القديمة</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a></aside><main>
+<div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab-v022.html">▤ هندسة الاختبارات</a><a href="schoolbooks-v022.html">▣ كتب القراءة القديمة</a><a href="sources-library-v02.html">▦ فهارس الكتب القديمة</a><a href="pedagogical-references-v1.html">▣ الوثائق التربوية وبلوم</a></aside><main>
 <header><div><h1>مختبر هندسة التقويم</h1><p class="lead">مسودة اختبار مدققة بنيويًا بمراجع شهادة التعليم المتوسط — الإصدار التجريبي</p></div><span class="chip" style="font-weight:bold;white-space:nowrap">النسخة المرئية V0.22 — 23 نوفمبر 2026</span></header>
 <div class="warning">نبدأ الآن بالكتب الجزائرية القديمة نفسها، مثل «المختار للرابعة متوسط» و«القراءة والنصوص للثامنة أساسي». تحققنا من وجود نصوصهما في النسخ المصورة، لكن OCR المستخرج مليء بالأخطاء؛ لن يُعتمد شاهد لغوي قبل مراجعة الأصل.</div>
 
@@ -299,7 +299,7 @@ main{max-width:1250px}
 <h2>مراجعة جودة المسودة — مستلهمة من الشهادة</h2>
 <p class="hint">فحص بنيوي أولي يقارن جودة التعليمات وتنوع المهارات وبناء الوضعية بمعايير مستخلصة من مواضيع منشورة للشهادة، ولا يثبت صحة الإجابات النحوية أو اعتماد الاختبار.</p>
 <ul id="reportItems"></ul>
-<div id="bemReport" class="bem-report" aria-live="polite"></div>
+<div id="bemReport" class="bem-report" aria-live="polite"></div><p class="hint">مرجع البناء: <a href="pedagogical-references-v1.html">المخططات الرسمية ودليل المنارة لأسئلة بلوم</a>. بيانات 2018 استرشادية عند اختلاف التوزيع الفعلي.</p>
 <details class="bem-details"><summary>ما المواضيع الحقيقية التي استفادت منها المنارة؟</summary>
 <div id="bemHistorical"></div>
 <p class="hint">تختلف طبيعة الفروض الفصلية عن شهادة التعليم المتوسط؛ ما نستعمله هنا أنماط تصميم وتقويم، وليس تنقيطًا رسميًا ملزمًا لكل فرض.</p>
@@ -319,7 +319,7 @@ main{max-width:1250px}
 <p class="small" style="text-align:center">من إعداد الأستاذ بن مزوز حمزة · المنارة — أداة تربوية قيد الاختبار</p>
 </main></div>
 <script src="verified-source-index-v016.js"></script>
-<script src="bem-mentor-v021.js"></script><script src="schoolbook-archive-v022.js"></script>
+<script src="bem-mentor-v021.js"></script><script src="schoolbook-archive-v022.js"></script><script src="pedagogy-core-v1.js"></script>
 <script>
 "use strict";
 (function(){
@@ -589,7 +589,9 @@ function build(){
  if(norm(d.passage).length<80){
   const blueprint=desiredGenre==="story"?narrativeReading("",""):planReading("سند لم يُحدّد بعد","",d.mode);
   const mentor=window.ManaraBemMentor;
-  const proposals=mentor?mentor.adaptReading(blueprint,localStorage):blueprint;
+  const adapted=mentor?mentor.adaptReading(blueprint,localStorage):blueprint;
+  const pedagogy=window.ManaraPedagogyCore;
+  const proposals=pedagogy?pedagogy.orderReading(adapted,d.previous):adapted;
   $("report").hidden=true;$("output").hidden=true;
   renderQuestionPreview(proposals,"مخطط أسئلة استرشادي حسب النوع والمقطع، لا يستند إلى نص محدد، ولا يُعدّ اختبارًا صالحًا للطباعة. اختر نصًا حقيقيًا من مكتبة الكتب لتخصيص الأسئلة والتحقق من إجاباته.",false);
   msg("ظهرت أسئلة أولية دون طلب مصدر أو مؤلف. لا يمكن اعتمادها قبل اختيار سند حقيقي.");
@@ -613,7 +615,9 @@ function build(){
  const narrative=isNarrativeRequest(desiredGenre);
  const initialReading=narrative?narrativeReading(d.passage,d.sourceTitle):planReading(d.passage,d.previous,d.mode);
  const mentor=window.ManaraBemMentor;
- const reading=mentor?mentor.adaptReading(initialReading,localStorage):initialReading;
+ const adaptedReading=mentor?mentor.adaptReading(initialReading,localStorage):initialReading;
+ const pedagogy=window.ManaraPedagogyCore;
+ const reading=pedagogy?pedagogy.orderReading(adaptedReading,d.previous):adaptedReading;
  let index=1;
  reading.forEach(q=>{
   if(q.table){
@@ -639,6 +643,10 @@ function build(){
  cor.append(edit("p","ملاحظة: هذا مفتاح مراجعة وليس تصحيحًا نموذجيًا مكتملًا؛ لا توجد علامات موزعة أو تبريرات إعرابية مصادق عليها."));
  cor.append(edit("p","التحقق المطلوب: اكتمال السند وملاءمة السنة والمقطع، ومطابقة الشواهد، وصحة الإجابات، وشبكة التنقيط قبل الطباعة للتلاميذ."));
  const reports=structuralReport({arr,passage:d.passage,jobs,reading,writingText,suppliedSituation});
+ if(pedagogy){
+  reports.push(...pedagogy.auditContext({level:$("chosenLevel").value,segment:d.segment,kind:d.kind,genre:desiredGenre,pattern:$("requestedPattern").value}));
+  reports.push(...pedagogy.auditReading(reading));
+ }
  const marks={good:"✓ ",bad:"! ",pending:"— "};
  $("reportItems").replaceChildren(...reports.map(r=>el("li",(marks[r.status]||"— ")+r.text,r.status)));
  renderBemReview({reading,passage:d.passage,title:d.sourceTitle,author:d.author,reference:d.reference,genre:desiredGenre,writing:writingText,resources:arr,previous:d.previous,level:$("chosenLevel").value});
