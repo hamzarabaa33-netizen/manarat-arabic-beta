@@ -310,7 +310,10 @@ function understand(){
  }else if(/فرض/.test(prompt))$("kind").value="فرض";
  else if(/تقويم/.test(prompt))$("kind").value="تقويم";
  else $("kind").value="اختبار الثلاثي الأول";
- $("mode").value=/تعليل|تحليل|استنتاج|نقد/.test(prompt)?"analysis":/توظيف|تطبيق|تحويل|إنتاج/.test(prompt)?"application":"balanced";
+ const asksAnalysis=/تعليل|تحليل|استنتاج|نقد/.test(prompt);
+ const asksApplication=/توظيف|تطبيق|تحويل|إنتاج/.test(prompt);
+ const explicitlyDiverse=/متنوع|تنويع|متوازن|يجمع|مختلفة/.test(prompt);
+ $("mode").value=(explicitlyDiverse||(asksAnalysis&&asksApplication))?"balanced":asksAnalysis?"analysis":asksApplication?"application":"balanced";
  const found=topicOptions.find(x=>prompt.includes(x));
  if(found)topic.value=found;
  const seg=prompt.match(/(?:المقطع|المجال)\s*(?:التعلمي)?\s*[:：\-]?\s*([^\n،.]{3,45})/);
