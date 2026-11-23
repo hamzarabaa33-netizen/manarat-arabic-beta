@@ -26,6 +26,12 @@ jobs:
           node --check intelligent-ui-v023.js
       - name: Verify secure AI flow
         run: node --test api/worker.test.mjs
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Chromium end-to-end print and question smoke test
+        run: node tests/browser-v023.mjs
       - name: Check web references
         run: |
           node - <<'NODE'
