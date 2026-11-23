@@ -39,8 +39,22 @@ input,select{width:100%;border:1px solid #ccdae2;border-radius:8px;padding:10px 
 mark{background:#f1e7c8}.footer{text-align:center;font-size:12px;color:#8d9aab;margin:35px}
 @media(max-width:860px){.layout{display:block}aside{padding:8px 15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}aside h1{font-size:22px}aside a{margin:0;padding:6px;font-size:12px}aside small{display:none}main{padding:16px}.filters{grid-template-columns:1fr 1fr}.manual{grid-template-columns:1fr}}
 @media(max-width:500px){.filters{grid-template-columns:1fr}.hero{padding:18px}.hero h1{font-size:22px}.panel{padding:15px}}
+
+/* V0.2: local excerpt bank and handoff to exam lab */
+body{font-size:16px}.panel h2{font-size:20px}.card h3{font-size:18px}.card p{font-size:14px;line-height:1.95}
+.cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr))}
+.excerpt-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.excerpt-form textarea{min-height:155px;resize:vertical;line-height:1.95;font:16px/1.95 "Simplified Arabic",Tahoma,serif}
+.excerpt-form .full{grid-column:1/-1}
+.bank-card{background:#fff;border:1px solid #d2e1e7;padding:17px;border-radius:11px;margin:12px 0}
+.bank-card h3{margin:0;color:#174b5c;font-size:19px}.bank-card p{white-space:pre-wrap;color:#334e61}
+.bank-meta{font-size:13px;color:#5d7181;margin:4px 0}
+.bank-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.bank-preview{background:#f8fafb;border:1px solid #dee9ea;padding:12px 14px;border-radius:8px;font:16px/1.9 "Simplified Arabic",Tahoma,serif}
+.bank-hint{font-size:13px;background:#fff9ec;border-right:3px solid #c8a867;padding:10px 14px;color:#765a31}
+@media(max-width:700px){.excerpt-form{grid-template-columns:1fr}.excerpt-form .full{grid-column:auto}}
 </style></head><body>
-<div class="layout"><aside><div><h1>المنارة</h1><small>خزانة الأستاذ المدرسية</small></div><a href="exam-lab-v011.html">▤ مختبر الاختبارات</a><a href="index.html">✎ محرر المذكرات</a><a href="sources-library.html">▣ مكتبة المصادر</a></aside>
+<div class="layout"><aside><div><h1>المنارة</h1><small>خزانة الأستاذ المدرسية</small></div><a href="exam-lab-v012.html">▤ مختبر الاختبارات</a><a href="index.html">✎ محرر المذكرات</a><a href="sources-library.html">▣ مكتبة المصادر</a></aside>
 <main>
 <section class="hero"><h1>خزانة الكتب المدرسية العربية</h1>
 <p>من كتب الجزائر القديمة منذ الاستقلال، إلى الكتب المدرسية الحديثة في البلدان العربية. مرجع موحّد للعثور على السندات، لا استنساخ للكتب أو محتوياتها.</p></section>
@@ -67,7 +81,27 @@ mark{background:#f1e7c8}.footer{text-align:center;font-size:12px;color:#8d9aab;m
 <div id="saveStatus" class="status" role="status">لم يُسجّل كتاب بعد في هذه الصفحة. المحفوظات لا تُشارك مع مستخدمين آخرين.</div>
 <div id="savedList"></div>
 </section>
-<div class="footer">منارة اللغة العربية — الأستاذ بن مزوز حمزة · مكتبة مصادر تجريبية V0.1</div>
+
+<section class="panel" id="excerptsPanel">
+<h2>سنداتي الموثّقة — بنك محلي قابل للبحث والاستعمال</h2>
+<p class="help">من كتاب مدرسي قديم أو حديث، احتفظ بمقطع تختاره مع بيانات مصدره الحقيقية، ثم أرسله إلى مختبر الاختبارات بلمسة واحدة. هذه <b>أداة لتنظيم مقتطفاتك الشخصية</b>، وليست استيرادًا تلقائيًا لكتب محفوظة الحقوق.</p>
+<div class="excerpt-form">
+<div class="field"><label for="exTitle">عنوان السند أو الدرس *</label><input id="exTitle" placeholder="العنوان الحقيقي للمقطع"></div>
+<div class="field"><label for="exAuthor">الكاتب الأصلي أو الجهة المؤلفة *</label><input id="exAuthor" placeholder="كما ورد في الكتاب، دون تخمين"></div>
+<div class="field"><label for="exBook">عنوان الكتاب أو المصدر *</label><input id="exBook" placeholder="مثال: كتاب قراءة من الطبعة القديمة"></div>
+<div class="field"><label for="exPage">الصفحة / الفصل (أو رابط المصدر) *</label><input id="exPage" placeholder="صفحة 40 أو رابط موثق"></div>
+<div class="field"><label for="exCountry">بلد الكتاب</label><select id="exCountry"><option>الجزائر</option><option>مصر</option><option>الأردن</option><option>السعودية</option><option>تونس</option><option>المغرب</option><option>بلد عربي آخر</option></select></div>
+<div class="field"><label for="exEra">سنة النشر إذا عُرفت</label><input id="exEra" inputmode="numeric" maxlength="4" placeholder="اختياري"></div>
+<div class="field full"><label for="exTopics">موضوعات السند (اختياري، تفصل بفاصلة)</label><input id="exTopics" placeholder="التضامن، القيم، البيئة..."></div>
+<div class="field full"><label for="exText">نص المقتطف المدخل من المصدر *</label><textarea id="exText" rows="7" placeholder="الصق نصًا تسمح بحق استعماله أو نصًا تعمل عليه محليًا، وحافظ على ألفاظه كما هي"></textarea></div>
+</div>
+<div class="bank-hint">المنارة لا تُصدّق نسبة النص ولا حقوقه تلقائيًا. إن كان الكتاب محميًّا بحقوق النشر، فاستعمل المقتطف محليًا للمراجعة فقط، ولا تُعِد نشره أو توزيعه دون ترخيص أو سند قانوني.</div>
+<div class="actions"><button class="btn primary" type="button" id="saveExcerpt">+ إضافة إلى سنداتي</button><button class="btn" type="button" id="exportExcerpts">تصدير بنك السندات JSON</button></div>
+<div class="status" id="excerptStatus" role="status" aria-live="polite">لم تُرفع أي نصوص إلى خادم. تحفظ السندات في متصفح جهازك فقط.</div>
+<div class="field"><label for="exSearch">ابحث داخل سنداتك</label><input id="exSearch" placeholder="عنوان، موضوع، مؤلف، كلمة من النص..."></div>
+<div id="excerptCount" class="stats"></div><div id="excerptList"></div>
+</section>
+<div class="footer">منارة اللغة العربية — الأستاذ بن مزوز حمزة · مكتبة مصادر تجريبية V0.2</div>
 </main></div>
 <script>
 "use strict";
@@ -135,6 +169,87 @@ $("exportList").addEventListener("click",()=>{
  a.href=url;a.download="مراجع-كتب-المنارة.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
  setStatus("طُلب تصدير قائمة المراجع. تحقق من وجود الملف في التنزيلات.")
 });
+
+/* بنك محلي للسندات: لا اتصال خارجي، ولا ادعاء توثيق أو حقوق */
+const EXCERPT_KEY="almanara-local-sources-v1";
+const TRANSFER_KEY="almanara-exam-source-handoff-v1";
+const exFields=["exTitle","exAuthor","exBook","exPage","exCountry","exEra","exTopics","exText"];
+function readExcerpts(){
+ try{const arr=JSON.parse(localStorage.getItem(EXCERPT_KEY)||"[]");
+ return Array.isArray(arr)?arr.filter(x=>x&&typeof x==="object"):[]}
+ catch{return[]}
+}
+function setExcerptStatus(message,error=false){
+ $("excerptStatus").textContent=message;
+ $("excerptStatus").className=error?"status error":"status";
+}
+function safeStore(arr){
+ try{localStorage.setItem(EXCERPT_KEY,JSON.stringify(arr));return true}
+ catch(e){setExcerptStatus("تعذر الحفظ المحلي؛ ربما امتلأت مساحة المتصفح: "+e.message,true);return false}
+}
+function renderExcerpts(){
+ const query=$("exSearch").value.trim(),all=readExcerpts();
+ const items=all.map((x,index)=>({...x,index})).filter(x=>!query||[x.title,x.author,x.book,x.page,x.topics,x.text].join(" ").includes(query));
+ $("excerptCount").textContent="سندات محلية مطابقة: "+items.length+" من "+all.length+". لم يُراجعها النظام تلقائيًا.";
+ const root=$("excerptList");root.replaceChildren();
+ if(!items.length){root.append(node("p","لا توجد سندات مطابقة؛ يمكنك إضافة سند موثق من الكتب التي تراجعها.","help"));return}
+ items.forEach(item=>{
+  const card=node("article",undefined,"bank-card");
+  card.append(node("h3",item.title),node("div",[item.author,item.book,item.page].join(" · "),"bank-meta"));
+  card.append(node("div",[item.country,item.year||"طبعة غير محددة",item.topics||"لا وسوم"].join(" | "),"bank-meta"));
+  const snippet=item.text.length>550?item.text.slice(0,550)+"…":item.text;
+  card.append(node("p",snippet,"bank-preview"));
+  const actions=node("div",undefined,"bank-actions");
+  const send=node("button","إرسال إلى مختبر الاختبارات","btn primary");send.type="button";
+  send.addEventListener("click",()=>{
+   const payload={title:item.title,author:item.author,book:item.book,page:item.page,country:item.country,year:item.year,text:item.text,topics:item.topics};
+   try{
+    localStorage.setItem(TRANSFER_KEY,JSON.stringify(payload));
+    setExcerptStatus("السند جاهز للانتقال إلى مختبر الاختبارات؛ ستراجعه هناك قبل بناء المسودة.");
+    location.href="exam-lab-v012.html";
+   }catch(e){setExcerptStatus("تعذر تسليم السند للمختبر: "+e.message,true)}
+  });
+  const del=node("button","حذف السند","btn");del.type="button";
+  del.addEventListener("click",()=>{
+   if(!confirm("حذف السند من هذا المتصفح؟ لا يُحذف الكتاب الأصلي."))return;
+   const arr=readExcerpts();arr.splice(item.index,1);
+   if(safeStore(arr)){renderExcerpts();setExcerptStatus("حُذف السند المحلي فقط.")}
+  });
+  actions.append(send,del);card.append(actions);root.append(card);
+ });
+}
+$("exSearch").addEventListener("input",renderExcerpts);
+$("saveExcerpt").addEventListener("click",()=>{
+ const vals=Object.fromEntries(exFields.map(id=>[id,$(id).value.trim()]));
+ if(vals.exTitle.length<3||vals.exAuthor.length<3||vals.exBook.length<3||vals.exPage.length<2){
+  setExcerptStatus("أكمل العنوان والكاتب الأصلي والكتاب والصفحة أو الرابط؛ لا يمكن حفظ سند مجهول المصدر.",true);return}
+ if(/غير معروف|غير مؤكد|لا أعرف|مجهول/.test(vals.exAuthor)){
+  setExcerptStatus("يجب معرفة الكاتب الأصلي أو جهة التأليف قبل إضافة السند إلى البنك.",true);return}
+ if(vals.exText.length<80){setExcerptStatus("نص السند قصير جدًا؛ أدخل 80 حرفًا على الأقل.",true);return}
+ if(vals.exEra&&(!/^\d{4}$/.test(vals.exEra)||Number(vals.exEra)<1800||Number(vals.exEra)>2026)){
+  setExcerptStatus("سنة النشر غير صحيحة؛ اتركها فارغة إن لم تتأكد.",true);return}
+ const arr=readExcerpts();
+ if(arr.some(x=>x.title===vals.exTitle&&x.book===vals.exBook&&x.text===vals.exText)){
+  setExcerptStatus("هذا السند نفسه موجود بالفعل.",true);return}
+ arr.push({
+  title:vals.exTitle,author:vals.exAuthor,book:vals.exBook,page:vals.exPage,
+  country:vals.exCountry,year:vals.exEra,topics:vals.exTopics,text:vals.exText,
+  status:"مرجع أدخله الأستاذ، لم يُراجع آليًا ولم تُفحص حقوق نشره"
+ });
+ if(!safeStore(arr))return;
+ $("exText").value="";
+ renderExcerpts();
+ setExcerptStatus("حُفظ السند محليًا مع بيانات مصدره. يمكنك استدعاؤه في مختبر الاختبارات.");
+});
+$("exportExcerpts").addEventListener("click",()=>{
+ try{
+ const blob=new Blob([JSON.stringify({warning:"مقتطفات أدخلها الأستاذ؛ تحقق من حقوق استعمالها ولا تعِد نشر نصوص محمية",items:readExcerpts()},null,2)],{type:"application/json;charset=utf-8"});
+ const a=node("a"),url=URL.createObjectURL(blob);a.href=url;a.download="سنداتي-المنارة.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ setExcerptStatus("طُلب تصدير بنك السندات؛ راجع مجلد التنزيلات.")
+ }catch(e){setExcerptStatus("تعذر التصدير: "+e.message,true)}
+});
+renderExcerpts();
+
 render();renderSaved();
 })();
 </script></body></html>
