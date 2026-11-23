@@ -88,12 +88,16 @@ function variantScore(store,id,variant){
  return x.good*2-x.bad*3;
 }
 function adaptReading(reading,storage){
- const saved=safeLoad(storage);
+ const saved=safeLoad(storage),usedVerbs=new Set();
  return reading.map(q=>{
   const variants=[q.text,...(variantTexts[q.id]||[])],unique=[...new Set(variants)];
-  const selection=unique.map((text,variant)=>({text,variant,score:variantScore(saved,q.id,variant)}))
-   .sort((a,b)=>b.score-a.score||a.variant-b.variant)[0];
-  return {...q,text:selection.text,sourceFamily:q.id,variant:selection.variant,
+  const ranked=unique.map((text,variant)=>({
+   text,variant,verb:String(text).trim().split(/\s+/)[0].replace(/[.،:]/g,""),
+   score:variantScore(saved,q.id,variant)
+  })).sort((a,b)=>b.score-a.score||a.variant-b.variant);
+  const selected=ranked.find(item=>!usedVerbs.has(item.verb))||ranked[0];
+  usedVerbs.add(selected.verb);
+  return {...q,text:selected.text,verb:selected.verb,sourceFamily:q.id,variant:selected.variant,
    bloom:families[q.id]?.bloom||"يحتاج تحديد المستوى المعرفي",
    dimension:families[q.id]?.dimension||q.skill||"غير مصنف"};
  });
