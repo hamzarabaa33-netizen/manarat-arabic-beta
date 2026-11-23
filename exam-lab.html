@@ -62,12 +62,21 @@ button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
 .search-hit p{color:#738491;font-size:11px;line-height:1.7;max-height:64px;overflow:hidden}
 .search-hit a{font-size:12px;color:#1b6674}
 .source-preview{border:1px solid #bfd9d2;background:#f6faf8;padding:14px;border-radius:10px;white-space:normal;margin:12px 0}
-.source-preview pre{white-space:pre-wrap;word-break:break-word;line-height:1.9;max-height:220px;overflow:auto;font:13px/1.9 "Simplified Arabic",Tahoma,serif;background:white;border:1px solid #e1ebe7;padding:11px;border-radius:7px}
+.source-preview pre{white-space:pre-wrap;word-break:break-word;line-height:2.05;max-height:400px;overflow:auto;font:18px/2.05 "Simplified Arabic",Tahoma,serif;background:white;border:1px solid #d9e8e2;padding:18px;border-radius:9px}
 .source-preview .warning-mini{color:#8d6a32;font-size:11px}
 .advanced{background:#fff;border:1px solid #dfe7ec;border-radius:11px;padding:10px 15px;margin:15px 0}
 .advanced>summary{font-weight:700;color:#214e67;padding:10px 3px;cursor:pointer}
 .advanced .panel{box-shadow:none;border-color:#e8edf0;margin:10px 0}
 @media(max-width:700px){.quick-hero{padding:16px}.quick-hero h2{font-size:19px}.search-panel{padding:11px}}
+
+.search-results{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.search-hit{padding:17px}
+.search-hit strong{font-size:15px;line-height:1.7}
+.search-hit p{font-size:13px;color:#43596b;max-height:110px;line-height:1.8}
+.source-quality{border:1px solid #d4e0e4;border-radius:8px;padding:12px 14px;margin:10px 0;background:#f7fafb;font-size:13px;line-height:1.9}
+.source-quality.warn{background:#fff9ec;border-color:#e9d7aa;color:#765922}
+.source-quality b{display:block;font-size:14px;margin-bottom:3px}
+@media(max-width:700px){.source-preview pre{font-size:17px;padding:12px;line-height:2}}
 </style></head><body>
 <div class="layout"><aside><div><h1>المنارة</h1><p>رفيق الأستاذ اليومي</p></div><a href="index.html">✎ إعداد المذكرات</a><a class="active" href="exam-lab.html">▤ هندسة الاختبارات</a></aside><main>
 <header><div><h1>مختبر هندسة التقويم</h1><p class="lead">نموذج مساعد للرابعة متوسط — لغة عربية، قابل للتطوير لبقية المستويات</p></div><span class="chip">تجربة V0.9</span></header>
@@ -96,6 +105,7 @@ button.gold{background:#fff8e9;border-color:#dcc59a;color:#80632a}
 <div class="source-preview" id="sourcePreview" hidden>
 <strong id="foundTitle"></strong>
 <p id="foundLink"></p>
+<div id="sourceQuality" class="source-quality" aria-live="polite"></div>
 <pre id="foundText"></pre>
 <p class="warning-mini">النص المعروض مقتطف من صفحة عامة، وقد يتضمن عناصر تحريرية. النسبة والتطابق وصلاحية الاقتباس وحقوقه تحتاج إلى مراجعة الأستاذ. لا يُعد ظهور المقال في البحث اعتمادًا تربويًا.</p>
 <div class="actions"><button type="button" class="primary" id="useSource">إدراج هذا المقتطف بعد مراجعته</button></div>
@@ -334,6 +344,15 @@ $("quickBuildBtn").addEventListener("click",()=>{
  $("generate").click();
 });
 const baseByLibrary={wikisource:"https://ar.wikisource.org",wikipedia:"https://ar.wikipedia.org"};
+// Bibliographic records reviewed separately; not automatically inferred from Wikimedia.
+// One first specimen: original issue scan catalog and article text checked on 2026-11-23.
+const CURATED_REFERENCES={
+ "مجلة الرسالة/العدد 1023/التضامن الاجتماعي بين ابن خلدون ودوجي":{
+  author:"جمال مرسي بدر",journal:"مجلة الرسالة",issue:"1023",published:"11 فبراير 1953",page:"213",
+  verification:"https://archive.alsharekh.org/contents/30/12012",
+  assessment:"المقال يتناول مقارنة فكرية بين ابن خلدون ودوجي ونظريات الاجتماع والدولة؛ ملاءمته للرابعة متوسط ليست مفترضة، وقد يحتاج إلى انتقاء مقطع مناسب. حقوق إعادة الاستخدام غير مؤكدة."
+ }
+};
 let pendingSource=null,searchGeneration=0;
 const stripTags=str=>{const doc=new DOMParser().parseFromString(String(str||""),"text/html");return t(doc.body.textContent).replace(/\s+/g," ").slice(0,300)};
 function apiURL(base,params){
@@ -368,6 +387,8 @@ $("findSources").addEventListener("click",async()=>{
  for(const hit of hits){
  const card=el("article",undefined,"search-hit");
  const title=String(hit.title),href=base+"/wiki/"+encodeURIComponent(title.replace(/ /g,"_"));
+ const record=CURATED_REFERENCES[title];
+ if(record)card.append(el("p","المصدر: "+record.journal+"، العدد "+record.issue+"، الكاتب "+record.author+"، ص "+record.page));
  card.append(el("strong",title),el("p",stripTags(hit.snippet)));
  const actions=el("div",undefined,"actions"),a=el("a","فتح الصفحة الأصلية");
  a.href=href;a.target="_blank";a.rel="noopener noreferrer";
@@ -390,6 +411,16 @@ $("findSources").addEventListener("click",async()=>{
 });
 async function previewSource(base,title,url){
  const state=$("sourcePreview");state.hidden=false;pendingSource=null;$("foundTitle").textContent=title;$("foundLink").replaceChildren();
+ const sourceQuality=$("sourceQuality"),record=CURATED_REFERENCES[title];
+ sourceQuality.className="source-quality warn";
+ if(record){
+   sourceQuality.replaceChildren(el("b","بطاقة توثيق أولية من مصدر ببليوغرافي مستقل"),
+     el("div","الكاتب: "+record.author+" | "+record.journal+" | العدد "+record.issue+" | "+record.published+" | ص "+record.page),
+     el("div","التقدير التربوي المبدئي: "+record.assessment));
+   const citation=el("a","فتح سجل العدد للتحقق");citation.href=record.verification;citation.target="_blank";citation.rel="noopener noreferrer";
+   sourceQuality.append(citation);
+ }else sourceQuality.replaceChildren(el("b","المصدر الأصلي والملاءمة التربوية غير موثّقين بعد"),
+   el("div","العنوان ورابط الصفحة دليل على وجود صفحة منشورة فقط، ولا يثبتان الكاتب الأصلي أو ملاءمتها للمستوى أو حق إعادة استخدامها."));
  const a=el("a","الاطلاع على الصفحة الأصلية");a.href=url;a.target="_blank";a.rel="noopener noreferrer";$("foundLink").append(a);
  $("foundText").textContent="يجري جلب مقتطف من الصفحة...";
  try{
@@ -406,11 +437,24 @@ async function previewSource(base,title,url){
    content=container.textContent||"";
   }
   content=t(content).replace(/\r/g,"").replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n");
-  if(content.length<80)throw new Error("هذه الصفحة لا تحتوي مقتطفًا نصيًا كافيًا. افتح الأصل يدويًا.");
-  // اقتطاع حتى آخر فاصلة جملية قريبة، دون إعادة صياغة أو اختلاق.
-  let cut=content.slice(0,2100);
-  if(content.length>2100){const stop=Math.max(cut.lastIndexOf("。"),cut.lastIndexOf("؟"),cut.lastIndexOf("!"),cut.lastIndexOf("."),cut.lastIndexOf("؛"));if(stop>950)cut=cut.slice(0,stop+1)}
-  pendingSource={title,url,base,text:cut};
+  // Remove only editorial title/byline when these appear as isolated lines; never rewrite the article.
+  const lines=content.split(/\n+/).map(t).filter(Boolean);
+  const articleLines=lines.filter((line,i)=>{
+   if(i>5)return true;
+   if(line===title||line===title.split("/").pop())return false;
+   if(/^مجلة الرسالة\/العدد\s*\d+\//.test(line))return false;
+   if(/^للأستاذ\s+.{3,65}$/.test(line))return false;
+   return true;
+  });
+  const cleanText=articleLines.join("\n\n");
+  if(cleanText.length<80)throw new Error("هذه الصفحة لا تحتوي مقتطفًا نصيًا كافيًا. افتح الأصل يدويًا.");
+  // Show a short excerpt for assessment; not a license to reproduce the whole article.
+  let cut=cleanText.slice(0,900);
+  if(cleanText.length>900){
+   const stop=Math.max(cut.lastIndexOf("؟"),cut.lastIndexOf("!"),cut.lastIndexOf("."),cut.lastIndexOf("؛"));
+   if(stop>520)cut=cut.slice(0,stop+1);
+  }
+  pendingSource={title,url,base,text:cut,record:record||null};
   $("foundText").textContent=cut;
   quickMessage("جُلب مقتطف مباشر من الصفحة؛ اقْرأه وتحقق من مناسبة موضوعه وبنيته قبل إدراجه.");
   state.scrollIntoView({behavior:"smooth",block:"start"});
@@ -419,11 +463,11 @@ async function previewSource(base,title,url){
 $("useSource").addEventListener("click",()=>{
  if(!pendingSource){quickMessage("لا يوجد سند جاهز للإدراج.",true);return}
  $("sourceTitle").value=pendingSource.title;
- $("author").value=pendingSource.base.includes("wikisource")?"ويكي مصدر (جهة الإتاحة الرقمية، الكاتب الأصلي غير مؤكد)":"ويكيبيديا العربية (جهة الإتاحة، لا الكاتب الأصلي)";
+ $("author").value=pendingSource.record?.author||"مؤلف أصلي غير مؤكد — يجب تحديده من المصدر";
  $("reference").value=pendingSource.url;
  $("passage").value=pendingSource.text;
  $("advanced").open=true;
- quickMessage("أُدرج المقتطف ومصدره الرقمي. راجع بيانات الكاتب الأصلي وحقوق الاقتباس، ثم أثبت الشواهد اللغوية أو اكتفِ بمسودة الفهم الأولية.");
+ quickMessage("أُدرج مقتطف مختصر. "+(pendingSource.record?"أُدرج الكاتب من بطاقة توثيق أولية، لكن الحقوق والملاءمة تحتاج مراجعة.":"الكاتب الأصلي غير مؤكد ويجب تصحيحه يدويًا.")+" أثبت الشواهد اللغوية قبل اعتماد الاختبار.");
  $("passage").scrollIntoView({behavior:"smooth",block:"center"});
 });
 
